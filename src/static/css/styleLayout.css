@@ -1,0 +1,116 @@
+ul ul a {
+  font-size: 0.9em !important;
+  padding-left: 30px !important;
+
+}
+
+
+
+.imgnav{
+  padding-left: 15px;
+}
+
+.offcanvas-backdrop.show {
+   opacity: 0; 
+}
+  .offcanvas {
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.offcanvas-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.offcanvas-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.user-menu {
+  list-style: none;
+  padding: 0;
+}
+
+.user-menu li {
+  margin-bottom: 10px;
+}
+
+.user-menu a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.user-menu a:hover {
+  background-color: #96c1ee;
+  border-radius: 5px;
+}
+
+.navbar {
+      background-color: #1E2D4F; /* Color de fondo */
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+    }
+
+    .navbar-brand img {
+      max-width: 150px;
+    }
+
+    .navbar-brand {
+      font-family: 'Arial', sans-serif; /* Fuente */
+      font-size: 20px;
+      color: #fff; /* Color del texto */
+    }
+
+    .navbar-brand:hover {
+      color: #74aceb; /* Color del texto al pasar el mouse */
+    }
+
+    .navbar-toggler {
+      border: none;
+      background: none;
+      color: #fff;
+    }
+
+    .navbar-toggler:hover {
+      color: #74aceb; /* Color del botón al pasar el mouse */
+    }
+
+    .navbar-toggler-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .nav-link {
+      font-family: 'Arial', sans-serif; /* Fuente */
+      font-size: 16px;
+      color: #000000; /* Color del texto */
+      transition: color 0.3s ease; /* Transición al pasar el mouse */
+    }
+
+    .nav-link:hover {
+      color: #74aceb; /* Color del texto al pasar el mouse */
+    }
+
+    .btn-outline-success {
+      color: #74aceb; /* Color del texto */
+      border-color:#74aceb; /* Color del borde */
+      transition: color 0.3s ease, border-color 0.3s ease; /* Transición al pasar el mouse */
+    }
+
+    .btn-outline-success:hover {
+      color: #000000; /* Color del texto al pasar el mouse */
+      background-color: #74aceb; /* Color de fondo al pasar el mouse */
+      border-color: #74aceb; /* Color del borde al pasar el mouse */
+    }
+
+    .user-info p {
+      font-family: 'Arial', sans-serif; /* Fuente */
+      font-size: 16px;
+      color: #000000; /* Color del texto */
+      margin-right: 20px;
+    }

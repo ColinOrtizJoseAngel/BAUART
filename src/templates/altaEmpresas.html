@@ -1,0 +1,353 @@
+<!--IMPOTRAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}Nuevo Proyecto{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styele_alta_empresas.css') }}">
+
+{% endblock %}
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+<br>
+<div class="container tituloform">
+    <div class="container text-center">
+        <h1 class="display-2">Alta de empresas</h1>
+        <p class="lead">Completa los datos del formulario para dar de alta una empresa, los campos con rojo son campos
+            obligatorios.</p>
+    </div>
+</div>
+<br>
+<!--INICIA INFORMACIÓN GENERAL-->
+<br>
+<div class="container">
+    <form class="needs-validation" novalidate accion="/Altaempresas" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="container">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <div class="text-center">
+                    <button class="btn btn-primary" type="submit">Cofirmar</button>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="form-group row">
+                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                    <label for="ID_EMPRESA" class="form-label">Empresa: </label>
+                        <input type="text" class="form-control" id="ID_EMPRESA" name="ID_EMPRESA" value="{{numero_empresa}}">
+                </div>
+            </div>
+        </div>
+        <br>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                    type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Información
+                    General</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                    data-bs-target="#regitrosPatronales-tab-pane" type="button" role="tab"
+                    aria-controls="regitrosPatronales-tab-pane" aria-selected="false">Registros Patronales</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#representantes-tab-pane"
+                    type="button" role="tab" aria-controls="representantes-tab-pane"
+                    aria-selected="false">Representantes
+                    Legales</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane"
+                    type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">Apoderado
+                    legal</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#direccion-tab-pane"
+                    type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">Dirección</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                tabindex="0">
+                <br>
+                <div class="container text-center">
+                    <h2>Información General</h2>
+                </div>
+                <br>
+                <!--INFORMACIÓN GENERAL-->
+                <div class="form-group row">
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <label for="RAZON_SOCIAL" class="form-label">Razón Social*</label>
+                        <input type="text" class="form-control" id="RAZON_SOCIAL" name="RAZON_SOCIAL"
+                            placeholder="Razón Social" required>
+                        <div class="invalid-feedback">
+                            Completa Razón Social
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <label for="REG_FISCAL" class="form-label">Regimen Fiscal*</label>
+                        <input type="text" class="form-control" id="REG_FISCAL" name="REG_FISCAL" placeholder="Regimen Fiscal" maxlength="13"
+                            required>
+                        <div class="invalid-feedback">
+                            Completa Regimen Fiscal 
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <label for="RFC" class="form-label">RFC*</label>
+                        <input type="text" class="form-control" id="RFC" name="RFC" placeholder="RFC" maxlength="13"
+                            required>
+                        <div class="invalid-feedback">
+                            Completa RFC
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <label for="REPSE" class="form-label">REPSE*</label>
+                        <input type="text" class="form-control" id="REPSE" name="REPSE" placeholder="REPSE" required>
+                        <div class="invalid-feedback">
+                            Completa REPSE
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+            <!--FIN INFORMACIÓN GENERAL-->
+            <!--REGISTROS PATRONALES-->
+            <div class="tab-pane fade" id="regitrosPatronales-tab-pane" role="tabpanel"
+                aria-labelledby="regitrosPatronales-tab" tabindex="0">
+                <br>
+                <div class="container text-center">
+                    <h2>Registros Patronales</h2>
+                    <p class="lead">Completa por lo menos un registro patronal.</p>
+                </div>
+                <br>
+                <!--BOTONES CONTACTOS-->
+                <div class="container">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+
+                        <button class="btn btn btn-dark" type="button" onclick="añadirRegistro()">
+                            <i class="bi bi-window-plus"></i> Nuevo Registro Patronal
+                        </button>
+                        <!--
+                            <button class="btn btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+                            <i class="bi bi-search"></i> Filtrar Empresa
+                        </button>
+                        -->
+
+                    </div>
+                </div>
+                <!--FIN BOTONES CONTACTOS-->
+                <!--MODAL PARA ALTA DE CONTACTO-->
+                <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="container text-center">
+                                    <h5 class="modal-title" id="miModalLabel">Añadir Registro Patronal</h5>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form action="" method="">
+                                <div class="modal-body">
+                                    <div class="form-group row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <label for="NO_REGISTRO_PATRONAL" class="form-label">No° Registro
+                                                Patronal*</label>
+                                            <input type="text" class="form-control" id="NO_REGISTRO_PATRONAL"
+                                                name="NO_REGISTRO_PATRONAL" placeholder="Número  de Registro Patronal"
+                                                >
+                                            
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <label for="ESTADO_REPRESENTANTE" class="form-label">Estado*</label>
+                                            <input type="text" class="form-control" id="ESTADO_REPRESENTANTE"
+                                                name="ESTADO_REPRESENTANTE" placeholder="Estado de registro patronal"
+                                                >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer d-flex justify-content-center">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="button" class="btn btn-primary" onclick="añadirRegistro()">Añadir</button>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!--FIN MODAL CONTACTO-->
+                <br>
+                <!--VISTA DE CONTACTOS-->
+                <div class="container-fluid">
+                    <table class="table table-borderless" id="Registros_Patronales">
+                        <thead class="table">
+                            <tr>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!--VISTA DE CONTACTOS-->
+
+            </div>
+            <!--FIN REGISTROS PATRONALES-->
+            <div class="tab-pane fade" id="representantes-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                tabindex="0">
+                <br>
+                <div class="container text-center">
+                    <h2>Representante Legales</h2>
+                    <p class="lead">Completa por lo menos un representante legal.</p>
+                </div>
+                <br>
+                <br>
+                <p class="h4">Representante legal 1</p>
+                <br>
+                <div class="container">
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <label for="NOMBRE_REPRESENTANTE1" class="form-label">Nombre*</label>
+                            <input type="text" class="form-control" id="NOMBRE_REPRESENTANTE1"
+                                name="NOMBRE_REPRESENTANTE1" placeholder="Nombre Contacto" required>
+                            <div class="invalid-feedback">
+                                Completar Nombre
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <label for="APELLIDO_REPRESENTANTE1" class="form-label">Apellido*</label>
+                            <input type="text" class="form-control" id="APELLIDO_REPRESENTANTE1"
+                                name="APELLIDO_REPRESENTANTE1" placeholder="Apellido Contacto" required>
+                            <div class="invalid-feedback">
+                                Completar Apellido
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <label for="TelefonoContacto1" class="form-label">Teléfono*</label>
+                            <input type="text" class="form-control" id="TELEFONO_REPRESENTANTE1"
+                                name="TELEFONO_REPRESENTANTE1" placeholder="Teléfono Contacto" required>
+                            <div class="invalid-feedback">
+                                Completar Teléfono
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <label for="CORREO_REPRESENTANTE1" class="form-label">Correo Electrónico*</label>
+                            <input type="email" class="form-control" id="CORREO_REPRESENTANTE1"
+                                name="CORREO_REPRESENTANTE1" placeholder="Correo Contacto" required>
+                            <div class="invalid-feedback">
+                                Completar Correo electrónico
+                            </div>
+                        </div>
+                    </div>
+                    <!-- REPRESENTANTE LEGAL 2-->
+                    <br>
+                    <p class="h4">Representante legal 2</p>
+                    <br>
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <label for="NOMBRE_REPRESENTANTE2" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="NOMBRE_REPRESENTANTE2"
+                                name="NOMBRE_REPRESENTANTE2" placeholder="Nombre Contacto">
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <label for="APELLIDO_REPRESENTANTE2" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="APELLIDO_REPRESENTANTE2"
+                                name="APELLIDO_REPRESENTANTE2" placeholder="Apellido Contacto">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <label for="TELEFONO_REPRESENTANTE2" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="TELEFONO_REPRESENTANTE2"
+                                name="TELEFONO_REPRESENTANTE2" placeholder="Teléfono Contacto">
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <label for="CORREO_REPRESENTANTE2" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="CORREO_REPRESENTANTE2"
+                                name="CORREO_REPRESENTANTE2" placeholder="Correo Contacto">
+                        </div>
+                    </div>
+                    
+                </div>
+                <!--FIN REPRESENTANTE LEGAL 1-->
+                    <br>
+            </div>
+            <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
+                tabindex="0">
+                <br>
+                <div class="container text-center">
+                    <h2>Apoderado Legal</h2>
+                    <p class="lead">Datos de Apoderado Legal</p>
+                </div>
+                <br>
+                <!--APODERADO LEGAL-->
+                <div class="form-group row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <label for="NOMBRE_APODERADO" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="NOMBRE_APODERADO" name="NOMBRE_APODERADO"
+                            placeholder="Nombre Contacto">
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <label for="APELLIDO_APODERADO" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" id="APELLIDO_APODERADO" name="APELLIDO_APODERADO"
+                            placeholder="Apellido Contacto">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <label for="TELEFONO_APODERADO" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="TELEFONO_APODERADO" name="TELEFONO_APODERADO"
+                            placeholder="Teléfono Contacto">
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <label for="CORREO_APODERADO" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="CORREO_APODERADO" name="CORREO_APODERADO"
+                            placeholder="Correo Contacto">
+                    </div>
+                </div>
+                <!--FIN APODERADO LEGAL-->
+                <br>
+            </div>
+            <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
+                tabindex="0">
+                <br>
+                <div class="container text-center">
+                    <h2>Dirección</h2>
+                    <p class="lead">Completa el Codigo Postal.</p>
+                </div>
+                <br>
+                <div class="form-group row">
+                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                        <label for="CP" class="form-label">CP*</label>
+                        <input type="text" class="form-control" id="CP" name="CP" placeholder="Código Postal" required>
+                        <div class="invalid-feedback">
+                            COMPLETAR Código Postal
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <label for="ESTADO" class="form-label">Estado</label>
+                        <input type="text" class="form-control" id="ESTADO" name="ESTADO" placeholder="Estado">
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <label for="CIUDAD" class="form-label">Ciudad</label>
+                        <input type="text" class="form-control" id="CIUDAD" name="CIUDAD" placeholder="Ciudad">
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <label for="DIRECCION" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="DIRECCION" name="DIRECCION" placeholder="Dirección">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<br>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ url_for('static', filename='JS/validar_formulario.js') }}"></script>
+<script src="{{ url_for('static', filename='JS/funciones_altra_empresa.js') }}"></script>
+
+{% endblock %}

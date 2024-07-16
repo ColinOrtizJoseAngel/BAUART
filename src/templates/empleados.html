@@ -1,0 +1,48 @@
+<!--IMPOTRAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}Nuevo Proyecto{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+
+{% endblock %}
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+<br>
+<div class="container-fluid">
+    <div class="container text-center">
+        <h1>Cliente</h1>
+    </div>
+    <br>
+    <!--BOTONES ACCIONES-->
+    <div class="container">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a class="btn btn-primary" href="/Altacliente">
+                <i class="bi bi-building-fill-add"></i> Nueva Cliente
+            </a>
+            <button class="btn  btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+                <i class="bi bi-search"></i> Filtrar Cliente
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Empleado</th>
+                    <th scope="col">RFC</th>
+                    <th scope="col">Direción</th>
+                    <th scope="col">Contacto</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}
