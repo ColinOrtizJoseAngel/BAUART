@@ -33,7 +33,8 @@
             <div class="form-group row">
                 <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
                     <label for="ID_EMPRESA" class="form-label">Empresa: </label>
-                        <input type="text" class="form-control" id="ID_EMPRESA" name="ID_EMPRESA" value="{{numero_empresa}}">
+                    <input type="text" class="form-control" id="ID_EMPRESA" name="ID_EMPRESA"
+                        value="{{numero_empresa}}">
                 </div>
             </div>
         </div>
@@ -42,18 +43,18 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
                     type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Información
-                    General</button>
+                    general</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
                     data-bs-target="#regitrosPatronales-tab-pane" type="button" role="tab"
-                    aria-controls="regitrosPatronales-tab-pane" aria-selected="false">Registros Patronales</button>
+                    aria-controls="regitrosPatronales-tab-pane" aria-selected="false">Registros patronales</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#representantes-tab-pane"
                     type="button" role="tab" aria-controls="representantes-tab-pane"
                     aria-selected="false">Representantes
-                    Legales</button>
+                    legales</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane"
@@ -64,13 +65,19 @@
                 <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#direccion-tab-pane"
                     type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">Dirección</button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#inf_banco-tab-pane"
+                    type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">Infomracion
+                    bancaría</button>
+            </li>
         </ul>
         <div class="tab-content" id="myTabContent">
+            <!-- INICIO INFORMACION GENERAL -->
             <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
                 tabindex="0">
                 <br>
                 <div class="container text-center">
-                    <h2>Información General</h2>
+                    <h2>Información general</h2>
                 </div>
                 <br>
                 <!--INFORMACIÓN GENERAL-->
@@ -85,10 +92,10 @@
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                         <label for="REG_FISCAL" class="form-label">Regimen Fiscal*</label>
-                        <input type="text" class="form-control" id="REG_FISCAL" name="REG_FISCAL" placeholder="Regimen Fiscal" maxlength="13"
-                            required>
+                        <input type="text" class="form-control" id="REG_FISCAL" name="REG_FISCAL"
+                            placeholder="Regimen Fiscal" maxlength="13" required>
                         <div class="invalid-feedback">
-                            Completa Regimen Fiscal 
+                            Completa Regimen Fiscal
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -109,22 +116,23 @@
                 </div>
                 <br>
             </div>
-            <!--FIN INFORMACIÓN GENERAL-->
-            <!--REGISTROS PATRONALES-->
+            <!-- FIN INFORMACION GENERAL -->
+
+            <!--INICIO REGISTROS PATRONALES-->
             <div class="tab-pane fade" id="regitrosPatronales-tab-pane" role="tabpanel"
                 aria-labelledby="regitrosPatronales-tab" tabindex="0">
                 <br>
                 <div class="container text-center">
-                    <h2>Registros Patronales</h2>
+                    <h2>Registros patronales</h2>
                     <p class="lead">Completa por lo menos un registro patronal.</p>
                 </div>
                 <br>
-                <!--BOTONES CONTACTOS-->
+                <!--BOTONES REGISTROS PATRONALES -->
                 <div class="container">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
 
                         <button class="btn btn btn-dark" type="button" onclick="añadirRegistro()">
-                            <i class="bi bi-window-plus"></i> Nuevo Registro Patronal
+                            <i class="bi bi-window-plus"></i> Agregar registro patronal
                         </button>
                         <!--
                             <button class="btn btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
@@ -141,7 +149,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <div class="container text-center">
-                                    <h5 class="modal-title" id="miModalLabel">Añadir Registro Patronal</h5>
+                                    <h5 class="modal-title" id="miModalLabel">Agregar registro patronal</h5>
                                 </div>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
@@ -151,17 +159,15 @@
                                     <div class="form-group row">
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <label for="NO_REGISTRO_PATRONAL" class="form-label">No° Registro
-                                                Patronal*</label>
+                                                patronal*</label>
                                             <input type="text" class="form-control" id="NO_REGISTRO_PATRONAL"
-                                                name="NO_REGISTRO_PATRONAL" placeholder="Número  de Registro Patronal"
-                                                >
-                                            
+                                                name="NO_REGISTRO_PATRONAL" placeholder="Número  de Registro Patronal">
+
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <label for="ESTADO_REPRESENTANTE" class="form-label">Estado*</label>
                                             <input type="text" class="form-control" id="ESTADO_REPRESENTANTE"
-                                                name="ESTADO_REPRESENTANTE" placeholder="Estado de registro patronal"
-                                                >
+                                                name="ESTADO_REPRESENTANTE" placeholder="Estado de registro patronal">
                                         </div>
                                     </div>
                                 </div>
@@ -169,7 +175,8 @@
                                 <div class="modal-footer d-flex justify-content-center">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="button" class="btn btn-primary" onclick="añadirRegistro()">Añadir</button>
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="añadirRegistro()">Añadir</button>
 
                                 </div>
                             </form>
@@ -178,12 +185,13 @@
                 </div>
                 <!--FIN MODAL CONTACTO-->
                 <br>
-                <!--VISTA DE CONTACTOS-->
+
+                <!--TABLA REGISTROS PATRONALES-->
                 <div class="container-fluid">
                     <table class="table table-borderless" id="Registros_Patronales">
                         <thead class="table">
                             <tr>
-                                
+
                             </tr>
                         </thead>
                         <tbody>
@@ -191,15 +199,17 @@
                         </tbody>
                     </table>
                 </div>
-                <!--VISTA DE CONTACTOS-->
+                <!--FIN TABLA REGISTROS PATRONALES-->
 
             </div>
             <!--FIN REGISTROS PATRONALES-->
+
+            <!-- INICIO REPRESENTANCTE LEGALES-->
             <div class="tab-pane fade" id="representantes-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
                 tabindex="0">
                 <br>
                 <div class="container text-center">
-                    <h2>Representante Legales</h2>
+                    <h2>Representante legales</h2>
                     <p class="lead">Completa por lo menos un representante legal.</p>
                 </div>
                 <br>
@@ -271,17 +281,20 @@
                                 name="CORREO_REPRESENTANTE2" placeholder="Correo Contacto">
                         </div>
                     </div>
-                    
+
                 </div>
                 <!--FIN REPRESENTANTE LEGAL 1-->
-                    <br>
+                <br>
             </div>
+            <!-- FIN REPRESENTANTES LEGALES -->
+
+            <!-- APODERADO LEGAL -->
             <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
                 tabindex="0">
                 <br>
                 <div class="container text-center">
-                    <h2>Apoderado Legal</h2>
-                    <p class="lead">Datos de Apoderado Legal</p>
+                    <h2>Apoderado legal</h2>
+                    <p class="lead">Datos de apoderado legal</p>
                 </div>
                 <br>
                 <!--APODERADO LEGAL-->
@@ -304,7 +317,7 @@
                             placeholder="Teléfono Contacto">
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="CORREO_APODERADO" class="form-label">Correo Electrónico</label>
+                        <label for="CORREO_APODERADO" class="form-label">Correo electrónico</label>
                         <input type="email" class="form-control" id="CORREO_APODERADO" name="CORREO_APODERADO"
                             placeholder="Correo Contacto">
                     </div>
@@ -312,12 +325,14 @@
                 <!--FIN APODERADO LEGAL-->
                 <br>
             </div>
+            <!-- FIN APODERADO LEGAL-->
+            <!--DIRECCIÓN-->
             <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
                 tabindex="0">
                 <br>
                 <div class="container text-center">
                     <h2>Dirección</h2>
-                    <p class="lead">Completa el Codigo Postal.</p>
+                    <p class="lead">Completa el código postal</p>
                 </div>
                 <br>
                 <div class="form-group row">
@@ -341,6 +356,48 @@
                         <input type="text" class="form-control" id="DIRECCION" name="DIRECCION" placeholder="Dirección">
                     </div>
                 </div>
+            </div>
+            <!-- FIN DIRECCIÓN -->
+
+            <!-- INICIO INFORMACIÓN BANCARÍA -->
+            <div class="tab-pane fade" id="inf_banco-tab-pane" role="tabpanel" aria-labelledby="regitrosPatronales-tab"
+                tabindex="0">
+                <br>
+                <div class="container text-center">
+                    <h2>Información</h2>
+                    <p class="lead">Completa por lo menos una cuenta bancaría.</p>
+                </div>
+                <br>
+
+                <!--BOTONES INFORMACION BANCARIA -->
+                <div class="container">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+
+                        <button class="btn btn btn-dark" type="button" onclick="añadirCuentasBancarias()">
+                            <i class="bi bi-window-plus"></i> Agregar una cuenta bancaría
+                    </div>
+                </div>
+                <!--FIN BOTONES CONTACTOS-->
+                <!--MODAL PARA ALTA DE CONTACTO-->
+                
+                <!--FIN MODAL CONTACTO-->
+                <br>
+
+                <!--TABLA REGISTROS PATRONALES-->
+                <div class="container-fluid">
+                    <table class="table table-borderless" id="Cuentas_Bancarias">
+                        <thead class="table">
+                            <tr>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!--FIN TABLA REGISTROS PATRONALES-->
+
             </div>
         </div>
     </form>

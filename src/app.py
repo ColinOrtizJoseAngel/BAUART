@@ -13,6 +13,7 @@ from models.ModelCategoria import ModelCategoria
 from models.ModelPuesto import ModelPuesto
 from models.ModelBanco import ModelBanco
 from models.ModelRegistroPatronal import ModelRegistroPatronal
+from models.ModelCuentaEmpresa import ModelCuentasEmpresas
 
 # Entities
 from models.entities.Empresas import Empresas
@@ -21,6 +22,7 @@ from models.entities.Categoria import Categoria
 from models.entities.Puestos import Puesto
 from models.entities.Banco import Banco
 from models.entities.RegistroPatronal import ResgistroPatronal
+from models.entities.CuentasEmpresas import CuentasEmpresas
 
 app = Flask(__name__)
 
@@ -48,6 +50,19 @@ def login():
 def periodos():
     return render_template('periodos.html')
 
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    bancos = ModelBanco.get_all_banco(db)
+    data = []
+    for b in bancos:
+         banco_dict = {
+             'id' : b.id_banco,
+             'banco': b.banco
+         }
+         data.append(banco_dict)
+    return jsonify(data)
+
+#EMPPRESAS 
 @app.route('/Empresas', methods=['GET', 'POST'])
 def empresas():
     if request.method == 'POST':
@@ -161,13 +176,30 @@ def altaempresas():
             direccion=request.form.get('DIRECCION', "")
         )
 
-       
-
         estados = request.form.getlist('estado[]')
         registros_patronales = request.form.getlist('noRegistro[]')
+        bancos = request.form.getlist('banco-select[]')
+        num_cuentas = request.form.getlist('noCuenta[]')
+        cabes = request.form.getlist('cabe[]')
+        
+        print(f"NUMERO CUENTA {num_cuentas}")
+        print(f"BANCOS {bancos}")
+        print(f"CUENTA {cabes}")
 
         print(estados)
         print(registros_patronales)
+
+        for num in num_cuentas:
+            for b in bancos:
+                for c in cabes:
+                    nueva_cuenta = CuentasEmpresas(id_dato_banco=0,
+                                                  empresa = request.form['ID_EMPRESA'],
+                                                  banco=b,
+                                                  numero_cuenta = num,
+                                                  cable = c )
+                    
+            ModelCuentasEmpresas.new_cuenta_empresa(db,nueva_cuenta)
+
         
         for r in registros_patronales:
             for e in estados:
