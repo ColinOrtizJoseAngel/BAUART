@@ -93,6 +93,18 @@ class ModelRegistroPatronal():
         except Exception as ex:
             db.rollback()
             raise Exception(ex)
+    
+    @classmethod
+    def change_status(cls, db, id, is_blocked):
+        try:
+            print(f"ESTE ES EL ESTATUS{is_blocked}")
+            cursor = db.cursor()
+            query = "UPDATE REGISTROS_PATRONALES SET is_blocked = ? WHERE ID = ?"
+            cursor.execute(query, (is_blocked, id))
+            db.commit()
+        except Exception as ex:
+            db.rollback()
+            raise Exception(ex)
         
     @classmethod
     def get_all_registros_patronales(cls, db):

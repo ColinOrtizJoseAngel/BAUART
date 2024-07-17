@@ -198,11 +198,11 @@
             </thead>
             <tbody>
                 {% for r  in regis_patronales %}
-                    {% if r._is_blocked %}
+                    {% if r.is_blocked %}
                     <tr class="table-secondary">
                         <td>{{ r.id_registro }}</td>
                         <td>{{ r.registro_patronal }}</td>
-                        <td>{{  r.empresa }}</td>
+                        <td>{{ r.empresa }}</td>
                         <td>{{ r.estado }}</td>
                         <td>Bloqueado</td>
                         <td>
@@ -213,7 +213,7 @@
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="">
                                     <li>
-                                        <form action="{{ url_for('unblock_categoria', id=r.id_registro) }}"
+                                        <form action="{{ url_for('unblock_registro_patronal', id=r.id_registro) }}"
                                             method="post" style="display:inline;">
                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                             <button class="dropdown-item" type="submit">Desbloquear</button>
@@ -245,7 +245,7 @@
                                         </button>
                                     </li>
                                     <li>
-                                        <form action="{{ url_for('block_categoria', id=r.id_registro) }}"
+                                        <form action="{{ url_for('block_registro_patronal', id=r.id_registro) }}"
                                             method="post" style="display:inline;">
                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                             <button class="dropdown-item" type="submit">Bloquear</button>

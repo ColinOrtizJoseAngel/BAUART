@@ -188,6 +188,30 @@ def altaempresas():
         ultima_empresa = ultima_empresa + 1
         print(f"Estas es la ultima empresa{ultima_empresa}")
         return render_template('altaEmpresas.html',numero_empresa = ultima_empresa)
+    
+#BLOCK REGISTRO PATRONAL
+@app.route('/block_registro_patronal/<int:id>', methods=['POST'])
+def block_registro_patronal(id):
+    if request.method == 'POST':
+        try:
+            print("BLOQUEA CATEGORIA")
+            ModelRegistroPatronal.change_status(db, id, True)
+            return redirect(url_for('registosPatronales'))
+        except Exception as e:
+            print(e)
+            return redirect(url_for('registosPatronales'))
+
+#UNBLOCK REGISTRO PATRONAL
+@app.route('/unblock_registro_patronal/<int:id>', methods=['POST'])
+def unblock_registro_patronal(id):
+    if request.method == 'POST':
+        try:
+            print("BLOQUEA CATEGORIA")
+            ModelRegistroPatronal.change_status(db, id, False)
+            return redirect(url_for('registosPatronales'))
+        except Exception as e:
+            print(e)
+            return redirect(url_for('registosPatronales'))
 
 #REGISTROS PATRONALES
 @app.route('/RegistosPatronales', methods=['GET', 'POST'])
@@ -207,7 +231,7 @@ def registosPatronales():
     empresas = ModelEmpresas.get_all_empresas(db)
     regis_patronales = ModelRegistroPatronal.get_all_registroPatronal(db)
     for r in regis_patronales:
-        print(f"ESTAS CON LAC CATEGORIAS {r.empresa}")
+        print(f"ESTAS CON LAC CATEGORIAS {r.is_blocked}")
     
     return render_template('registrosPatronales.html', regis_patronales = regis_patronales, empresas=empresas)
 
@@ -224,7 +248,7 @@ def edit_registro_patronal(id):
         
         print(f"ESTA ES LA CATEGORIA{regis_patronal.id_registro}")
         ModelRegistroPatronal.update_registro_patronal(db, regis_patronal)
-        return redirect(url_for(''))
+        return redirect(url_for('registosPatronales'))
     
 @app.route('/Altacliente',methods=['GET', 'POST'])
 def altaclientes():
