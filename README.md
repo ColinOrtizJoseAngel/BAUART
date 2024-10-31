@@ -1,2 +1,0 @@
-# BAUART
-Proyecto BAUART

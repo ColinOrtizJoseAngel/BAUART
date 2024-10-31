@@ -1,22 +1,25 @@
-from .entities.RegistroPatronal import ResgistroPatronal
+from .entities.RegistroPatronal import RegistroPatronal
 
-class ModelRegistroPatronal():
+class ModelRegistroPatronal:
 
     @classmethod
-    def newRegistroPatronal(self,db,resgistroPatronal):
+    def newRegistroPatronal(cls, db, registro_patronal):
         try:
             cursor = db.cursor()
             query = """
-                    INSERT INTO REGISTROS_PATRONALES (
-                    NUMERO_REGISTRO_PATRONAL,ID_EMPRESA,ESTADO ) VALUES (?,?,?);
-                    """
+                INSERT INTO REGISTRO_PATRONALES (
+                    ID_EMPRESA, NUMERO_REGISTRO_PATRONAL, ESTADO, FECHA_REGISTRO, USUARIO_ID, IS_BLOCKED
+                ) VALUES (?, ?, ?, ?, ?, ?);
+            """
             cursor.execute(query, (
-                resgistroPatronal.registro_patronal,
-                resgistroPatronal.empresa,
-                resgistroPatronal.estado
+                registro_patronal.id_empresa,
+                registro_patronal.numero_registro_patronal,
+                registro_patronal.estado,
+                registro_patronal.fecha_registro,
+                registro_patronal.usuario,
+                registro_patronal.is_blocked
             ))
             db.commit()
-        
         except Exception as ex:
             db.rollback()
             raise Exception(ex)
@@ -26,21 +29,23 @@ class ModelRegistroPatronal():
         try:
             cursor = db.cursor()
             query = """
-                SELECT REGISTROS_PATRONALES.ID,REGISTROS_PATRONALES.NUMERO_REGISTRO_PATRONAL,REGISTROS_PATRONALES.ID_EMPRESA,
-                EMPRESAS.RAZON_SOCIAL,REGISTROS_PATRONALES.ESTADO,REGISTROS_PATRONALES.is_blocked 
-                FROM REGISTROS_PATRONALES 
-                INNER JOIN EMPRESAS 
-                ON REGISTROS_PATRONALES.ID_EMPRESA = EMPRESAS.ID_EMPRESA
-
-                """
+                SELECT RP.ID, RP.NUMERO_REGISTRO_PATRONAL, RP.ID_EMPRESA, E.RAZON_SOCIAL, RP.ESTADO, RP.FECHA_REGISTRO, RP.USUARIO_ID, RP.IS_BLOCKED
+                FROM REGISTRO_PATRONALES RP
+                INNER JOIN EMPRESAS E ON RP.ID_EMPRESA = E.ID
+            """
             cursor.execute(query)
             rows = cursor.fetchall()
             registrospatronales = []
             for row in rows:
-                registrospatronales.append(ResgistroPatronal(
-                    id_registro=row[0], registro_patronal=row[1], empresa=row[3],estado=row[4],
-                    is_blocked=row[5] 
-                    ))
+                registrospatronales.append(RegistroPatronal(
+                    id=row[0],
+                    id_empresa=row[2],
+                    numero_registro_patronal=row[1],
+                    estado=row[4],
+                    fecha_registro=row[5],
+                    usuario=row[6],
+                    is_blocked=row[7]
+                ))
             return registrospatronales
         except Exception as ex:
             raise Exception(ex)
@@ -50,44 +55,43 @@ class ModelRegistroPatronal():
         try:
             cursor = db.cursor()
             query = """
-                SELECT REGISTROS_PATRONALES.ID,REGISTROS_PATRONALES.NUMERO_REGISTRO_PATRONAL,REGISTROS_PATRONALES.ID_EMPRESA,
-                EMPRESAS.RAZON_SOCIAL,REGISTROS_PATRONALES.ESTADO,REGISTROS_PATRONALES.is_blocked 
-                FROM REGISTROS_PATRONALES 
-                INNER JOIN EMPRESAS 
-                ON REGISTROS_PATRONALES.ID_EMPRESA = EMPRESAS.ID_EMPRESA WHERE EMPRESAS.ID_EMPRESA = ?;
-
+                SELECT RP.ID, RP.NUMERO_REGISTRO_PATRONAL, RP.ID_EMPRESA, E.RAZON_SOCIAL, RP.ESTADO, RP.FECHA_REGISTRO, RP.USUARIO_ID, RP.IS_BLOCKED
+                FROM REGISTRO_PATRONALES RP
+                INNER JOIN EMPRESAS E ON RP.ID_EMPRESA = E.ID
+                WHERE RP.ID_EMPRESA = ?;
             """
             cursor.execute(query, (id_empresa,))
             rows = cursor.fetchall()
             registrospatronales = []
             for row in rows:
-                registrospatronales.append(ResgistroPatronal(
-                    id_registro=row[0], 
-                    registro_patronal=row[1], 
-                    empresa=row[3],
+                registrospatronales.append(RegistroPatronal(
+                    id_registro=row[0],
+                    id_empresa=row[2],
+                    numero_registro_patronal=row[1],
                     estado=row[4],
-                    is_blocked=row[5] 
+                    fecha_registro=row[5],
+                    usuario=row[6],
+                    is_blocked=row[7]
                 ))
             return registrospatronales
         except Exception as ex:
             raise Exception(ex)
 
-    
-    #ACTUALIAZA REGISTRO PATRONAL
     @classmethod
     def update_registro_patronal(cls, db, registro_patronal):
         try:
             cursor = db.cursor()
             query = """
-                UPDATE REGISTROS_PATRONALES
-                SET  NUMERO_REGISTRO_PATRONAL,ESTADO) VALUES (?,?,?) WHERERE ID = ?;
-                
+                UPDATE REGISTRO_PATRONALES
+                SET NUMERO_REGISTRO_PATRONAL = ?, ESTADO = ?, USUARIO_ID = ?, IS_BLOCKED = ?
+                WHERE ID = ?;
             """
-            print(registro_patronal.id_registro)
             cursor.execute(query, (
-                registro_patronal.registro_patronal,
+                registro_patronal.numero_registro_patronal,
                 registro_patronal.estado,
-                registro_patronal.id_registro
+                registro_patronal.usuario,
+                registro_patronal.is_blocked,
+                registro_patronal.id_registro,
             ))
             db.commit()
         except Exception as ex:
@@ -97,9 +101,8 @@ class ModelRegistroPatronal():
     @classmethod
     def change_status(cls, db, id, is_blocked):
         try:
-            print(f"ESTE ES EL ESTATUS{is_blocked}")
             cursor = db.cursor()
-            query = "UPDATE REGISTROS_PATRONALES SET is_blocked = ? WHERE ID = ?"
+            query = "UPDATE REGISTRO_PATRONALES SET IS_BLOCKED = ? WHERE ID = ?"
             cursor.execute(query, (is_blocked, id))
             db.commit()
         except Exception as ex:
@@ -109,16 +112,32 @@ class ModelRegistroPatronal():
     @classmethod
     def get_all_registros_patronales(cls, db):
         try:
-                cursor = db.cursor()
-                query = "SELECT * FROM REGISTROS_PATRONALES"
-                cursor.execute(query)
-                rows = cursor.fetchall()
-                registrospatronales = []
-                for row in rows:
-                    registrospatronales.append(ResgistroPatronal(
-                        id_registro=row[0], registro_patronal=row[1], empresa=row[2],estado=row[3],
-                        is_blocked=row[4] 
-                        ))
-                return registrospatronales
+            cursor = db.cursor()
+            query = "SELECT * FROM REGISTRO_PATRONALES"
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            registrospatronales = []
+            for row in rows:
+                registrospatronales.append(RegistroPatronal(
+                    id_registro=row[0],
+                    id=row[0],
+                    id_empresa=row[2],
+                    numero_registro_patronal=row[1],
+                    estado=row[4],
+                    fecha_registro=row[5],
+                    usuario=row[6],
+                    is_blocked=row[7]
+                ))
+            return registrospatronales
         except Exception as ex:
-                raise Exception(ex)
+            raise Exception(ex)
+
+    @classmethod
+    def delete_registro_patronales(cls, db,id):
+        try:
+            cursor = db.cursor()
+            query = "DELETE FROM REGISTRO_PATRONALES WHERE ID_EMPRESA = ?;"
+            cursor.execute(query, (id))
+            db.commit()
+        except Exception as ex:
+            raise Exception(ex)

@@ -1,304 +1,246 @@
 <!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Nuevo Proyecto{% endblock %}
+{% block title %}PUESTOS{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 
-<style>
-    .tituloform {
-        background: #fff;
-        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
-        color: #052c65;
-        list-style-type: none;
-        border-radius: 10px;
-        display: flex;
-        padding: 20px 10px;
-        position: relative;
-        z-index: 10;
-    }
-
-    .btn-primary {
-        background-color: #052c65;
-        border-color: #052c65;
-    }
-</style>
 {% endblock %}
+
+{% block titutlo %}PUESTOS{% endblock %}
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
-<!-- Modal para Filtrar Puestos -->
+<!-- INICIA MODAL FILTRO BANCO -->
 <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="miModalLabel">Filtrar Puestos</h5>
+                <div class="container" style="text-align: center;" >
+                    <h4 class="modal-title" id="miModalLabel">FILTAR PUESTOS</h4>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ url_for('puestos') }}" method="post">
+            <form action="/Puestos" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
-                        <label for="filtro_Puesto" class="form-label">Puestos</label>
-                        <input type="text" class="form-control" id="filtro_Puesto" name="filtro_Puesto">
+                        <label for="BANCO" class="form-label">PUESTO</label>
+                        <input type="text" class="form-control" id="PUESTO" name="PUESTO">
                     </div>
                     <div class="mb-3">
-                        <label for="filtro_Categoria" class="form-label">Categoria</label>
-                        <input type="text" class="form-control" id="filtro_Categoria" name="filtro_Categoria">
-                    </div>
-                    <div class="mb-3">
-                        <label for="filtro_Sueldo_diario" class="form-label">Sueldo Diario</label>
-                        <input type="text" class="form-control" id="filtro_Sueldo_diario" name="filtro_Sueldo_diario">
-                    </div>
-                    <div class="mb-3">
-                        <label for="filtro_Tipo_sueldo" class="form-label">Tipo de Sueldo</label>
-                        <input type="text" class="form-control" id="filtro_Tipo_sueldo" name="filtro_Tipo_sueldo">
-                    </div>
-                    <div class="mb-3">
-                        <label for="filtro_Sueldo_mensual" class="form-label">Sueldo Mensual</label>
-                        <input type="text" class="form-control" id="filtro_Sueldo_mensual" name="filtro_Sueldo_mensual">
-                    </div>
-                    <div class="mb-3">
-                        <label for="filtro_Sueldo_imss" class="form-label">Sueldo IMSS</label>
-                        <input type="text" class="form-control" id="filtro_Sueldo_imss" name="filtro_Sueldo_imss">
-                    </div>
-                    <div class="mb-3">
-                        <label for="filtro_Sueldo_monedero" class="form-label">Sueldo Monedero</label>
-                        <input type="text" class="form-control" id="filtro_Sueldo_monedero"
-                            name="filtro_Sueldo_monedero">
-                    </div>
-                    <div class="mb-3">
-                        <label for="filtro_Horas_extra" class="form-label">Tope de Horas Extra</label>
-                        <input type="text" class="form-control" id="filtro_Horas_extra" name="filtro_Horas_extra">
-                    </div>
-                    <div class="mb-3">
-                        <label for="filtro_Estatus" class="form-label">Estado</label>
-                        <select class="form-select" id="filtro_Estatus" name="filtro_Estatus">
-                            <option value="">Seleccionar</option>
-                            <option value="activo">Activo</option>
-                            <option value="bloqueado">Bloqueado</option>
+                        <label for="ESTATUS" class="form-label">ESTATUS</label>
+                        <select class="form-select" id="ESTATUS" name="ESTATUS">
+                            <option value="" style="text-align: center;">SELECIONA</option>
+                            <option value="1">ACTIVO</option>
+                            <option value="2">BLOQUEADO</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <button type="button" class="btn boton-cerrar" data-bs-dismiss="modal">CERRAR</button>
+                    <button type="submit" class="btn botones">FILTRAR</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-<!-- Modal para Filtrar Puestos -->
-<!-- INICIA MODAL ALTA CATEGORIA -->
-<div class="modal fade" id="altaPuesto" tabindex="-1" aria-labelledby="altaPuestoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog modal-xl">
+<!-- INICIA MODAL FILTRO BANCO -->
+
+<!-- INICIA MODAL ALTA BANCO -->
+<div class="modal fade" id="altaBancoModal" tabindex="-1" aria-labelledby="altaBancoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="container text-center">
-                    <h1 class="modal-title" id="altaPuestoLabel">Alta Puesto</h1>
+                    <h4 class="modal-title" id="altaBancoModalLabel">ALTA PUESTO</h4>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form class="needs-validation" action="{{ url_for('puestos') }}" method="post" novalidate>
+            <form class="needs-validation" action="/Altapuesto" method="post" novalidate>
+                
                 <div class="modal-body">
-                    <div class="container text-center">
-                        <p class="lead">Completa los datos del formulario para dar de alta un puesto</p>
-
-                    </div>
                     <div class="container">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <br>
                         <div class="form-group row">
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="id_ht_Categoria" class="form-label">Categoría</label>
-                                <select class="form-control" name="id_ht_Categoria" id="id_ht_Categoria" required>
-                                    <option value="">Selecciona una opción</option>
-                                    <option value="0">0</option>
-
-                                </select>
-                                <div class="invalid-feedback">
-                                    Selecciona Categoría
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="ht_Puesto" class="form-label">Puesto</label>
-                                <input type="text" class="form-control" id="ht_Puesto" name="ht_Puesto" required >
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <label for="BANCO" class="form-label">PUESTO: </label>
+                                <input type="text" class="form-control" id="PUESTO" name="PUESTO" required>
                                 <div class="invalid-feedback">
                                     Completa Puesto
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="ht_Tipo_Empleado" class="form-label">Tipo Empleado</label>
-                                <select class="form-control" name="ht_Tipo_Empleado" id="ht_Tipo_Empleado" required>
-                                    <option value="">Selecciona una opción</option>
-                                    <option value="1">Obra</option>
-                                    <option value="2">Personal Bauart</option>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label for="BANCO" class="form-label">SUELDO BASE:</label>
+                                <input type="text" class="form-control moneda" id="SUELDO_BASE" name="SUELDO_BASE" required>
+                                <div class="invalid-feedback">
+                                    Completa Sueldo base
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label for="BANCO" class="form-label">SUELDO TARJETA:</label>
+                                <input type="text" class="form-control moneda" id="SUELDO_TARJETA" name="SUELDO_TARJETA" required>
+                                <div class="invalid-feedback">
+                                    Completa Sueldo TARJETA
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label for="BANCO" class="form-label">HORA EXTRA:</label>
+                                <input type="text" class="form-control moneda" id="HORA_EXTRA" name="HORA_EXTRA" required>
+                                <div class="invalid-feedback">
+                                    Completa Sueldo TARJETA
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <label for="CATEGORIA" class="form-label">CATEGORIA:*</label>
+                                <select class="form-control" name="CATEGORIA" id="CATEGORIA" required>
+                                    <option value="" style="text-align: center;">------Selecciona------</option>
+                                    {% for c in categorias %}
+                                        <option value="{{ c.idCategoria }}">{{ c.categoria}}</option>
+                                    {% endfor%}
                                 </select>
                                 <div class="invalid-feedback">
-                                    Selecciona un Tipo de Empleado
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="ht_Tipo_sueldo" class="form-label">Tipo de Sueldo</label>
-                                <select class="form-control" name="ht_Tipo_sueldo" id="ht_Tipo_sueldo" required>
-                                    <option value="">Selecciona una opción</option>
-                                    <option value="1">Semanal</option>
-                                    <option value="2">Quincenal</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Selecciona un Tipo de Sueldo
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="ht_Sueldo" class="form-label">Sueldo </label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">$</span>
-                                    <input type="text" id="ht_Sueldo" value="0" name="ht_Sueldo" class="form-control" required>
-                                    <div class="invalid-feedback">
-                                        Completar Sueldo
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="ht_Sueldo_diario" class="form-label">Sueldo Diario</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">$</span>
-                                    <input type="text" id="ht_Sueldo_diario" value="0" name="ht_Sueldo_diario"
-                                        class="form-control" required >
-                                    <div class="invalid-feedback">
-                                        Completar Sueldo Diario
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="ht_Sueldo_mensual" class="form-label">Sueldo Mensual</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">$</span>
-                                    <input type="text" id="ht_Sueldo_mensual" value="0" name="ht_Sueldo_mensual"
-                                        class="form-control" required>
-                                    <div class="invalid-feedback">
-                                        Completar Sueldo Mensual
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="ht_Sueldo_imss" class="form-label">Sueldo IMSS</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">$</span>
-                                    <input type="text" id="ht_Sueldo_imss" value="0" name="ht_Sueldo_imss" class="form-control"
-                                        required >
-                                    <div class="invalid-feedback">
-                                        Completar Sueldo IMSS
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="ht_Sueldo_monedero" class="form-label">Sueldo Monedero</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" id="ht_Sueldo_monedero" value="0" name="ht_Sueldo_monedero"
-                                        class="form-control">
-                                    <div class="invalid-feedback" >
-                                        Completar Sueldo Monedero
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <label for="ht_horas_extra" class="form-label">Horas Extra</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" id="ht_horas_extra" value="0" name="ht_horas_extra"
-                                        class="form-control">
-                                    <div class="invalid-feedback" >
-                                        Completar Horas Extra 
-                                    </div>
-                                </div>
+                                    SELECIONA CATEGORÍA 
+                                </div>  
                             </div>
 
                         </div>
+
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Confirmar</button>
+                    <button type="button" class="btn boton-cerrar" data-bs-dismiss="modal">CERRAR</button>
+                    <button type="submit" class="btn botones"><i class="bi bi-floppy"></i> CONFIRMAR</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-<!-- FIN ALTA CATEGORIA -->
+<!-- FIN ALTA BANCO -->
+
+<!-- Modal para editar especialidad -->
+<div class="modal fade" id="editPuestoModal" tabindex="-1" aria-labelledby="editPuestoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="container text-center">
+                    <h4 class="modal-title" id="editPuestoModalLabel">EDITAR PUESTO</h4>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editBancoForm" action="" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" id="editBancoId" name="banco_id">
+                    
+                    <div class="form-group row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <label for="BANCO" class="form-label">PUESTO: </label>
+                            <input type="text" class="form-control" id="PUESTO_EDIT" name="PUESTO_EDIT" required>
+                            <div class="invalid-feedback">
+                                Completa Puesto
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label for="BANCO" class="form-label">SUELDO BASE:</label>
+                            <input type="text" class="form-control moneda" id="SUELDO_BASE_EDIT" name="SUELDO_BASE_EDIT" required>
+                            <div class="invalid-feedback">
+                                Completa Sueldo base
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label for="BANCO" class="form-label">SUELDO TARJETA:</label>
+                            <input type="text" class="form-control moneda" id="SUELDO_TARJETA_EDIT" name="SUELDO_TARJETA_EDIT" required>
+                            <div class="invalid-feedback">
+                                Completa Sueldo TARJETA
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label for="BANCO" class="form-label">HORA EXTRA:</label>
+                            <input type="text" class="form-control moneda" id="HORA_EXTRA_EDIT" name="HORA_EXTRA_EDIT" required>
+                            <div class="invalid-feedback">
+                                Completa Sueldo TARJETA
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <label for="CATEGORIA" class="form-label">CATEGORIA:*</label>
+                            <select class="form-control" name="CATEGORIA_EDIT" id="CATEGORIA_EDIT" required>
+                                <option value="" style="text-align: center;">------Selecciona------</option>
+                                {% for c in categorias %}
+                                    <option value="{{ c.idCategoria }}">{{ c.categoria}}</option>
+                                {% endfor%}
+                            </select>
+                            <div class="invalid-feedback">
+                                SELECIONA CATEGORÍA 
+                            </div>  
+                        </div>
+
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn boton-cerrar"  data-bs-dismiss="modal">CANCELAR</button>
+                        <button type="submit" class="btn botones"><i class="bi bi-floppy"></i> GUARDAR CAMBIOS</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <br>
 <div class="container-fluid">
     <br>
-    <div class="container tituloform">
-        <div class="container text-center">
-            <h1 class="display-2">Portal de Puestos</h1>
-            <p class="lead">Visualiza, edita y bloquea Puestos</p>
-        </div>
-
-    </div>
-    <br>
     <!--BOTONES ACCIONES-->
-    <div class="container">
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#altaPuesto">
-                Añadir
-            </button>
-            <button class="btn btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
-                <i class="bi bi-search"></i> Filtrar Categorias
-            </button>
-        </div>
-    </div>
+    <div class="d-grid gap-2 d-md-flex justify-content-start">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn botones" data-bs-toggle="modal" data-bs-target="#altaBancoModal">
+            <i class="bi bi-person-plus"></i> NUEVO PUESTO
+       </button>
+       <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+           <i class="bi bi-search"></i> FILTRAR
+        </button>
+        <a class="btn botones" href="/Puestos">
+            <i class="bi bi-eraser"></i> LIMPIAR FILTRO
+        </a>
+   </div>
     <br>
-    <div class="container-fluid">
+    <div class="table-container">
         <table class="table table-borderless">
             <thead class="table-dark">
                 <tr>
-                    <th scope="col">ID</th> <!-- 1 -->
-                    <th scope="col">Puesto</th> <!-- 2 -->
-                    <th scope="col">Categoria</th> <!-- 3 -->
-                    <th scope="col">Sueldo Diario</th> <!-- 4 -->
-                    <th scope="col">Tipo de Sueldo</th> <!-- 5 -->
-                    <th scope="col">Sueldo Mensual</th> <!-- 6 -->
-                    <th scope="col">Sueldo IMSS</th> <!-- 7 -->
-                    <th scope="col">Sueldo Monedero</th><!-- 8 -->
-                    <th scope="col">Horas Extra</th> <!-- 9 -->
-                    <th scope="col">Estatus</th> <!-- 10 -->
-                    <th scope="col">Acciones</th> <!-- 11 -->
+                    <th class="col-3">ID</th>
+                    <th class="col-3">PUESTO</th>
+                    <th class="col-3">SUELDO BASE</th>
+                    <th class="col-3">SUELDO TARJETA</th>
+                    <th class="col-3">HORAS EXTRA</th>
+                    <th class="col-3">CATEGORIA</th>
+                    <th class="col-3">ESTATUS</th>
+                    <th class="col-3">ACCIONES</th>
                 </tr>
             </thead>
-                <tbody>
-                {% for puesto in puestos %}
-                {% if puesto.ent_is_blocked %}
+            <tbody>
+                {% for p in puesto %}
+                {% if p.is_blocked %}
                 <tr class="table-secondary">
-                    <td>{{ puesto.ent_IdPuesto }}</td>         
-                    <td>{{ puesto.ent_Puesto }}</td>            
-                    <td>{{ puesto.ent_Categoria }}</td>         
-                    <td>{{ puesto.ent_SueldoDiario }}</td>     
-                    <td>{{ puesto.ent_TipoSueldo }}</td>        
-                    <td>{{ puesto.ent_SueldoMensual }}</td>    
-                    <td>{{ puesto.ent_SueldoIMSS }}</td>        
-                    <td>{{ puesto.ent_SueldoMonedero }}</td>   
-                    <td>{{ puesto.ent_HoraExtra }}</td>         
-                    <td>Bloqueado</td>                          
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.puesto }}</td>
+                    <td>{{ p.sueldo_base}}</td>
+                    <td>{{ p.sueldo_tarjeta }}</td>
+                    <td>{{ p.horas_extras }}</td>
+                    <td>{{ p.categoria }}</td>
+                    <td>BLOQUEADO</td>
                     <td>
                         <div class="dropdown">
-                            <button class="btn btn-outline-dark dropdown-toggle" id=""
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                            <button class="btn btn-outline-dark dropdown-toggle" id="" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="">
                                 <li>
-                                    <form action="" method="post"
-                                        style="display:inline;">
-                                        <input type="hidden" name="csrf_token" value="">
-                                        <button class="dropdown-item" type="submit">Desbloquear</button>
+                                    <form action="{{ url_for('unblock_puesto', id=p.id) }}" method="post" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>
@@ -307,30 +249,29 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td>{{ puesto.ent_IdPuesto }}</td>          
-                    <td>{{ puesto.ent_Puesto }}</td>            
-                    <td>{{ puesto.ent_Categoria }}</td>         
-                    <td>{{ puesto.ent_SueldoDiario }}</td>     
-                    <td>{{ puesto.ent_TipoSueldo }}</td>        
-                    <td>{{ puesto.ent_SueldoMensual }}</td>     
-                    <td>{{ puesto.ent_SueldoIMSS }}</td>       
-                    <td>{{ puesto.ent_SueldoMonedero }}</td>    
-                    <td>{{ puesto.ent_HoraExtra }}</td>         
-                    <td> Activo</td>
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.puesto }}</td>
+                    <td>{{ p.sueldo_base}}</td>
+                    <td>{{ p.sueldo_tarjeta }}</td>
+                    <td>{{ p.horas_extras }}</td>
+                    <td>{{ p.categoria }}</td>
+                    <td>ACTIVO</td>
                     <td>
                         <div class="dropdown">
-                            <button class="btn btn-outline-dark dropdown-toggle" id=""
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                            <button class="btn btn-outline-dark dropdown-toggle" id="" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="">
-                                <li><a class="dropdown-item"
-                                        href="">Editar</a></li>
                                 <li>
-                                    <form action="" method="post"
-                                        style="display:inline;">
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editPuestoModal" id="{{ p.id }}" puesto="{{ p.puesto }}" sueldo-base="{{ p.sueldo_base }}" sueldo-tarjeta="{{ p.sueldo_tarjeta}}" hora-extra="{{ p.horas_extras }}" categoria="{{ p.categoria }}">
+                                        EDITAR
+                                    </button>
+                                </li>
+                                <li>
+                                    <form action="{{ url_for('block_puesto', id=p.id) }}" method="post" >
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Bloquear</button>
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>
@@ -339,11 +280,13 @@
                 </tr>
                 {% endif %}
                 {% endfor %}
-
             </tbody>
         </table>
+       
     </div>
+
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (() => {
@@ -364,20 +307,64 @@
             }, false)
         })
     })()
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const formatCurrency = (input) => {
-            let value = input.value.replace(/,/g, '').replace('$', '').trim();
-            if (!isNaN(value) && value !== '') {
-                let formattedValue = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value);
-                input.value = formattedValue.replace('$', '');
-            }
-        };
+
+
+
+    const editPuestoModal = document.getElementById('editPuestoModal');
+    editPuestoModal.addEventListener('show.bs.modal', event => {
+
+        
+        const button = event.relatedTarget;
+        const idPuesto = button.getAttribute('id');
+        const puesto = button.getAttribute('puesto')
+        const sueldoBase = button.getAttribute('sueldo-base')
+        const sueldoTarjeta = button.getAttribute('sueldo-tarjeta')
+        const horasExtra = button.getAttribute('hora-extra')
+        const categoria = button.getAttribute('categoria')
+    
+
+
+        const inputPuesto = editPuestoModal.querySelector('#PUESTO_EDIT');
+        const inputSueldoBase = editPuestoModal.querySelector('#SUELDO_BASE_EDIT')
+        const inputSueldoTarjeta = editPuestoModal.querySelector('#SUELDO_TARJETA_EDIT')
+        const inputHoraExtra = editPuestoModal.querySelector('#HORA_EXTRA_EDIT')
+        const inputCategoria = editPuestoModal.querySelector('#CATEGORIA_EDIT')
+
+
+        inputPuesto.value = puesto;
+        inputSueldoBase.value = sueldoBase;
+        inputSueldoTarjeta.value = sueldoTarjeta;
+        inputHoraExtra.value = horasExtra;
+        inputCategoria.value = categoria
+
+        const form = editPuestoModal.querySelector('form');
+        console.log(form)
+        form.action = `/edit_puesto/${idPuesto}`;
     });
 </script>
+<script>
+    // Función para formatear como moneda MXN
+    function formatearMonedaMXN(valor) {
+           let numero = parseFloat(valor.replace(/[^0-9.-]+/g, ''));
+           if (isNaN(numero)) return '';
+           return numero.toLocaleString('es-MX', {
+               style: 'currency',
+               currency: 'MXN'
+           });
+       }
 
+       // Evento que formatea los inputs al perder el foco
+       document.querySelectorAll('.moneda').forEach(input => {
+           input.addEventListener('blur', (event) => {
+               event.target.value = formatearMonedaMXN(event.target.value);
+           });
 
-
+           // Eliminar caracteres no numéricos al escribir
+           input.addEventListener('input', (event) => {
+               let valor = event.target.value.replace(/[^0-9.-]+/g, '');
+               event.target.value = valor;
+           });
+       });
+</script>
 
 {% endblock %}

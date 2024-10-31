@@ -1,28 +1,15 @@
 <!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Nuevo Proyecto{% endblock %}
+{% block title %}Alta cliente{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
-<style>
-    .tituloform {
-        background: #fff;
-        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
-        color: #052c65;
-        list-style-type: none;
-        border-radius: 10px;
-        display: flex;
-        padding: 20px 10px;
-        position: relative;
-        z-index: 10;
-    }
-
-    .btn-primary {
-        background-color: #052c65;
-        border-color: #052c65;
-    }
-</style>
 
 {% endblock %}
+
+<!-- TITULO DE PAGINA -->
+{% block titutlo %}CLIENTES{% endblock %}
+<!-- FIN DE TITULO -->
+
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 <!-- Modal para Filtrar cliente -->
@@ -37,11 +24,7 @@
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
-                        <label for="REPSE" class="form-label">REPSE</label>
-                        <input type="text" class="form-control" id="REPSE" name="REPSE">
-                    </div>
-                    <div class="mb-3">
-                        <label for="RAZON_SOCIAL" class="form-label">Razón Social</label>
+                        <label for="RAZON_SOCIAL" class="form-label">RAZÓN SOCIAL</label>
                         <input type="text" class="form-control" id="RAZON_SOCIAL" name="RAZON_SOCIAL">
                     </div>
                     <div class="mb-3">
@@ -49,25 +32,21 @@
                         <input type="text" class="form-control" id="RFC" name="RFC">
                     </div>
                     <div class="mb-3">
-                        <label for="NOREGIS1" class="form-label">No. Registro 1</label>
-                        <input type="text" class="form-control" id="NOREGIS1" name="NOREGIS1">
-                    </div>
-                    <div class="mb-3">
                         <label for="CP" class="form-label">CP</label>
                         <input type="text" class="form-control" id="CP" name="CP">
                     </div>
                     <div class="mb-3">
-                        <label for="ESTATUS" class="form-label">Estado</label>
-                        <select class="form-select" id="ESTATUS" name="ESTATUS">
-                            <option value="">Seleccionar</option>
-                            <option value="activo">Activo</option>
-                            <option value="bloqueado">Bloqueado</option>
+                        <label for="ESTATUS" class="form-label">ESTATUS</label>
+                        <select class="form-select" id="ESTATUS" name="ESTATUS" style="text-align: center;">
+                            <option value="">SELECIONA</option>
+                            <option value="activo">ACTIVO</option>
+                            <option value="bloqueado">BLOQUEDO</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn botones">Filtrar</button>
                 </div>
             </form>
         </div>
@@ -75,39 +54,41 @@
 </div>
 <br>
 <div class="container-fluid">
-    <br>
-    <div class="container tituloform">
-        <div class="container text-center">
-            <h1 class="display-2">Portal de clientes</h1>
-            <p class="lead">Visualiza, edita y bloquea clientes</p>
-        </div>
+    <div class="d-grid gap-2 d-md-flex justify-content-start">
+        <a class="btn botones" href="/Altacliente">
+            <i class="bi bi-people-fill"></i> NUEVO CLIENTE
+        </a>
+        <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+            <i class="bi bi-search"></i> FILTRAR
+        </button>
+        <a class="btn botones" href="/Clientes">
+            <i class="bi bi-eraser"></i> LIMPIAR FILTRO
+        </a>
     </div>
     <br>
-    <!--BOTONES ACCIONES-->
-    <div class="container">
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a class="btn btn btn-dark" href="/Altacliente">
-                <i class="bi bi-people-fill"></i> cliente
-            </a>
-            <button class="btn btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
-                <i class="bi bi-search"></i> Filtrar cliente
-            </button>
-        </div>
-    </div>
-    <br>
-    <div class="container-fluid">
-        <table class="table table-borderless">
+    <div class="table-container">
+        <table class="table table-hover">
+            <colgroup>
+                <col style="width: 30px;"> <!-- Primera columna de 150px -->
+                <col style="width: 250px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 150px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 50px;"> <!-- Primera columna de 150px -->
+                <col style="width: 50px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 75px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 75px;"> <!-- Primera columna de 150px -->
+                <col style="width: 125px;"> <!-- Primera columna de 150px -->
+
+            </colgroup>
             <thead class="table-dark">
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Razón Social</th>
+                    <th scope="col">RAZON SOCIAL</th>
                     <th scope="col">RFC</th>
-                    <th scope="col">ID Empresa</th>
+                    <th scope="col">EMPRESA</th>
                     <th scope="col">CP</th>
-                    <th scope="col">Correo Contacto</th>
-                    <th scope="col">Forma de Pago</th>
-                    <th scope="col">Estatus</th>
-                    <th scope="col">Acciones</th>
+                    <th scope="col">FORMA DE PAGO</th>
+                    <th scope="col">ESTATUS</th>
+                    <th scope="col">ACCIONES</th>
                 </tr>
             </thead>
             <tbody>
@@ -117,12 +98,21 @@
                     <td>{{ cliente.id }}</td>
                     <td>{{ cliente.razon_social }}</td>
                     <td>{{ cliente.rfc }}</td>
-                    <td>{{ cliente.empresa }}</td>
+                    <td>{{ cliente.id_empresa }}</td>
                     <td>{{ cliente.cp }}</td>
-                    <td>{{ cliente.correo_contacto }}</td>
-                    <td>{{ cliente.forma_pago }}</td>
+
+                    {% if cliente.forma_pago_id == 1 %}
+                    <td>Credito</td>
+                    {% elif cliente.forma_pago_id == 2 %}
+                    <td>Debito</td>
+                    {% elif cliente.forma_pago_id == 3 %}
+                    <td>Efectivo</td>
+                    {% else %}
+                    <td>""</td>
+                    {% endif %}
+
                     <td>
-                        Bloqueado
+                        BLOQUEADO
                     </td>
                     <td>
                         <div class="dropdown">
@@ -147,12 +137,21 @@
                     <td>{{ cliente.id }}</td>
                     <td>{{ cliente.razon_social }}</td>
                     <td>{{ cliente.rfc }}</td>
-                    <td>{{ cliente.empresa }}</td>
+                    <td>{{ cliente.id_empresa }}</td>
                     <td>{{ cliente.cp }}</td>
-                    <td>{{ cliente.correo_contacto }}</td>
-                    <td>{{ cliente.forma_pago }}</td>
+
+                    {% if cliente.forma_pago_id == 1 %}
+                    <td>Credito</td>
+                    {% elif cliente.forma_pago_id == 2 %}
+                    <td>Debito</td>
+                    {% elif cliente.forma_pago_id == 3 %}
+                    <td>Efectivo</td>
+                    {% else %}
+                    <td>""</td>
+                    {% endif %}
+
                     <td>
-                        Activo
+                        ACTIVO
                     </td>
                     <td>
                         <div class="dropdown">
@@ -161,7 +160,8 @@
                                 Acciones
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ cliente.id }}">
-                                <li><a class="dropdown-item" href="{{ url_for('edit_cliente', id=cliente.id) }}">Editar</a></li>
+                                <li><a class="dropdown-item"
+                                        href="{{ url_for('edit_cliente', id=cliente.id) }}">Editar</a></li>
                                 <li>
                                     <form action="{{ url_for('block_cliente', id=cliente.id) }}" method="post"
                                         style="display:inline;">
@@ -175,7 +175,6 @@
                 </tr>
                 {% endif %}
                 {% endfor %}
-
             </tbody>
         </table>
     </div>

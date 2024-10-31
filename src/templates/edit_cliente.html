@@ -6,440 +6,506 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styele_alta_empresas.css') }}">
 
 {% endblock %}
+
+{% block titutlo %}ALTA CLIENTE{% endblock %}
+
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 <br>
-<div class="container tituloform">
-    <div class="container text-center">
-        <h1 class="display-2">Alta de Clientes</h1>
-        <p class="lead">Completa los datos del formularío para dar de alta un cliente.Los datos con asterisco son
-            obligatorios</p>
+<form class="needs-validation" novalidate accion="/Altacliente" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="container">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <div class="text-center">
+                <button class="btn botones" type="submit">CONFIRMA</button>
+            </div>
+        </div>
     </div>
-</div>
-<br>
-<!--INICIA INFORMACIÓN GENERAL-->
-<br>
-<div class="container">
-    <form class="needs-validation" novalidate  accion="{{ url_for('edit_cliente', id=cliente.id) }}" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="container">
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <div class="text-center">
-                    <button class="btn btn-primary" type="submit">Confirmar</button>
+    <!--INICIA INFORMACIÓN GENERAL-->
+    <br>
+    <div class="container" style="display: none;">
+        <div class="form-group row">
+            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                <label for="ID_CLIENTE" class="form-label">Siguiente cliente: </label>
+                <input type="text" class="form-control" style="text-align: center;" id="ID_CLIENTE" name="ID_CLIENTE"
+                    value="{{ cliente.id }}" readonly>
+            </div>
+        </div>
+    </div>
+
+    <!--INICIA CARD CLIENTES -->
+    <div class="container-fluid">
+        <div class="card mb-3">
+            <div class="card-header">
+
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+                    <br>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                                data-bs-target="#informacion-tab-pane" type="button" role="tab"
+                                aria-controls="informacion-tab-pane" aria-selected="true">Cliente</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                data-bs-target="#direccion-tab-pane" type="button" role="tab"
+                                aria-controls="direccion-tab-pane" aria-selected="false">Dirección</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
+                                data-bs-target="#contacto-tab-pane" type="button" role="tab"
+                                aria-controls="contacto-tab-pane" aria-selected="false">Contacto</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                data-bs-target="#facturacion-tab-pane" type="button" role="tab"
+                                aria-controls="facturacion-tab-pane" aria-selected="false">Facturación</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                data-bs-target="#Cuentas-tab-pane" type="button" role="tab"
+                                aria-controls="Cuentas-tab-pane" aria-selected="false">Cuentas</button>
+                        </li>
+                    </ul>
+                    <!--INFORMACIÓN GENERAL-->
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="informacion-tab-pane" role="tabpanel"
+                            aria-labelledby="home-tab" tabindex="0">
+                            <br>
+
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="RAZON_SOCIAL" class="form-label">RAZON SOCIAL*</label>
+                                    <input type="text" class="form-control" name="RAZON_SOCIAL"
+                                        value="{{ cliente.razon_social }}" id="RAZON_SOCIAL" placeholder="Enter value"
+                                        required>
+                                    <div class="invalid-feedback">
+                                        Completar Razón Social
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="RFC" class="form-label">RFC*</label>
+                                    <input type="text" class="form-control" id="RFC" value="{{cliente.rfc}}" name="RFC"
+                                        placeholder="RFC" required>
+                                    <div class="invalid-feedback">
+                                        Completar RFC
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="EMPRESA" class="form-label">EMPRESA:*</label>
+                                    <select class="form-control" name="EMPRESA" id="EMPRESA" required>
+                                        <option value="{{cliente.id_empresa }}">{{ empresa_selecionada.razon_social }}</option>
+                                        {% for e in empresas %}
+                                        <option value="{{ e.id }}">{{ e.razon_social }}</option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--FIN INFORMACIÓN GENERAL-->
+                        <!-- DIRECCION -->
+                        <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                            tabindex="0">
+                            <br>
+                            <div class="container-fluid">
+                                <div class="form-group row">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="CP" class="form-label">CP*</label>
+                                        <input type="text" value="{{cliente.cp}}" class="form-control" id="CP" name="CP"
+                                            ma placeholder="Código Postal" required>
+                                        <div class="invalid-feedback">
+                                            Completa Código Postal
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="ESTADO" class="form-label">ESTADO*</label>
+                                        <input type="text" value="{{cliente.estado}}" class="form-control" id="ESTADO"
+                                            name="ESTADO" placeholder="Estado" required>
+                                        <div class="invalid-feedback">
+                                            Completa Estado
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
+                                        <input type="text" value="{{cliente.municipio}}" class="form-control"
+                                            name="MUNICIPIO" id="MUNICIPIO" placeholder="Municipio" required>
+                                        <div class="invalid-feedback">
+                                            Completa Municipio
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="PAIS" class="form-label">PAÍS*</label>
+                                        <input type="text" value="{{cliente.pais}}" class="form-control" name="PAIS"
+                                            id="PAIS" value="México" required>
+                                        <div class="invalid-feedback">
+                                            Completa País
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <label for="CALLE" class="form-label">CALLE*</label>
+                                        <input type="text" value="{{cliente.calle}}" class="form-control" id="CALLE"
+                                            name="CALLE" maxlength="50" placeholder="Calle" required>
+                                        <div class="invalid-feedback">
+                                            Completa Calle
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="NO_EXTERIOR" class="form-label">NO. EXTERIOR</label>
+                                        <input type="text" value="{{cliente.ciudad}}" class="form-control"
+                                            name="NO_EXTERIOR" id="NO_EXTERIOR" placeholder="Numero Exterior">
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="NO_EXTERIOR" class="form-label">NO. INTERIOR</label>
+                                        <input type="text" class="form-control" value="{{cliente.no_exterior}}"
+                                            name="NO_INTERIOR" id="NO_INTERIOR" placeholder="Numero Interior">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- FIN DIRECCION -->
+                        <!-- INFORMACIÓN DEL CONTACTO -->
+                        <div class="tab-pane fade" id="contacto-tab-pane" role="tabpanel" aria-labelledby="contact-tab"
+                            tabindex="0">
+                            <br>
+
+                            <!--BOTONES ACCIONES-->
+                            <div class="container-fluid">
+                                <div class="form-group row">
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <button type="button" class="btn botones" onclick="añadirContacto()"><i
+                                            class="bi bi-person-add"></i> AGREGAR
+                                    </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <br>
+                            <div class="container-fluid">
+                                <table class="table table-borderless" id="Contactos">
+                                    <colgroup>
+                                        <!-- Agrega más columnas según sea necesario -->
+                                        <col style="width: 250px;"> <!-- Primera columna -->
+                                        <col style="width: 250px;"> <!-- Segunda columna -->
+                                        <col style="width: 250px;"> <!-- Tercera columna -->
+                                        <col style="width: 250px;"> <!-- Cuarta columna -->
+                                        <col style="width: 250px;">
+                                        <col style="width: 40px;">
+                                    </colgroup>
+                                    <thead class="table">
+                                        <tr>
+                                         
+                                                <th scope="col">NOMBRE</th>
+                                                <th scope="col">APELLIDO</th>
+                                                <th scope="col">TELEFONO</th>
+                                                <th scope="col">CORREO</th>
+                                                <th scope="col">PUESTO</th>
+                                                <th scope="col"></th>
+
+                                         
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cc in contactos %}
+                                        <tr>
+                                            <td>
+                                                <input type="text" class="form-control" value="{{ cc.nombre }}"
+                                                    name="NOMBRE_CONTACTO[]" required="">
+                                                <div class="invalid-feedback">
+                                                    Completa Nombre
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" value="{{ cc.apellido }}"
+                                                    name="APELLIDO_CONTACTO[]" required="">
+                                                <div class="invalid-feedback">
+                                                    Completa Apellido
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" value="{{ cc.telefono }}"
+                                                    name="TELEFONO_CONTACTO[]" required="">
+                                                <div class="invalid-feedback">
+                                                    Completa Telefono
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" value="{{ cc.correo }}"
+                                                    name="CORREO_CONTACTO[]" required="">
+                                                <div class="invalid-feedback">
+                                                    Completa Correo
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" value="{{ cc.puesto }}"
+                                                    name="PUESTO_CONTACTO[]" required="">
+                                                <div class="invalid-feedback">
+                                                    Completa Puesto
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center"
+                                                    style="height: 100%;margin-top: 30px;"><button
+                                                        onclick="eliminarFila(this)" class="btn"><i
+                                                            class="bi bi-trash"></i></button></div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- FIN INFORMACIÓN DEL CONTACTO -->
+                        <!-- DATOS DE FACTURACIÓN -->
+                        <div class="tab-pane fade" id="facturacion-tab-pane" role="tabpanel"
+                            aria-labelledby="disabled-tab" tabindex="0">
+                            <br>
+
+                            <p class="h6">DATOS FISCALES</p>
+                            <hr>
+                            <div class="form-group row">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <label for="REGIMEN_FISCAL" class="form-label">Régimen Fiscal</label>
+                                    <select class="form-control" name="REGIMEN_FISCAL" id="REGIMEN_FISCAL" required>
+                                        <option value="" style="text-align: center;">------Selecciona------</option>
+                                
+                                        <optgroup label="Personas morales">
+                                            <option value="601" {{ 'selected' if cliente.regimen_fiscal_id == 601 else '' }}>601 General de Ley Personas Morales</option>
+                                            <option value="603" {{ 'selected' if cliente.regimen_fiscal_id == 603 else '' }}>603 Personas Morales con Fines no Lucrativos</option>
+                                            <option value="607" {{ 'selected' if cliente.regimen_fiscal_id == 607 else '' }}>607 Régimen de Enajenación o Adquisición de Bienes</option>
+                                            <option value="610" {{ 'selected' if cliente.regimen_fiscal_id == 610 else '' }}>610 Residentes en el Extranjero sin Establecimiento Permanente en México</option>
+                                            <option value="620" {{ 'selected' if cliente.regimen_fiscal_id == 620 else '' }}>620 Sociedades Cooperativas de Producción que optan por diferir sus ingresos</option>
+                                            <option value="622" {{ 'selected' if cliente.regimen_fiscal_id == 622 else '' }}>622 Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
+                                            <option value="623" {{ 'selected' if cliente.regimen_fiscal_id == 623 else '' }}>623 Opcional para Grupos de Sociedades</option>
+                                            <option value="624" {{ 'selected' if cliente.regimen_fiscal_id == 624 else '' }}>624 Coordinados</option>
+                                            <option value="626" {{ 'selected' if cliente.regimen_fiscal_id == 626 else '' }}>626 Régimen Simplificado de Confianza</option>
+                                            <option value="628" {{ 'selected' if cliente.regimen_fiscal_id == 628 else '' }}>628 Hidrocarburos</option>
+                                        </optgroup>
+                                        <optgroup label="Personas físicas">
+                                            <option value="605" {{ 'selected' if cliente.regimen_fiscal_id == 605 else '' }}>605 Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
+                                            <option value="606" {{ 'selected' if cliente.regimen_fiscal_id == 606 else '' }}>606 Arrendamiento</option>
+                                            <option value="608" {{ 'selected' if cliente.regimen_fiscal_id == 608 else '' }}>608 Demás ingresos</option>
+                                            <option value="611" {{ 'selected' if cliente.regimen_fiscal_id == 611 else '' }}>611 Ingresos por Dividendos (socios y accionistas)</option>
+                                            <option value="612" {{ 'selected' if cliente.regimen_fiscal_id == 612 else '' }}>612 Personas Físicas con Actividades Empresariales y Profesionales</option>
+                                            <option value="614" {{ 'selected' if cliente.regimen_fiscal_id == 614 else '' }}>614 Ingresos por intereses</option>
+                                            <option value="615" {{ 'selected' if cliente.regimen_fiscal_id == 615 else '' }}>615 Régimen de los ingresos por obtención de premios</option>
+                                            <option value="616" {{ 'selected' if cliente.regimen_fiscal_id == 616 else '' }}>616 Sin obligaciones fiscales</option>
+                                            <option value="621" {{ 'selected' if cliente.regimen_fiscal_id == 621 else '' }}>621 Incorporación Fiscal</option>
+                                            <option value="625" {{ 'selected' if cliente.regimen_fiscal_id == 625 else '' }}>625 Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
+                                            <option value="629" {{ 'selected' if cliente.regimen_fiscal_id == 629 else '' }}>629 De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales</option>
+                                            <option value="630" {{ 'selected' if cliente.regimen_fiscal_id == 630 else '' }}>630 Enajenación de acciones en bolsa de valores</option>
+                                        </optgroup>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Selecciona un Régimen Fiscal
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-6 col-md-5 col-sm-12 col-xs-12">
+                                    <label for="USO_CFDI" class="form-label">Uso de CFDI:</label>
+                                    <select class="form-control" name="USO_CFDI" id="USO_CFDI" required>
+                                        <option value="{{ uso_cfdi.id }}">{{ uso_cfdi.clave }} - {{ uso_cfdi.decripcion }}</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Selecciona Uso de CFDI
+                                    </div>
+                                </div>                                
+                            </div>
+                            <br>
+                            <p class="h6">CONDICIONES COMERCIALES</p>
+                            <hr>
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CONDICION_PAGO" class="form-label">Condición de pago</label>
+                                    <select class="form-control" name="CONDICION_PAGO" id="CONDICION_PAGO" required>
+                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>Inmediato</option>
+                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>Trimestral</option>
+                                        <option value="3" {{ 'selected' if cliente.condicion_pago_id == 3 else '' }}>Semestral</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Selecciona una condición de pago
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="FORMA_PAGO" class="form-label">Forma de pago:</label>
+                                    <select class="form-control" name="FORMA_PAGO" id="FORMA_PAGO" required>
+                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>Credíto</option>
+                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>Debíto</option>
+                                        <option value="3" {{ 'selected' if cliente.condicion_pago_id == 3 else '' }}>Efectivo</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Selecciona una Forma de pago
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="METODO_PAGO" class="form-label">Metodo de Pago:</label>
+                                    <select class="form-control" name="METODO_PAGO" id="METODO_PAGO" required>
+                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>PUE</option>
+                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>PPD</option>
+                                       
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Selecciona un Metódo de pago
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="Cuentas-tab-pane" role="tabpanel" aria-labelledby="Cuentas-tab"
+                            tabindex="0">
+                            <br>
+
+                            <!--BOTONES INFORMACION BANCARIA -->
+                            <div class="container-fluid">
+                                <div class="form-group row">
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <button type="button" class="btn botones" onclick="añadirCuenta()"> <i class="bi bi-window-plus"></i> AGREGAR
+                                        </button>                                            
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="container-fluid">
+                                <table class="table table-borderless" id="Cuentas">
+                                    <colgroup>
+                                        <!-- Agrega más columnas según sea necesario -->
+                                        <col style="width: 250px;"> <!-- Primera columna -->
+                                        <col style="width: 250px;"> <!-- Segunda columna -->
+                                        <col style="width: 250px;"> <!-- Tercera columna -->
+                                        <col style="width: 40px;">
+                                    </colgroup>
+                                    <thead class="table">
+                                        <tr>
+                                            <th scope="col">BANCO</th>
+                                            <th scope="col">NO. Cuenta</th>
+                                            <th scope="col">CLABE</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cuenta in cuentas %}
+                                        <tr>
+
+                                            <td>
+                                                <select name="ID_BANCO[]" class="form-control" style="text-align: center;" required>
+                                                    {% for b in bancos %}
+                                                        <option value="{{ b.id }}" {% if cuenta.id_banco == b.id %}selected{% endif %}>{{ b.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    SELECCIONA UN BANCO
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" class="form-control" name="NUM_CUENTA[]"
+                                                    maxlength="20" value="{{ cuenta.numero_cuenta }}"
+                                                    onchange="formatearCLABE(this)" required>
+                                                <div class="invalid-feedback">
+                                                    "Completa numero de cuenta"
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="CLABE[]"
+                                                    maxlength="19" value="{{ cuenta.clabe }}"
+                                                    onchange="formatearCLABE(this)" required>
+                                                <div class="invalid-feedback">
+                                                    "Completa CLABE"
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center"
+                                                    style="height: 100%;margin-top: 30px;">
+                                                    <button onclick="eliminarFila(this)" class="btn"><i
+                                                            class="bi bi-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
-                    data-bs-target="#informacion-tab-pane" type="button" role="tab" aria-controls="informacion-tab-pane"
-                    aria-selected="true">Cliente</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#direccion-tab-pane"
-                    type="button" role="tab" aria-controls="direccion-tab-pane" aria-selected="false">Dirección</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contacto-tab-pane"
-                    type="button" role="tab" aria-controls="contacto-tab-pane" aria-selected="false">Contacto</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#facturacion-tab-pane"
-                    type="button" role="tab" aria-controls="facturacion-tab-pane"
-                    aria-selected="false">Facturación</button>
-            </li>
-            <!--
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#apoderado-tab-pane"
-                    type="button" role="tab" aria-controls="apoderado-tab-pane" aria-selected="false">Ordenes de
-                    Compara</button>
-            </li>
-            -->
-            <!--
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#condionPago-tab-pane"
-                    type="button" role="tab" aria-controls="condionPago-tab-pane" aria-selected="false">Condiciones Comerciales</button>
-            </li>
-            
-            -->
-
-        </ul>
-        <!--INFORMACIÓN GENERAL-->
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="informacion-tab-pane" role="tabpanel" aria-labelledby="home-tab"
-                tabindex="0">
-                <br>
-                <div class="container text-center">
-                    <h2>Información General</h2>
-                </div>
-                <br>
-
-                <div class="form-group row">
-                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
-                        <label for="NUM_CLIENTE" class="form-label"># Cliente</label>
-                        <input type="text" class="form-control" id="NUM_CLIENTE" name="NUM_CLIENTE" value="cliente.id" readonly value="0">
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <label for="RAZON_SOCIAL" class="form-label">Razón Social*</label>
-                        <input type="text" class="form-control" name="RAZON_SOCIAL" id="RAZON_SOCIAL" value="{{ cliente.razon_social }}"
-                            placeholder="Enter value" required>
-                        <div class="invalid-feedback">
-                            Completar Razón Social
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="RFC" class="form-label">RFC*</label>
-                        <input type="text" class="form-control" id="RFC" name="RFC" placeholder="Razón Social"  value="{{cliente.rfc}}" required>
-                        <div class="invalid-feedback">
-                            Completar RFC
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="EMPRESA" class="form-label">Seleciona una empresa:*</label>
-                        <select class="form-control" name="EMPRESA" id="EMPRESA" required>
-                            <option value="{{ empresa_selecionada.id }}">{{ empresa_selecionada.razon_social }}</option>
-                            {% for empresa in empresas %}
-                            <option value="{{ empresa.id }}">{{empresa.razon_social}}</option>
-                            {% endfor %}
-                        </select>
-                        <div class="invalid-feedback">
-                            SELECCIONE UNA EMPRESA
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--FIN INFORMACIÓN GENERAL-->
-            <!-- DIRECCION -->
-            <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
-                tabindex="0">
-                <br>
-                <div class="container text-center">
-                    <h2>Dirección</h2>
-                </div>
-                <br>
-
-                <div class="container">
-                    <div class="form-group row">
-                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                            <label for="CP" class="form-label">CP*</label>
-                            <input type="text" class="form-control" id="CP" name="CP" placeholder="Código Postal"
-                                required>
-                            <div class="invalid-feedback">
-                                Completa Código Postal
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                            <label for="ESTADO" class="form-label">Estado*</label>
-                            <input type="text" class="form-control" id="ESTADO" name="ESTADO" placeholder="Estado"
-                                required>
-                            <div class="invalid-feedback">
-                                Completa Estado
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                            <label for="MUNCICIPIO" class="form-label">Municipio*</label>
-                            <input type="text" class="form-control" name="MUNCICIPIO" id="MUNCICIPIO"
-                                placeholder="Municipio" required>
-                            <div class="invalid-feedback">
-                                Completa Municipio
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                            <label for="PAIS" class="form-label">País*</label>
-                            <input type="text" class="form-control" name="PAIS" id="PAIS" placeholder="Municipio"
-                                required>
-                            <div class="invalid-feedback">
-                                Completa País
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                            <label for="CALLE" class="form-label">Calle*</label>
-                            <input type="text" class="form-control" id="CALLE" name="CALLE" placeholder="Calle"
-                                required>
-                            <div class="invalid-feedback">
-                                Completa Calle
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                            <label for="NO_EXTERIOR" class="form-label">No. Exterior</label>
-                            <input type="text" class="form-control" name="NO_EXTERIOR" id="NO_EXTERIOR"
-                                placeholder="Numero Exterior">
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                            <label for="NO_EXTERIOR" class="form-label">No. Interior</label>
-                            <input type="text" class="form-control" name="NO_INTERIOR" id="NO_INTERIOR"
-                                placeholder="Numero Interior">
-                        </div>
-                    </div>
-                </div>
-
-                <br>
-            </div>
-            <!-- FIN DIRECCION -->
-            <!-- INFORMACIÓN DEL CONTACTO -->
-            <div class="tab-pane fade" id="contacto-tab-pane" role="tabpanel" aria-labelledby="contact-tab"
-                tabindex="0">
-                <br>
-                <div class="container text-center">
-                    <h2>Contacto C X P</h2>
-                </div>
-                <br>
-                <div class="form-group row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="NOMBRE_CONTACTO1" class="form-label">Nombre*</label>
-                        <input type="text" class="form-control" name="NOMBRE_CONTACTO1" id="NOMBRE_CONTACTO1"
-                            placeholder="Nombre de Contacto" required>
-                        <div class="invalid-feedback">
-                            COMPLETAR Nombre Contacto
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="APELLIDO_CONTACTO1" class="form-label">Apellido*</label>
-                        <input type="text" class="form-control" name="APELLIDO_CONTACTO1" id="APELLIDO_CONTACTO1"
-                            placeholder="Apellido de Contacto" required>
-                        <div class="invalid-feedback">
-                            COMPLETAR Apellido Contacto
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="TELEFONO_CONTACTO" class="form-label">Teléfono*</label>
-                        <input type="tel" class="form-control" name="TELEFONO_CONTACTO1" id="TELEFONO_CONTACTO1"
-                            placeholder="Teléfono Contacto" required>
-                        <div class="invalid-feedback">
-                            COMPLETAR Teléfono Contacto
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="CORREO_CONTACTO1" class="form-label">Correo*</label>
-                        <input type="email" class="form-control" name="CORREO_CONTACTO1" id="CORREO_CONTACTO1"
-                            placeholder="Enter value" required>
-                        <div class="invalid-feedback">
-                            COMPLETAR Correo Coctacto
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="container text-center">
-                    <h2>Contacto de PM</h2>
-                </div>
-                <div class="form-group row">
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="RESPONSABLE_PROYECTO_DIRECTORIO" class="form-label">Responsable del
-                            Proyectos</label>
-                        <input type="text" class="form-control" name="RESPONSABLE_PROYECTO_DIRECTORIO"
-                            id="RESPONSABLE_PROYECTO_DIRECTORIO" placeholder="Enter value" required>
-                        <div class="invalid-feedback">
-                            Completar Responsable de Proyecto
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="TELEFONO_DIRECTORIO" class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" name="TELEFONO_DIRECTORIO" id="TELEFONO_DIRECTORIO"
-                            placeholder="Enter value" required>
-                        <div class="invalid-feedback">
-                            COMPLETAR Teléfono Contacto
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="CORREO_CONTATO_DIRECTORIO" class="form-label">Correo</label>
-                        <input type="text" class="form-control" name="CORREO_CONTATO_DIRECTORIO"
-                            id="CORREO_CONTATO_DIRECTORIO" placeholder="Correo" required>
-                        <div class="invalid-feedback">
-                            Completar Correo Contacto
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="telefono_emergencia" class="form-label">Telefono de Emergencia</label>
-                        <input type="tel" class="form-control" name="EMERGENCIA_CONTATO_DIRECTORIO"
-                            id="EMERGENCIA_CONTATO_DIRECTORIO" placeholder="Enter value">
-                        <div class="invalid-feedback">
-                            Completar Teléfono contacto
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="PUESTO_CONTACTO_DIRECTROIO" class="form-label">Puesto en la empresa</label>
-                        <input type="text" class="form-control" name="PUESTO_CONTACTO_DIRECTROIO"
-                            id="PUESTO_CONTACTO_DIRECTROIO" placeholder="Puesto en la empresa" required>
-                        <div class="invalid-feedback">
-                            Completar Puesto Contacto
-                        </div>
-                    </div>
-                </div>
+    </div>
 
 
-            </div>
-            <!-- FIN INFORMACIÓN DEL CONTACTO -->
-            <!-- DATOS DE FACTURACIÓN -->
-            <div class="tab-pane fade" id="facturacion-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
-                tabindex="0">
-                <br>
-                <div class="container text-center">
-                    <h2>Datos de Facturacion</h2>
-                </div>
-                <br>
-                <div class="form-group row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="REGIMEN_FISCAL" class="form-label">Regimen Fiscal</label>
-                        <select class="form-control" name="REGIMEN_FISCAL" id="REGIMEN_FISCAL" required>
-                            <option value="">Select an option</option>
-                            <optgroup label="Personas morales">
-                                <option value="601">601 General de Ley Personas Morales</option>
-                                <option value="603">603 Personas Morales con Fines no Lucrativos</option>
-                                <option value="607">607 Régimen de Enajenación o Adquisición de Bienes</option>
-                                <option value="610">610 Residentes en el Extranjero sin Establecimiento Permanente en
-                                    México</option>
-                                <option value="620">620 Sociedades Cooperativas de Producción que optan por diferir sus
-                                    ingresos</option>
-                                <option value="622">622 Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras
-                                </option>
-                                <option value="623">623 Opcional para Grupos de Sociedades</option>
-                                <option value="624">624 Coordinados</option>
-                                <option value="626">626 Régimen Simplificado de Confianza</option>
-                                <option value="628">628 Hidrocarburos</option>
-                            <optgroup label="Personas físicas">
-                                <option value="605">605 Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
-                                <option value="606">606 Arrendamiento</option>
-                                <option value="608">608 Demás ingresos</option>
-                                <option value="611">611 Ingresos por Dividendos (socios y accionistas)</option>
-                                <option value="612">612 Personas Físicas con Actividades Empresariales y Profesionales
-                                </option>
-                                <option value="614">614 Ingresos por intereses</option>
-                                <option value="615">615 Régimen de los ingresos por obtención de premios</option>
-                                <option value="616">616 Sin obligaciones fiscales</option>
-                                <option value="621">621 Incorporación Fiscal</option>
-                                <option value="625">625 Régimen de las Actividades Empresariales con ingresos a través
-                                    de Plataformas Tecnológicas</option>
-                                <option value="629">629 De los Regímenes Fiscales Preferentes y de las Empresas
-                                    Multinacionales</option>
-                                <option value="630">630 Enajenación de acciones en bolsa de valores</option>
-                            </optgroup>
-                        </select>
-                        <div class="invalid-feedback">
-                            Selecciona un regimen fiscal
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-5 col-sm-12 col-xs-12">
-                        <label for="USO_CFDI" class="form-label">Uso de CFDI:</label>
-                        <input type="text" class="form-control" name="USO_CFDI" id="USO_CFDI" placeholder="Enter value"
-                            required>
-                        <div class="invalid-feedback">
-                            Selecciona Uso de CFDI
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="container text-center">
-                    <h2>Condiciones Comerciales</h2>
-                </div>
-                <br>
-                <div class="form-group row">
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="DIAS_CREDITO" class="form-label">Días de Crédito</label>
-                        <input type="text" class="form-control" name="DIAS_CREDITO" id="DIAS_CREDITO"
-                            placeholder="Enter value" required>
-                        <div class="invalid-feedback">
-                            Completa Días de Crédito
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="FORMA_PAGO" class="form-label">Forma de pago:</label>
-                        <select class="form-control" name="FORMA_PAGO" id="FORMA_PAGO" required>
-                            <option value="">Select an option</option>
-                            <option value="credito">Credito</option>
-                            <option value="debito">Debito</option>
-                            <option value="efectivo">Efectivo</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Selecciona una Forma de pago
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="BANCO" class="form-label">Banco</label>
-                        <select class="form-control" name="BANCO" id="BANCO" required>
-                            <option value="">Select an option</option>
-                            <option value="1">Lista de bancos</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Selecciona un Banco
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="CUENTA_BANCARIA" class="form-label">No. Cuenta Bancaria*</label>
-                        <input type="text" class="form-control" name="CUENTA_BANCARIA" id="CUENTA_BANCARIA"
-                            placeholder="Número de Cuenta" required>
-                        <div class="invalid-feedback">
-                            Completa No. Cuenta Bancaria
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label for="CLABE" class="form-label">CLABE Cuenta Bancaria</label>
-                        <input type="text" class="form-control" name="CLABE" id="CLABE" placeholder="CLABE" required>
-                        <div class="invalid-feedback">
-                            Completa Cuenta Bancaria
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- FIN FACTURACIÓN -->
-            <!--PORTAL PARA ORDENES DE COMPRA-->
-            <!--
-             <div class="tab-pane fade" id="apoderado-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
-                tabindex="0">
-                <br>
-                <div class="container text-center">
-                    <h2>Portal para Ordenes de Compra</h2>
-                </div>
-                <br>
-                <div class="form-group row">
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="HTTP" class="form-label">Direccion HTTP</label>
-                        <input type="text" class="form-control" name="HTTP" id="HTTP" placeholder="https://" required>
-                        <div class="invalid-feedback">
-                            COMPLETAR DIRECCION HTTP
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="usuario" class="form-label">Usuario</label>
-                        <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Enter value"
-                            required>
-                        <div class="invalid-feedback">
-                            COMPLETAR USUARIO
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="password" class="form-label">Contraseña</label>
-                        <input type="text" class="form-control" name="password" id="password" placeholder="Enter value"
-                            required>
-                        <div class="invalid-feedback">
-                            COMPLETAR CONTRASEÑA
-                        </div>
-                    </div>
-                </div>
-            </div>
-            -->
+    <!-- FIN CARD CLIENTE -->
 
-            <!--FIN PORTAL PARA ORDENES DE COMPRA-->
-            <!-- CONDICIONES COMERCIALES -->
-            <!--
-            <div class="tab-pane fade" id="condionPago-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
-                tabindex="0">
 
-                    
-            </div>
-            -->
-            <!--FIN CONDICIONES COMERCIALES -->
-    </form>
+</form>
 </div>
 <br>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        function cargaCFDI() {
+            fetch("/api/obtener_cfdi/")
+                .then((response) => {
+                    if (!response.ok) {
+                        console.error(`Error: ${response.status} - ${response.statusText}`);
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log(data);
+                    const select = document.querySelector("#USO_CFDI");
+
+                    // Asegúrate de que el elemento select exista antes de intentar manipularlo
+                    if (select) {
+                        data.forEach((cfdi) => {
+                            const option = document.createElement("option");
+                            cfdis = `${cfdi.nombre} - ${cfdi.decripcion}`;
+                            option.value = cfdi.id;
+                            option.textContent = cfdis  // Corregí la concatenación de clave y descripción
+                            select.appendChild(option);
+                        });
+                    } else {
+                        console.error("No se encontró el elemento select con el ID #USO_CFDI.");
+                    }
+                })
+                .catch((error) => console.error("Error:", error));
+        }
+
+        cargaCFDI();
+    });
+</script>
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (() => {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{{ url_for('static', filename='JS/validar_formulario.js') }}"></script
+
+<script src="{{ url_for('static', filename='JS/funciones_Clientes.js') }}"></script>
 
 {% endblock %}

@@ -1,48 +1,193 @@
 <!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Nuevo Proyecto{% endblock %}
+{% block title %}EMPLEADOS{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 
 {% endblock %}
+
+<!-- TITULO DE PAGINA -->
+{% block titutlo %}EMPLEADOS{% endblock %}
+<!-- FIN DE TITULO -->
+
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
-<br>
-<div class="container-fluid">
-    <div class="container text-center">
-        <h1>Cliente</h1>
-    </div>
-    <br>
-    <!--BOTONES ACCIONES-->
-    <div class="container">
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a class="btn btn-primary" href="/Altacliente">
-                <i class="bi bi-building-fill-add"></i> Nueva Cliente
-            </a>
-            <button class="btn  btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
-                <i class="bi bi-search"></i> Filtrar Cliente
-            </button>
+<!-- MODAL PARA EDITAR EMPLEADO -->
+<div class="modal fade" id="editBancoModal" tabindex="-1" aria-labelledby="editBancoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBancoModalLabel">EDITAR EMPLEADO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editBancoForm" action="" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" id="editBancoId" name="banco_id">
+                    
+                    <div class="mb-3">
+                        <label for="editBancoNombre" class="form-label">NOMBRE BANCO</label>
+                        <input type="text" class="form-control" id="editBancoNombre" name="BANCO" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
+</div>
+<!-- FIN MODAL EDITAR EMPLEADO -->
+<!-- Modal para Filtrar cliente -->
+<div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="miModalLabel">Filtro empleado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/Empleados" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="NOMBRE" class="form-label">NOMBRE</label>
+                        <input type="text" class="form-control" id="NOMBRE" name="NOMBRE">
+                    </div>
+                    <div class="mb-3">
+                        <label for="APELLIDO" class="form-label">APELLIDO</label>
+                        <input type="text" class="form-control" id="APELLIDO" name="APELLIDO">
+                    </div>
+                    <div class="mb-3">
+                        <label for="TIPO_EMPLEADO" class="form-label">TIPO DE EMPLEADO</label>
+                        <select class="form-control" name="TIPO_EMPLEADO" id="TIPO_EMPLEADO">
+                            <option value="" style="text-align: center;">SELECIONA</option>
+                            <option value="1">ADMINISTRATIVO</option>
+                            <option value="2">OBRA</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ESTATUS" class="form-label">ESTATUS</label>
+                        <select class="form-select" id="ESTATUS" name="ESTATUS" style="text-align: center;">
+                            <option value="">SELECIONA</option>
+                            <option value="0">ACTIVO</option>
+                            <option value="1">BLOQUEDO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal">CERRAR</button>
+                    <button type="submit" class="btn botones">FILTRAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container-fluid">
+    <div class="d-grid gap-2 d-md-flex justify-content-start">
+        <a class="btn botones" href="/Altaempleados">
+            <i class="bi bi-people-fill"></i> NUEVO EMPLEADO
+        </a>
+        <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+            <i class="bi bi-search"></i> FILTRAR
+        </button>
+        <a class="btn botones" href="/Empleados">
+            <i class="bi bi-eraser"></i> LIMPIAR FILTRO
+        </a>
+    </div>
     <br>
-    <div class="container">
-        <table class="table">
-            <thead>
+    <div class="table-container">
+        <table class="table table-hover">
+            <colgroup>
+                <col style="width: 50px;"> <!-- Primera columna de 150px -->
+                <col style="width: 200px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 200px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 200px;"> <!-- Primera columna de 150px -->
+                <col style="width: 150px;"> <!-- Segunda columna de 200px -->
+                
+
+            </colgroup>
+            <thead class="table-dark">
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Empleado</th>
-                    <th scope="col">RFC</th>
-                    <th scope="col">Direción</th>
-                    <th scope="col">Contacto</th>
-                    <th scope="col">Status</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">NOMBRE</th>
+                    <th scope="col">APELLIDO</th>
+                    <th scope="col">PUESTO</th>
+                    <th scope="col">TIPO EMPLEADO</th>
+                    <th scope="col">ALTA/BAJA</th>
+                    <th scope="col">ACCIONES</th>
                 </tr>
             </thead>
             <tbody>
-                
+               {% for e in empleados %}
+               {% if e.is_blocked%}
+               <tr class="table-secondary">
+                <td>{{ e.id }}</td>
+                <td>{{ e.nombre }}</td>
+                <td>{{ e.apellido }}</td>
+                <td>{{ e.puesto }}</td>
+                <td>{{ e.tipo_empleado }}</td>
+                <td>
+                    BLOQUEADO
+                </td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ e.id }}"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ACCIONES
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ e.id }}">
+                            <li>
+                                <form  action="{{ url_for('unblock_empleado', id=e.id) }}" method="post"
+                                    style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td>{{ e.id }}</td>
+                <td>{{ e.nombre }}</td>
+                <td>{{ e.apellido }}</td>
+                <td>{{ e.puesto }}</td>
+                <td>{{ e.tipo_empleado }}</td>
+              
+                <td>
+                    ACTIVO
+                </td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ e.id }}"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ACCIONES
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ e.id }}">
+                            <li><a class="dropdown-item"
+                                href="{{ url_for('edit_empleado', id=e.id) }}">EDITAR</a></li>
+                            <li>
+                                <form action="{{ url_for('block_empleado', id=e.id) }}" method="post"
+                                    style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="dropdown-item" type="submit">BLOQUEAR</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+             
             </tbody>
         </table>
     </div>
-
 </div>
+
 
 {% endblock %}

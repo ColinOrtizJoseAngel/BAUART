@@ -1,0 +1,210 @@
+<!--IMPOTRAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}Familias{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+
+{% endblock %}
+
+<!-- TITULO DE PAGINA -->
+{% block titutlo %}Familias{% endblock %}
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+
+<!-- Modal para Filtrar FAMILIA -->
+<div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="miModalLabel">FILTRAR FAMILIAS</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- <form action="" method="post"> -->
+            <form action="" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="grupo" class="form-label">FAMILIA</label>
+                        <input type="text" class="form-control" id="grupo" name="grupo">
+                    </div>                    
+                </div>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2 d-md-flex justify-content-start">
+                        <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
+                        <button type="submit" class="btn botones"> <i class="bi bi-search"></i> FILTRAR</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- INICIA MODAL ALTA FAMILIA -->
+<div class="modal fade" id="altaFamiliaModal" tabindex="-1" aria-labelledby="altaFamiliaModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="container text-center">
+                    <h4 class="modal-title" id="altaFamiliaModalLabel">NUEVA FAMILIA</h4>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="needs-validation" action="" method="post" novalidate>
+                <div class="modal-body">
+                    <div class="container">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <br>
+                        <div class="form-group row">
+                           
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <label for="grupo" class="form-label">FAMILIA</label>
+                                <input type="text" class="form-control" id="NuevaFamilia" name="NuevaFamilia" placeholder="Introduzca la Familia" required>
+                                <div class="invalid-feedback">
+                                    COMPLETA FAMILIA
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2 d-md-flex justify-content-start">
+                        <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
+                        <button type="submit" class="btn botones"><i class="bi bi-floppy"></i> CONFIRMAR</button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- FIN ALTA FAMILIA -->
+ <!-- MODAL EDIT -->
+ <div class="modal fade" id="editFamiliaModal" tabindex="-1" aria-labelledby="editFamiliaModalLabel"
+ aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered">
+     <div class="modal-content">
+         <div class="modal-header">
+             <div class="container text-center">
+                 <h1 class="modal-title" id="editFamiliaModalLabel">EDITAR</h1>
+             </div>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form class="needs-validation" " action=" " method="post" novalidate>
+             <div class="modal-body">
+                 <div class="container">
+                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                     <br>
+                     <div class="form-group row">
+                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                             <label for="grupo" class="form-label">FAMILIA</label>
+                             <input type="text" class="form-control" id="grupo" name="grupo" value="" required>
+                             <div class="invalid-feedback">
+                                 COMPLETA FAMILIA
+                             </div>
+                         </div>
+                     </div>
+
+                 </div>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
+                 <button type="submit" class="btn botones"><i class="bi bi-floppy"> </i>GUARDAR</button>
+             </div>
+         </form>
+     </div>
+ </div>
+</div>
+<!-- FIN MODAL EDIT -->
+<br>
+<div class="container-fluid">
+    <br>
+        <div class="d-grid gap-2 d-md-flex justify-content-start">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn botones" data-bs-toggle="modal" data-bs-target="#altaFamiliaModal">
+                <i class="bi bi-wrench"></i> NUEVA FAMILIA
+            </button>
+            <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+                <i class="bi bi-search"></i> FILTRAR
+            </button>
+        </div>
+    <br>
+    <!--TABLA ESPECIALIDAD-->
+    <div class="table-container">
+        <table class="table table-borderless">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">FAMILIA</th>
+                    <th scope="col">ESTATUS</th>
+                    <th scope="col">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in familias %}
+                {% if f.is_blocked %}
+                <tr class="table-secondary">
+                    <td>{{ f.id }}</td>
+                    <td>{{ f.familia }}</td>
+                    <td>
+                        BLOQUEADO
+                    </td>
+                    <td>
+                       
+
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ f.id }}"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Acciones
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{  f.id }}">
+                                <li>
+                                    <form action="{{ url_for('unblock_familia', id=f.id) }}" method="post" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="dropdown-item" type="submit">Desbloquear</button>
+                                    </form>
+                                    
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td>{{ f.id }}</td>
+                    <td>{{ f.familia }}</td>
+                    <td>
+                        ACTIVO
+                    </td>
+                    <td>
+                        
+
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ f.id }}"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Acciones
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ f.id }}">
+                                <li><a class="dropdown-item">Editar</a></li>
+                                <li>
+                                    <form action="{{ url_for('block_familia', id=f.id) }}" method="post"
+                                        style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="dropdown-item" type="submit">Bloquear</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+
+
+
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!--FIN TABLA ESPECIALIDAD-->
+</div>
+{% endblock %}

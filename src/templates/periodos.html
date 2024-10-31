@@ -1,6 +1,6 @@
 <!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Nuevo Proyecto{% endblock %}
+{% block title %}PERIODOS{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 
@@ -8,62 +8,128 @@
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 <br>
+
+<div class="form-group">
+    <label for="yearSelector">Selecciona un año:</label>
+    <select id="yearSelector" class="form-control">
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+    </select>
+</div>
 <div class="container-fluid">
-    <div class="container text-center">
-        <h1>Periodos</h1>
-    </div>
-    <div class="container">
-        <div class="row g-3  align-items-center col-md-4 offset-md-10">
-            <div class="col-auto">
-                <label for="año" class="col-form-label">Año:</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" id="año" class="form-control">
-            </div>
-        </div>
-        <br>
-        <div class="row g-3  align-items-center col-md-4 offset-md-10">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <table class="table">
+    <div  class="table-container">
+        <table class="table  table-hover">
+            <colgroup>
+                <col style="width: 30px;"> <!-- Primera columna de 150px -->
+                <col style="width: 250px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 150px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 150px;"> <!-- Primera columna de 150px -->
+                <col style="width: 100px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 100px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 125px;"> <!-- Primera columna de 150px -->
+
+            </colgroup>
             <thead>
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Año</th>
-                <th scope="col">Periodo</th>
-                <th scope="col">Status</th>
+                <th scope="col">ID</th>
+                <th scope="col">AÑO</th>
+                <th scope="col">SEMANA</th>
+                <th scope="col">DÍAS</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                
-              </tr>
-              <tr>
-               
-              </tr>
-              <tr>
-                
-              </tr>
+             
             </tbody>
           </table>
+
     </div>
+       
     
 </div>
+<script>
+    // Al cargar el DOM, asignar evento de cambio al selector de año
+    document.addEventListener("DOMContentLoaded", function() {
+        const yearSelector = document.getElementById("yearSelector");
+        yearSelector.addEventListener("change", function() {
+            const selectedYear = this.value;
+            generateYearData(selectedYear);
+        });
+    });
+
+    // Función para generar las semanas del año excluyendo fines de semana
+    function generateYearData(year) {
+        const tableBody = document.querySelector("tbody");
+        tableBody.innerHTML = ""; // Limpiar la tabla antes de agregar los nuevos datos
+
+        let id = 1; // ID para cada fila
+        let currentWeek = 0;
+        let weekStart = null;
+        let weekEnd = null;
+
+        // Recorremos todos los días del año
+        for (let month = 0; month < 12; month++) {
+            const daysInMonth = new Date(year, month + 1, 0).getDate(); // Número de días en el mes
+            for (let day = 1; day <= daysInMonth; day++) {
+                const currentDate = new Date(year, month, day);
+                const dayOfWeek = currentDate.getDay();
+                
+                // Excluir fines de semana (0 = Domingo, 6 = Sábado)
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    const weekNumber = getWeekNumber(currentDate);
+
+                    // Si cambia la semana, almacenamos el fin de la semana anterior
+                    if (weekNumber !== currentWeek) {
+                        if (weekStart) {
+                            // Mostrar la fila completa de la semana anterior
+                            const monthStartName = weekStart.toLocaleString('es-MX', { month: 'long' }).toUpperCase();
+                            const monthEndName = weekEnd.toLocaleString('es-MX', { month: 'long' }).toUpperCase();
+                            
+                            const row = `
+                                <tr>
+                                    <td>${id++}</td>
+                                    <td>${year}</td>
+                                    <td>SEMANA ${currentWeek}</td>
+                                    <td>${monthStartName} ${weekStart.getDate()} - ${monthEndName} ${weekEnd.getDate()}</td>
+                                </tr>
+                            `;
+                            tableBody.insertAdjacentHTML('beforeend', row);
+                        }
+                        // Iniciar nueva semana
+                        currentWeek = weekNumber;
+                        weekStart = currentDate;
+                    }
+
+                    // Actualizar el fin de la semana
+                    weekEnd = currentDate;
+                }
+            }
+        }
+
+        // Agregar la última semana después de recorrer el año completo
+        if (weekStart) {
+            const monthStartName = weekStart.toLocaleString('es-MX', { month: 'long' }).toUpperCase();
+            const monthEndName = weekEnd.toLocaleString('es-MX', { month: 'long' }).toUpperCase();
+            
+            const row = `
+                <tr>
+                    <td>${id++}</td>
+                    <td>${year}</td>
+                    <td>SEMANA ${currentWeek}</td>
+                    <td>${monthStartName} ${weekStart.getDate()} - ${monthEndName} ${weekEnd.getDate()}</td>
+                </tr>
+            `;
+            tableBody.insertAdjacentHTML('beforeend', row);
+        }
+    }
+
+    // Función para obtener el número de la semana
+    function getWeekNumber(date) {
+        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+        const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    }
+</script>
+
 
 {% endblock %}

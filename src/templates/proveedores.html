@@ -1,0 +1,197 @@
+<!--IMPOTRAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}PROVEEDORES{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+
+{% endblock %}
+
+
+<!-- TITULO DE PAGINA -->
+{% block titutlo %}PROVEEDORES{% endblock %}
+
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+<!-- Modal para Filtrar contratista/proveedor -->
+<div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="miModalLabel">FILTRAR PROVEEDOR</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/Proveedores" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="ht_contratista_proveedor" class="form-label">PROVEEDOR</label>
+                        <input type="text" class="form-control" id="PROVEEDOR" name="PROVEEDOR">
+                    </div>
+                    <div class="mb-3">
+                        <label for="REGIMEN_FISCAL" class="form-label">REGIMEN FISCAL</label>
+                        <select class="form-control" name="REGIMEN_FISCAL" id="REGIMEN_FISCAL">
+                            <option value="" style="text-align: center;">SELECCIONA</option>
+                            <optgroup label="PERSONAS MORALES">
+                                <option value="601">601 GENERAL DE LEY PERSONAS MORALES</option>
+                                <option value="603">603 PERSONAS MORALES CON FINES NO LUCRATIVOS</option>
+                                <option value="607">607 RÉGIMEN DE ENAJENACIÓN O ADQUISICIÓN DE BIENES</option>
+                                <option value="610">610 RESIDENTES EN EL EXTRANJERO SIN ESTABLECIMIENTO PERMANENTE EN MÉXICO</option>
+                                <option value="620">620 SOCIEDADES COOPERATIVAS DE PRODUCCIÓN QUE OPTAN POR DIFERIR SUS INGRESOS</option>
+                                <option value="622">622 ACTIVIDADES AGRÍCOLAS, GANADERAS, SILVÍCOLAS Y PESQUERAS</option>
+                                <option value="623">623 OPCIONAL PARA GRUPOS DE SOCIEDADES</option>
+                                <option value="624">624 COORDINADOS</option>
+                                <option value="626">626 RÉGIMEN SIMPLIFICADO DE CONFIANZA</option>
+                                <option value="628">628 HIDROCARBUROS</option>
+                            </optgroup>
+                            
+                            <optgroup label="PERSONAS FÍSICAS">
+                                <option value="605">605 SUELDOS Y SALARIOS E INGRESOS ASIMILADOS A SALARIOS</option>
+                                <option value="606">606 ARRENDAMIENTO</option>
+                                <option value="608">608 DEMÁS INGRESOS</option>
+                                <option value="611">611 INGRESOS POR DIVIDENDOS (SOCIOS Y ACCIONISTAS)</option>
+                                <option value="612">612 PERSONAS FÍSICAS CON ACTIVIDADES EMPRESARIALES Y PROFESIONALES</option>
+                                <option value="614">614 INGRESOS POR INTERESES</option>
+                                <option value="615">615 RÉGIMEN DE LOS INGRESOS POR OBTENCIÓN DE PREMIOS</option>
+                                <option value="616">616 SIN OBLIGACIONES FISCALES</option>
+                                <option value="621">621 INCORPORACIÓN FISCAL</option>
+                                <option value="625">625 RÉGIMEN DE LAS ACTIVIDADES EMPRESARIALES CON INGRESOS A TRAVÉS DE PLATAFORMAS TECNOLÓGICAS</option>
+                                <option value="629">629 DE LOS REGÍMENES FISCALES PREFERENTES Y DE LAS EMPRESAS MULTINACIONALES</option>
+                                <option value="630">630 ENAJENACIÓN DE ACCIONES EN BOLSA DE VALORES</option>
+                            </optgroup>
+                        </select>
+                      
+                    </div>
+              
+                    <div class="mb-3">
+                        <label for="ht_rfc" class="form-label">RFC</label>
+                        <input type="text" class="form-control" id="ht_rfc" name="ht_rfc">
+                    </div>
+                    <div class="mb-3">
+                        <label for="ESTATUS" class="form-label">ESTATUS</label>
+                        <select class="form-select" id="ESTATUS" name="ESTATUS">
+                            <option value="">SELECCIONA</option>
+                            <option value="activo">ACTIVO</option>
+                            <option value="bloqueado">BLOQUEADO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2 d-md-flex justify-content-start">
+                        <button type="button" class="btn botones" data-bs-dismiss="modal">CERRAR</button>
+                    <button type="submit" class="btn btn botones">FILTRAR</button>
+                    </div>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container-fluid">
+    <br>
+    <!--BOTONES ACCIONES-->
+        <div class="d-grid gap-2 d-md-flex justify-content-start">
+                <a class="btn botones" href="/Altaproveedores">
+                    <i class="bi bi-people-fill"></i>  NUEVO PROVEEDOR
+                </a>
+                <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+                    <i class="bi bi-search"></i> FILTRAR
+                </button>
+                <a class="btn botones" href="/Proveedores">
+                    <i class="bi bi-eraser"></i> LIMPIAR FILTRO
+                </a>
+        </div> 
+    <br>
+    <div class="table-container">
+        <table class="table table-hover table-borderless">
+            <colgroup>
+                <col style="width: 30px;"> 
+                <col style="width: 300px;"> 
+                <col style="width: 125px;"> 
+                <col style="width: 125px;"> 
+                <col style="width: 100PX;">
+                <col style="width: 125px;"> 
+                <col style="width: 125px;"> 
+
+            </colgroup>
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">RAZÓN SOCIAL </th>
+                    <th scope="col">REGIMEN FISCAL</th>
+                    <th scope="col">RFC</th>
+                    <th scope="col">CP</th>
+                    <th scope="col">ESTATUS</th>
+                    <th scope="col">ACCION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in proveedores %}
+                {% if p.is_blocked %}
+                <tr class="table-secondary">
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.razon_social }}</td>
+                    <td>{{ p.regimen_fiscal_id }}</td>
+                    <td>{{ p.rfc }}</td>
+                    <td>{{ p.cp }}</td>
+                    <td>
+                        BLOQUEADO
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ p.id }}"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{  p.id }}">
+                                <li>
+                                    <form action="{{ url_for('unblock_proveedores', id= p.id) }}" method="post"
+                                        style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.razon_social }}</td>
+                    <td>{{ p.regimen_fiscal_id }}</td>
+                    <td>{{ p.rfc }}</td>
+                    <td>{{ p.cp }}</td>
+                    <td>
+                        ACTIVO
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ p.id  }}"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ p.id }}">
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="{{ url_for('edit_proveedor', id=p.id) }}">EDITAR</a>
+                                </li>
+                                <li>
+                                    <form action="{{ url_for('block_proveedores', id=p.id) }}" method="post"
+                                        style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

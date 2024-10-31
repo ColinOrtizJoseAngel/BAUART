@@ -1,0 +1,360 @@
+<!--IMPORTAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}ALTA PROVEEDORES{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+
+{% endblock %}
+
+{% block titutlo %}ALTA PROVEEDORES{% endblock %}
+
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+<br>
+<form class="needs-validation" novalidate action="/Altaproveedores" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="container-fluid">
+            <div  class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <div class="text-center">
+                    <button class="btn botones" type="submit">CONFIRMAR</button>
+                </div>
+            </div>
+        </div>
+        <div class="container" style="display: none;">
+            <div class="form-group row">
+                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12" style="display: none;">
+                    <label for="ID_PROVEEDOR" class="form-label">SIGUIENTE PROVEEDOR: </label>
+                    <input type="text" class="form-control" id="ID_PROVEEDOR" name="ID_PROVEEDOR"
+                        value="{{siguiente}}" style="text-align: center;" readonly>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!--INICIA CARD CLIENTES -->
+        <div class="container-fluid">
+            <div class="card mb-3">
+                <div class="card-header">
+
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                                type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">INFORMACIÓN GENERAL</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="direccion-tab" data-bs-toggle="tab" data-bs-target="#direccion-tab-pane"
+                                type="button" role="tab" aria-controls="direccion-tab-pane" aria-selected="false">DIRECCIÓN</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="especialidad-tab" data-bs-toggle="tab"
+                                data-bs-target="#especialidad-tab-pane" type="button" role="tab"
+                                aria-controls="especialidad-tab-pane" aria-selected="false">ESPECIALIDADES</button>
+                        </li>
+            
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane"
+                                type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">INFORMACIÓN DE CONTACTO</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="bank-tab" data-bs-toggle="tab" data-bs-target="#bank-tab-pane"
+                                type="button" role="tab" aria-controls="bank-tab-pane" aria-selected="false">INFORMACIÓN BANCARIA</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                            tabindex="0">
+                            <br>
+                            <!--Informacion General-->
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="RAZON_SOCIAL" class="form-label">RAZÓN SOCIAL</label>
+                                    <input type="text" class="form-control" name="RAZON_SOCIAL" id="RAZON_SOCIAL"
+                                        placeholder="RAZÓN SOCIAL" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA RAZÓN SOCIAL
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="RFC" class="form-label">RFC</label>
+                                    <input type="text" onchange="validar_rfc(this)" class="form-control" name="RFC" id="RFC" placeholder="RFC" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA RFC
+                                    </div>
+                                </div>
+            
+                                <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                                    <label for="REGIMEN_FISCAL" class="form-label">REGIMEN FISCAL</label>
+                                    <select class="form-control" name="REGIMEN_FISCAL" id="REGIMEN_FISCAL" required>
+                                        <option value="" style="text-align: center;">SELECCIONA</option>
+                                        <optgroup label="PERSONAS MORALES">
+                                            <option value="601">601 GENERAL DE LEY PERSONAS MORALES</option>
+                                            <option value="603">603 PERSONAS MORALES CON FINES NO LUCRATIVOS</option>
+                                            <option value="607">607 RÉGIMEN DE ENAJENACIÓN O ADQUISICIÓN DE BIENES</option>
+                                            <option value="610">610 RESIDENTES EN EL EXTRANJERO SIN ESTABLECIMIENTO PERMANENTE EN MÉXICO</option>
+                                            <option value="620">620 SOCIEDADES COOPERATIVAS DE PRODUCCIÓN QUE OPTAN POR DIFERIR SUS INGRESOS</option>
+                                            <option value="622">622 ACTIVIDADES AGRÍCOLAS, GANADERAS, SILVÍCOLAS Y PESQUERAS</option>
+                                            <option value="623">623 OPCIONAL PARA GRUPOS DE SOCIEDADES</option>
+                                            <option value="624">624 COORDINADOS</option>
+                                            <option value="626">626 RÉGIMEN SIMPLIFICADO DE CONFIANZA</option>
+                                            <option value="628">628 HIDROCARBUROS</option>
+                                        </optgroup>
+                                        
+                                        <optgroup label="PERSONAS FÍSICAS">
+                                            <option value="605">605 SUELDOS Y SALARIOS E INGRESOS ASIMILADOS A SALARIOS</option>
+                                            <option value="606">606 ARRENDAMIENTO</option>
+                                            <option value="608">608 DEMÁS INGRESOS</option>
+                                            <option value="611">611 INGRESOS POR DIVIDENDOS (SOCIOS Y ACCIONISTAS)</option>
+                                            <option value="612">612 PERSONAS FÍSICAS CON ACTIVIDADES EMPRESARIALES Y PROFESIONALES</option>
+                                            <option value="614">614 INGRESOS POR INTERESES</option>
+                                            <option value="615">615 RÉGIMEN DE LOS INGRESOS POR OBTENCIÓN DE PREMIOS</option>
+                                            <option value="616">616 SIN OBLIGACIONES FISCALES</option>
+                                            <option value="621">621 INCORPORACIÓN FISCAL</option>
+                                            <option value="625">625 RÉGIMEN DE LAS ACTIVIDADES EMPRESARIALES CON INGRESOS A TRAVÉS DE PLATAFORMAS TECNOLÓGICAS</option>
+                                            <option value="629">629 DE LOS REGÍMENES FISCALES PREFERENTES Y DE LAS EMPRESAS MULTINACIONALES</option>
+                                            <option value="630">630 ENAJENACIÓN DE ACCIONES EN BOLSA DE VALORES</option>
+                                        </optgroup>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        SELECCIONA UN RIGIMEN FISCAL
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="TIPO" class="form-label">PROVEEDOR O CONTRATISTA</label>
+                                    <select class="form-control" name="TIPO" id="TIPO" required>
+                                        <option value="" style="text-align: center;">SELECIONA</option>
+                                        <option value="1">CONTRATISTA</option>
+                                        <option value="2">PROVEEDOR</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        SELECCIONA PROVEEDOR O CONTRATISTA
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Fin info general-->
+                        <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="direccion-tab"
+                            tabindex="0">
+                            <br>
+                            <div class="container-fluid">
+                                <div class="form-group row">
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="CALLE" class="form-label">CALLE*</label>
+                                        <input type="text" class="form-control" id="CALLE" name="CALLE" maxlength="50"
+                                            placeholder="CALLE" required>
+                                        <div class="invalid-feedback">
+                                            COMPLETA CALLE
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="NO_EXTERIOR" class="form-label">NO. EXTERIOR</label>
+                                        <input type="text" class="form-control" name="NO_EXTERIOR" id="NO_EXTERIOR"
+                                            placeholder="NÚMERO EXTERIOR">
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="NO_EXTERIOR" class="form-label">NO. INTERIOR</label>
+                                        <input type="text" class="form-control" name="NO_INTERIOR" id="NO_INTERIOR"
+                                            placeholder="NÚMERO INTERIOR">
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="COLONIA" class="form-label">COLONIA*</label>
+                                        <input type="text" class="form-control" id="COLONIA" name="COLONIA" maxlength="50"
+                                            placeholder="COLONIA" required>
+                                        <div class="invalid-feedback">
+                                            COMPLETA COLONIA
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="CP" class="form-label">CP*</label>
+                                        <input type="text" class="form-control" id="CP" name="CP" ma placeholder="CÓDIGO POSTAL"
+                                            required>
+                                        <div class="invalid-feedback">
+                                            COMPLETA CODIGO POSTAL
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="ESTADO" class="form-label">ESTADO*</label>
+                                        <select id="ESTADO" class="form-control" name="ESTADO" required>
+                                            <option value="" style="text-align: center;">SELECIONA</option>
+                                            <option value="AGUASCALIENTES">AGUASCALIENTES</option>
+                                            <option value="BAJA CALIFORNIA">BAJA CALIFORNIA</option>
+                                            <option value="BAJA CALIFORNIA SUR">BAJA CALIFORNIA SUR</option>
+                                            <option value="CHIAPAS">CHIAPAS</option>
+                                            <option value="CHIHUAHUA">CHIHUAHUA</option>
+                                            <option value="CIUDAD DE MÉXICO">CIUDAD DE MÉXICO</option>
+                                            <option value="COAHUILA">COAHUILA</option>
+                                            <option value="COLIMA">COLIMA</option>
+                                            <option value="DURANGO">DURANGO</option>
+                                            <option value="ESTADO DE MÉXICO">ESTADO DE MÉXICO</option>
+                                            <option value="GUANAJUATO">GUANAJUATO</option>
+                                            <option value="GUERRERO">GUERRERO</option>
+                                            <option value="HIDALGO">HIDALGO</option>
+                                            <option value="JALISCO">JALISCO</option>
+                                            <option value="MICHOACÁN">MICHOACÁN</option>
+                                            <option value="MORELOS">MORELOS</option>
+                                            <option value="NAYARIT">NAYARIT</option>
+                                            <option value="NUEVO LEÓN">NUEVO LEÓN</option>
+                                            <option value="OAXACA">OAXACA</option>
+                                            <option value="PUEBLA">PUEBLA</option>
+                                            <option value="QUERÉTARO">QUERÉTARO</option>
+                                            <option value="SAN LUIS POTOSÍ">SAN LUIS POTOSÍ</option>
+                                            <option value="SIN LOCALIDAD">SIN LOCALIDAD</option>
+                                            <option value="SINALOA">SINALOA</option>
+                                            <option value="SONORA">SONORA</option>
+                                            <option value="TABASCO">TABASCO</option>
+                                            <option value="TAMAULIPAS">TAMAULIPAS</option>
+                                            <option value="TLAXCALA">TLAXCALA</option>
+                                            <option value="VERACRUZ">VERACRUZ</option>
+                                            <option value="YUCATÁN">YUCATÁN</option>
+                                            <option value="ZACATECAS">ZACATECAS</option>
+                                          </select>
+                                          <div class="invalid-feedback">
+                                            SELECIONA UN ESTADO
+                                          </div>
+                                        <div class="invalid-feedback">
+                                            COMPLETA ESTADO
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
+                                        <input type="text" class="form-control" name="MUNICIPIO" id="MUNICIPIO"
+                                            placeholder="MUNICIPIO" required>
+                                        <div class="invalid-feedback">
+                                            COMPLETA MUNICIPIO
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="PAIS" class="form-label">PAÍS*</label>
+                                        <input type="text" class="form-control" name="PAIS" id="PAIS" value="MÉXICO" required>
+                                        <div class="invalid-feedback">
+                                            COMPLETA PAÍS
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!--Fin de direccion-->
+                        </div>
+                        <div class="tab-pane fade" id="especialidad-tab-pane" role="tabpanel" aria-labelledby="especialidad-tab"
+                            tabindex="0">
+                            <br>
+                            <!--Asignacion de especialidades-->
+                            <div class="container-fluid">
+                                <div class="form-group row">
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <button type="button" class="btn botones" onclick="añadirEspecialidad()"> AGREGAR
+                                            ESPECIALIDAD</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <br>
+                            <div class="container-fluid">
+                                <table class="table table-borderless" id="Especialidades">
+                                    <colgroup>
+                                        <!-- Agrega más columnas según sea necesario -->
+                                        <col style="width: 250px;"> <!-- Primera columna -->
+                                        <col style="width: 40px;">
+                                    </colgroup>
+                                    <thead class="table">
+                                        <th scope="col">ESPECIALIDAD</th>
+                                        <th scope="col"></th>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+            
+                        <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+                            <br>
+
+                            <!--BOTONES ACCIONES-->
+                            <div class="container-fluid">
+                                <div class="form-group row">
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <button type="button" class="btn botones" onclick="añadirContacto()"> AGREGAR
+                                            CONTACTO</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <br>
+                            <div class="container-fluid">
+                                <table class="table table-borderless" id="Contactos">
+                                    <colgroup>
+                                        <!-- Agrega más columnas según sea necesario -->
+                                        <col style="width: 250px;"> <!-- Primera columna -->
+                                        <col style="width: 250px;"> <!-- Segunda columna -->
+                                        <col style="width: 250px;"> <!-- Tercera columna -->
+                                        <col style="width: 250px;"> <!-- Cuarta columna -->
+                                        <col style="width: 250px;">
+                                        <col style="width: 40px;">
+                                    </colgroup>
+                                    <thead class="table">
+                                        <tr>
+                                         
+                                                <th scope="col">NOMBRE</th>
+                                                <th scope="col">APELLIDO</th>
+                                                <th scope="col">TELEFONO</th>
+                                                <th scope="col">CORREO</th>
+                                                <th scope="col">PUESTO</th>
+                                                <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="bank-tab-pane" role="tabpanel" aria-labelledby="bank-tab" tabindex="0">
+                            <br>
+                            <!--BOTONES INFORMACION BANCARIA -->
+                            <div class="container-fluid">
+                                <div class="form-group row">
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <button type="button" class="btn botones" onclick="añadirCuentasBancarias()">AGREGAR
+                                            CUENTA</button>                                            
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <br>
+                            <div class="table-container">
+                                <table class="table table-borderless" id="Cuentas_Bancarias">
+                                    <colgroup>
+                                        <!-- Agrega más columnas según sea necesario -->
+                                        <col style="width: 250px;"> <!-- Primera columna -->
+                                        <col style="width: 250px;"> <!-- Segunda columna -->
+                                        <col style="width: 250px;"> <!-- Tercera columna -->
+                                        <col style="width: 40px;">
+                                    </colgroup>
+                                    <thead class="table">
+                                        <tr>
+                                            <th scope="col">BANCO</th>
+                                            <th scope="col">NO. Cuenta</th>
+                                            <th scope="col">CLABE</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <!--Fin Info Bancaria-->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+       
+</form>
+
+<br>
+
+<script src="{{ url_for('static', filename='JS/funciones_altaProveedor.js') }}"></script>
+
+
+{% endblock %}

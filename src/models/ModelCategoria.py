@@ -3,12 +3,12 @@ from .entities.Categoria import Categoria
 class ModelCategoria():
 
     @classmethod
-    def newCategoria(self,db,categoria):
+    def alta_categoria(self,db,categoria):
         try:
             cursor = db.cursor()
             query = """
-                    INSERT INTO CATEGORI (
-                    NOMBRE_CATEGORIA ) VALUES (?);
+                    INSERT INTO CATEGORIAS (
+                    CATEGORIA) VALUES (?);
                     """
             cursor.execute(query, (
                 categoria.categoria  
@@ -24,13 +24,13 @@ class ModelCategoria():
     def get_all_categorias(cls, db):
         try:
             cursor = db.cursor()
-            query = "SELECT * FROM CATEGORI"
+            query = "SELECT * FROM CATEGORIAS"
             cursor.execute(query)
             rows = cursor.fetchall()
             categorias = []
             for row in rows:
                 categorias.append(Categoria(
-                    idCategoria=row[0], categoria=row[1], _is_blocked=row[2]
+                    idCategoria=row[0], categoria=row[1], _is_blocked=row[3]
                     ))
             return categorias
         except Exception as ex:
@@ -41,7 +41,7 @@ class ModelCategoria():
         try:
             print(f"ESTE ES EL ESTATUS{is_blocked}")
             cursor = db.cursor()
-            query = "UPDATE CATEGORI SET is_blocked = ? WHERE ID_CATEGORIA = ?"
+            query = "UPDATE CATEGORIAS SET is_blocked = ? WHERE ID = ?"
             cursor.execute(query, (is_blocked, id))
             db.commit()
         except Exception as ex:
@@ -54,9 +54,9 @@ class ModelCategoria():
         try:
             cursor = db.cursor()
             query = """
-                UPDATE CATEGORI
-                SET NOMBRE_CATEGORIA = ?
-                WHERE ID_CATEGORIA = ?;
+                UPDATE CATEGORIAS
+                SET CATEGORIA = ?
+                WHERE ID = ?;
             """
             print(categoria.idCategoria)
             cursor.execute(query, (
@@ -73,7 +73,7 @@ class ModelCategoria():
     def get_categoria_by_id(cls, db, id):
         try:
             cursor = db.cursor()
-            query = "SELECT * FROM CATEGORI WHERE ID_CATEGORIA = ?"
+            query = "SELECT * FROM CATEGORIAS WHERE ID = ?"
             cursor.execute(query, (id,))
             row = cursor.fetchone()
             if row:

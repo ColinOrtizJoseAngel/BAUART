@@ -1,20 +1,24 @@
 from .entities.CuentasEmpresas import CuentasEmpresas
 
-class ModelCuentasEmpresas():
+class ModelCuentasEmpresas:
 
     @classmethod
-    def new_cuenta_empresa (self,db,cuentas_empresa):
+    def new_cuenta_empresa(cls, db, cuenta_empresa):
         try:
             cursor = db.cursor()
             query = """
-                    INSERT INTO CUENTAS_BANCARIAS (
-                    ID_EMPRESA,ID_BANCO,NUMERO_CUENTA,CLABE ) VALUES (?,?,?,?);
-                    """
+                INSERT INTO CUENTAS_EMPRESAS (
+                    ID_EMPRESA, ID_BANCO, NUMERO_CUENTA, CLABE, FECHA_REGISTRO, USUARIO_ID, IS_BLOCKED
+                ) VALUES (?, ?, ?, ?, ?, ?, ?);
+            """
             cursor.execute(query, (
-                cuentas_empresa.empresa,
-                cuentas_empresa.banco,
-                cuentas_empresa.numero_cuenta,
-                cuentas_empresa.cable
+                cuenta_empresa.id_empresa,
+                cuenta_empresa.id_banco,
+                cuenta_empresa.numero_cuenta,
+                cuenta_empresa.clabe,
+                cuenta_empresa.fecha_registro,
+                cuenta_empresa.usuario,
+                cuenta_empresa.is_blocked
             ))
             db.commit()
         
@@ -23,72 +27,74 @@ class ModelCuentasEmpresas():
             raise Exception(ex)
         
     @classmethod
-    def get_all_registroPatronal(cls, db):
+    def get_all_cuentas_empresas(cls, db):
         try:
             cursor = db.cursor()
-            query = """
-                SELECT REGISTROS_PATRONALES.ID,REGISTROS_PATRONALES.NUMERO_REGISTRO_PATRONAL,REGISTROS_PATRONALES.ID_EMPRESA,
-                EMPRESAS.RAZON_SOCIAL,REGISTROS_PATRONALES.ESTADO,REGISTROS_PATRONALES.is_blocked 
-                FROM REGISTROS_PATRONALES 
-                INNER JOIN EMPRESAS 
-                ON REGISTROS_PATRONALES.ID_EMPRESA = EMPRESAS.ID_EMPRESA
-
-                """
+            query = "SELECT * FROM CUENTA_EMPRESAS"
             cursor.execute(query)
             rows = cursor.fetchall()
-            registrospatronales = []
+            cuentas_empresas = []
             for row in rows:
-                registrospatronales.append(ResgistroPatronal(
-                    id_registro=row[0], registro_patronal=row[1], empresa=row[3],estado=row[4],
-                    is_blocked=row[5] 
-                    ))
-            return registrospatronales
+                cuentas_empresas.append(CuentasEmpresas(
+                    id=row[0],
+                    id_empresa=row[1],
+                    id_banco=row[3],
+                    numero_cuenta=row[4],
+                    clabe=row[5],
+                    fecha_registro=row[6],
+                    usuario=row[7],
+                    is_blocked=row[8]
+                ))
+            return cuentas_empresas
         except Exception as ex:
             raise Exception(ex)
         
     @classmethod
-    def get_RegistroPatronal_empresa(cls, db, id_empresa):
+    def get_cuentas_by_empresa(cls, db, id_empresa):
         try:
             cursor = db.cursor()
             query = """
-                SELECT REGISTROS_PATRONALES.ID,REGISTROS_PATRONALES.NUMERO_REGISTRO_PATRONAL,REGISTROS_PATRONALES.ID_EMPRESA,
-                EMPRESAS.RAZON_SOCIAL,REGISTROS_PATRONALES.ESTADO,REGISTROS_PATRONALES.is_blocked 
-                FROM REGISTROS_PATRONALES 
-                INNER JOIN EMPRESAS 
-                ON REGISTROS_PATRONALES.ID_EMPRESA = EMPRESAS.ID_EMPRESA WHERE EMPRESAS.ID_EMPRESA = ?;
-
+                SELECT CE.ID, CE.ID_EMPRESA, E.RAZON_SOCIAL, CE.ID_BANCO, CE.NUMERO_CUENTA, CE.CLABE, CE.FECHA_REGISTRO, CE.USUARIO, CE.IS_BLOCKED
+                FROM CUENTAS_EMPRESAS CE
+                INNER JOIN EMPRESAS E ON CE.ID_EMPRESA = E.ID
+                WHERE CE.ID_EMPRESA = ?;
             """
             cursor.execute(query, (id_empresa,))
             rows = cursor.fetchall()
-            registrospatronales = []
+            cuentas_empresas = []
             for row in rows:
-                registrospatronales.append(ResgistroPatronal(
-                    id_registro=row[0], 
-                    registro_patronal=row[1], 
-                    empresa=row[3],
-                    estado=row[4],
-                    is_blocked=row[5] 
+                cuentas_empresas.append(CuentasEmpresas(
+                    id=row[0],
+                    id_empresa=row[1],
+                    id_banco=row[3],
+                    numero_cuenta=row[4],
+                    clabe=row[5],
+                    fecha_registro=row[6],
+                    usuario=row[7],
+                    is_blocked=row[8]
                 ))
-            return registrospatronales
+            return cuentas_empresas
         except Exception as ex:
             raise Exception(ex)
 
-    
-    #ACTUALIAZA REGISTRO PATRONAL
     @classmethod
-    def update_registro_patronal(cls, db, registro_patronal):
+    def update_cuenta_empresa(cls, db, cuenta_empresa):
         try:
             cursor = db.cursor()
             query = """
-                UPDATE REGISTROS_PATRONALES
-                SET  NUMERO_REGISTRO_PATRONAL,ESTADO) VALUES (?,?,?) WHERERE ID = ?;
-                
+                UPDATE CUENTAS_EMPRESAS
+                SET ID_EMPRESA = ?, ID_BANCO = ?, NUMERO_CUENTA = ?, CLABE = ?, FECHA_REGISTRO = ?, USUARIO = ?, IS_BLOCKED = ?
+                WHERE ID = ?;
             """
-            print(registro_patronal.id_registro)
             cursor.execute(query, (
-                registro_patronal.registro_patronal,
-                registro_patronal.estado,
-                registro_patronal.id_registro
+                cuenta_empresa.id_empresa,
+                cuenta_empresa.id_banco,
+                cuenta_empresa.numero_cuenta,
+                cuenta_empresa.clabe,
+                cuenta_empresa.fecha_registro,
+                cuenta_empresa.usuario,
+                cuenta_empresa.is_blocked,
+                cuenta_empresa.id_dato_banco
             ))
             db.commit()
         except Exception as ex:
@@ -96,30 +102,72 @@ class ModelCuentasEmpresas():
             raise Exception(ex)
     
     @classmethod
-    def change_status(cls, db, id, is_blocked):
+    def change_status(cls, db, id_dato_banco, is_blocked):
         try:
-            print(f"ESTE ES EL ESTATUS{is_blocked}")
             cursor = db.cursor()
-            query = "UPDATE REGISTROS_PATRONALES SET is_blocked = ? WHERE ID = ?"
-            cursor.execute(query, (is_blocked, id))
+            query = "UPDATE CUENTAS_EMPRESAS SET IS_BLOCKED = ? WHERE ID = ?"
+            cursor.execute(query, (is_blocked, id_dato_banco))
             db.commit()
         except Exception as ex:
             db.rollback()
             raise Exception(ex)
-        
+
     @classmethod
-    def get_all_registros_patronales(cls, db):
+    def get_all_cuentas(cls, db):
         try:
-                cursor = db.cursor()
-                query = "SELECT * FROM REGISTROS_PATRONALES"
-                cursor.execute(query)
-                rows = cursor.fetchall()
-                registrospatronales = []
-                for row in rows:
-                    registrospatronales.append(ResgistroPatronal(
-                        id_registro=row[0], registro_patronal=row[1], empresa=row[2],estado=row[3],
-                        is_blocked=row[4] 
-                        ))
-                return registrospatronales
+            cursor = db.cursor()
+            query = "SELECT * FROM CUENTAS_EMPRESAS"
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            cuentas_empresas = []
+            for row in rows:
+                cuentas_empresas.append(CuentasEmpresas(
+                    id=row[0],
+                    id_empresa=row[1],
+                    id_banco=row[2],
+                    numero_cuenta=row[3],
+                    clabe=row[4],
+                    fecha_registro=row[5],
+                    usuario=row[6],
+                    is_blocked=row[7]
+                ))
+            return cuentas_empresas
         except Exception as ex:
-                raise Exception(ex)
+            raise Exception(ex)
+
+
+    @classmethod
+    def get_cuenta_empresa_by_id(cls, db, id):
+        try:
+            cursor = db.cursor()
+            query = "SELECT * FROM CUENTAS_EMPRESAS WHERE ID_EMPRESA = ?"
+            cursor.execute(query, (id,))  # Se pasa el parámetro 'id' como una tupla
+            rows = cursor.fetchall()
+            
+            cuentas_empresas = []
+            for row in rows:
+                cuentas_empresas.append(CuentasEmpresas(
+                    id=row[0],
+                    id_empresa=row[1],
+                    id_banco=row[2],
+                    numero_cuenta=row[3],
+                    clabe=row[4],
+                    fecha_registro=row[5],
+                    usuario=row[6],
+                    is_blocked=row[7]
+                ))
+            return cuentas_empresas
+        except Exception as ex:
+            raise Exception(f"Error retrieving cuentas_empresas: {ex}")
+
+        
+
+    @classmethod
+    def delete_cuentas_empresa(cls, db,id):
+        try:
+            cursor = db.cursor()
+            query = "DELETE FROM CUENTAS_EMPRESAS WHERE ID_EMPRESA = ?;"
+            cursor.execute(query, (id))
+            db.commit()
+        except Exception as ex:
+            raise Exception(ex)

@@ -4,275 +4,464 @@
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styele_alta_empresas.css') }}">
-
+<style>
+    .oculto {
+        display: none;
+    }
+</style>
 {% endblock %}
+
+{% block titutlo %}EDITAR EMPRESA{% endblock %}
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 <br>
-<div class="container tituloform">
-    <div class="container text-center">
-        <h1 class="display-2">Modificar empresa</h1>
-        <p class="lead">Completa los datos del formulario para dar de alta una empresa, los campos con rojo son campos
-            obligatorios.</p>
-    </div>
-</div>
-<br>
 <!--INICIA INFORMACIÓN GENERAL-->
 <br>
-<div class="container">
+<div class="container-fluid">
     <form class="needs-validation" novalidate accion="{{ url_for('edit_empresa', id=empresa.id) }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="container">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <div class="text-center">
-                    <button class="btn btn-primary" type="submit">Editar</button>
+                    <button class="btn botones" id="EditarEmpresa" type="submit">EDITAR</button>
                 </div>
             </div>
         </div>
         <div class="container">
             <div class="form-group row">
-                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 oculto">
                     <label for="ID_EMPRESA" class="form-label">Empresa: </label>
-                    <input type="text" class="form-control" id="ID_EMPRESA" name="ID_EMPRESA" value="{{ empresa.id }}"
-                        readonly>
+                    <input type="text" style="text-align: center;" class="form-control" id="ID_EMPRESA"
+                        name="ID_EMPRESA" value="{{ empresa.id }}" readonly>
                 </div>
             </div>
         </div>
         <br>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
-                    type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Información
-                    general</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
-                    type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Representantes
-                    legales</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane"
-                    type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">Apoderado
-                    legal</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#direccion-tab-pane"
-                    type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">Dirección</button>
-            </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
-                tabindex="0">
-                <br>
-                <div class="container text-center">
-                    <h2>Información general</h2>
-                </div>
-                <br>
-                <!--INFORMACIÓN GENERAL-->
-                <div class="form-group row">
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <label for="RAZON_SOCIAL" class="form-label">Razón Social*</label>
-                        <input type="text" class="form-control" id="RAZON_SOCIAL" name="RAZON_SOCIAL"
-                            value="{{ empresa.razon_social }}" required>
-                        <div class="invalid-feedback">
-                            Completa Razón Social
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <label for="REG_FISCAL" class="form-label">Regimen Fiscal*</label>
-                        <input type="text" class="form-control" id="REG_FISCAL" name="REG_FISCAL" maxlength="13"
-                            value="{{ empresa.reg_fiscal }}" required>
-                        <div class="invalid-feedback">
-                            Completa Regimen Fiscal
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <label for="RFC" class="form-label">RFC*</label>
-                        <input type="text" class="form-control" id="RFC" name="RFC" value="{{ empresa.rfc }}"
-                            maxlength="13" required>
-                        <div class="invalid-feedback">
-                            Completa RFC
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <label for="REPSE" class="form-label">REPSE*</label>
-                        <input type="text" class="form-control" id="REPSE" name="REPSE" placeholder="REPSE" required
-                            value="{{ empresa.repse }}">
-                        <div class="invalid-feedback">
-                            Completa REPSE
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <!--FIN INFORMACIÓN GENERAL-->
-            <!--FIN INFORMACIÓN GENERAL-->
-            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-                <br>
-                <div class="container text-center">
-                    <h2>Registros patronales</h2>
-                    <p class="lead">Competa por lo menos un registro patronal.</p>
-                </div>
-                <br>
-                <!--BOTONES CONTACTOS-->
-                <div class="container">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-
-                        <a class="btn btn btn-dark" type="button" href="/RegistosPatronales" >
-                            <i class="bi bi-window-plus"></i> Nuevo Registro Patronal
-                        </a>
-                        <!--
-                            <button class="btn btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
-                            <i class="bi bi-search"></i> Filtrar Empresa
-                        </button>
-                        -->
-
-                    </div>
-                </div>
-                <!--FIN BOTONES CONTACTOS-->
-                <br>
-                <!--VISTA DE CONTACTOS-->
-                <div class="container-fluid">
-                    <table class="table table-borderless">
-                        <thead class="table-dark">
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Registro Patronal</th>
-                                <th scope="col">Emepresa</th>
-                                <th scope="col">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for registro in registrosPatronales %}
-                            <tr>
-                                <td>{{ registro.id_registro }}</td>
-                                <td>{{ registro.registro_patronal }}</td>
-                                <td>{{ registro.empresa }}</td>
-                                <td>{{ registro.estado }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <!--FIN CONTACTO-->
-            </div>
-            <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
-                tabindex="0">
-                <br>
-                <div class="container text-center">
-                    <h2>Representante Legales</h2>
-                    <p class="lead">Completa por lo menos un representante legal.</p>
-                </div>
-                <br>
-                <br>
-                <p class="h4">Representante legal 1</p>
-                <br>
-                <div class="container">
-                    <div class="form-group row">
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="NOMBRE_REPRESENTANTE1" class="form-label">Nombre*</label>
-                            <input type="text" class="form-control" id="NOMBRE_REPRESENTANTE1"
-                                name="NOMBRE_REPRESENTANTE1" placeholder="Nombre Contacto"
-                                value="{{ empresa.nombre_representante1 }}" required>
-                            <div class="invalid-feedback">
-                                Completar Nombre
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="APELLIDO_REPRESENTANTE1" class="form-label">Apellido*</label>
-                            <input type="text" class="form-control" id="APELLIDO_REPRESENTANTE1"
-                                name="APELLIDO_REPRESENTANTE1" placeholder="Apellido Contacto"
-                                value="{{ empresa.apellido_representante1 }}" required>
-                            <div class="invalid-feedback">
-                                Completar Apellido
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="TelefonoContacto1" class="form-label">Teléfono*</label>
-                            <input type="text" class="form-control" id="TELEFONO_REPRESENTANTE1"
-                                name="TELEFONO_REPRESENTANTE1" placeholder="Teléfono Contacto"
-                                value="{{ empresa.telefono_representante1 }}" required>
-                            <div class="invalid-feedback">
-                                Completar Teléfono
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="CORREO_REPRESENTANTE1" class="form-label">Correo Electrónico*</label>
-                            <input type="email" class="form-control" id="CORREO_REPRESENTANTE1"
-                                name="CORREO_REPRESENTANTE1" placeholder="Correo Contacto"
-                                value="{{ empresa.correo_representante1 }}" required>
-                            <div class="invalid-feedback">
-                                Completar Correo electrónico
-                            </div>
-                        </div>
-                    </div>
-                    <!-- REPRESENTANTE LEGAL 2-->
-                    <br>
-                    <p class="h4">Representante legal 2</p>
-                    <br>
-                    <div class="form-group row">
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="NOMBRE_REPRESENTANTE2" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="NOMBRE_REPRESENTANTE2"
-                                name="NOMBRE_REPRESENTANTE2" placeholder="Nombre Contacto"
-                                value="{{ empresa.nombre_representante2 }}">
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="APELLIDO_REPRESENTANTE2" class="form-label">Apellido</label>
-                            <input type="text" class="form-control" id="APELLIDO_REPRESENTANTE2"
-                                name="APELLIDO_REPRESENTANTE2" placeholder="Apellido Contacto"
-                                value="{{ empresa.apellido_representante2 }}">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="TELEFONO_REPRESENTANTE2" class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="TELEFONO_REPRESENTANTE2"
-                                name="TELEFONO_REPRESENTANTE2" placeholder="Teléfono Contacto"
-                                value="{{ empresa.telefono_representante2 }}">
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="CORREO_REPRESENTANTE2" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="CORREO_REPRESENTANTE2"
-                                name="CORREO_REPRESENTANTE2" placeholder="Correo Contacto"
-                                value="{{ empresa.correo_representante2 }}">
-                        </div>
-                    </div>
+        <div class="container-fluid">
+            <div class="card mb-3">
+                <div class="card-header">
 
                 </div>
-            </div>
-            <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
-                tabindex="0">
-                <br>
-                <div class="container text-center">
-                    <h2>Dirección</h2>
-                </div>
-                <br>
-                <div class="form-group row">
-                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                        <label for="CP" class="form-label">CP*</label>
-                        <input type="text" class="form-control" id="CP" name="CP" placeholder="Código Postal"
-                            value="{{ empresa.cp }}" required>
-                        <div class="invalid-feedback">
-                            COMPLETAR Código Postal
+                <div class="card-body">
+                    <div class="container-fluid">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                                    data-bs-target="#home-tab-pane" type="button" role="tab"
+                                    aria-controls="home-tab-pane" aria-selected="true">Información
+                                    general</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                    data-bs-target="#regitrosPatronales-tab-pane" type="button" role="tab"
+                                    aria-controls="regitrosPatronales-tab-pane" aria-selected="false">Registros
+                                    patronales</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                    data-bs-target="#representantes-tab-pane" type="button" role="tab"
+                                    aria-controls="representantes-tab-pane" aria-selected="false">Representantes
+                                    legales</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                    data-bs-target="#disabled-tab-pane" type="button" role="tab"
+                                    aria-controls="disabled-tab-pane" aria-selected="false">Apoderado
+                                    legal</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                    data-bs-target="#direccion-tab-pane" type="button" role="tab"
+                                    aria-controls="disabled-tab-pane" aria-selected="false">Dirección</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                    data-bs-target="#inf_banco-tab-pane" type="button" role="tab"
+                                    aria-controls="disabled-tab-pane" aria-selected="false">Información
+                                    bancaría</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel"
+                                aria-labelledby="home-tab" tabindex="0">
+                                <br>
+                                <div class="container-fluid">
+                                    <!--INFORMACIÓN GENERAL-->
+                                    <div class="form-group row">
+                                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                            <label for="RAZON_SOCIAL" class="form-label">Razón Social*</label>
+                                            <input type="text" class="form-control" id="RAZON_SOCIAL"
+                                                name="RAZON_SOCIAL" value="{{ empresa.razon_social }}" required>
+                                            <div class="invalid-feedback">
+                                                Completa Razón Social
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="REGIMEN_FISCAL" class="form-label">Régimen Fiscal</label>
+                                            <select class="form-control" name="REGIMEN_FISCAL" id="REGIMEN_FISCAL" required>
+                                                <option value="" style="text-align: center;">------Selecciona------</option>
+                                        
+                                                <optgroup label="Personas morales">
+                                                    <option value="601" {{ 'selected' if empresa.regimen_fiscal_id == 601 else '' }}>601 General de Ley Personas Morales</option>
+                                                    <option value="603" {{ 'selected' if empresa.regimen_fiscal_id == 603 else '' }}>603 Personas Morales con Fines no Lucrativos</option>
+                                                    <option value="607" {{ 'selected' if empresa.regimen_fiscal_id == 607 else '' }}>607 Régimen de Enajenación o Adquisición de Bienes</option>
+                                                    <option value="610" {{ 'selected' if empresa.regimen_fiscal_id == 610 else '' }}>610 Residentes en el Extranjero sin Establecimiento Permanente en México</option>
+                                                    <option value="620" {{ 'selected' if empresa.regimen_fiscal_id == 620 else '' }}>620 Sociedades Cooperativas de Producción que optan por diferir sus ingresos</option>
+                                                    <option value="622" {{ 'selected' if empresa.regimen_fiscal_id == 622 else '' }}>622 Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
+                                                    <option value="623" {{ 'selected' if empresa.regimen_fiscal_id == 623 else '' }}>623 Opcional para Grupos de Sociedades</option>
+                                                    <option value="624" {{ 'selected' if empresa.regimen_fiscal_id == 624 else '' }}>624 Coordinados</option>
+                                                    <option value="626" {{ 'selected' if empresa.regimen_fiscal_id == 626 else '' }}>626 Régimen Simplificado de Confianza</option>
+                                                    <option value="628" {{ 'selected' if empresa.regimen_fiscal_id == 628 else '' }}>628 Hidrocarburos</option>
+                                                </optgroup>
+                                                <optgroup label="Personas físicas">
+                                                    <option value="605" {{ 'selected' if empresa.regimen_fiscal_id == 605 else '' }}>605 Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
+                                                    <option value="606" {{ 'selected' if empresa.regimen_fiscal_id == 606 else '' }}>606 Arrendamiento</option>
+                                                    <option value="608" {{ 'selected' if empresa.regimen_fiscal_id == 608 else '' }}>608 Demás ingresos</option>
+                                                    <option value="611" {{ 'selected' if empresa.regimen_fiscal_id == 611 else '' }}>611 Ingresos por Dividendos (socios y accionistas)</option>
+                                                    <option value="612" {{ 'selected' if empresa.regimen_fiscal_id == 612 else '' }}>612 Personas Físicas con Actividades Empresariales y Profesionales</option>
+                                                    <option value="614" {{ 'selected' if empresa.regimen_fiscal_id == 614 else '' }}>614 Ingresos por intereses</option>
+                                                    <option value="615" {{ 'selected' if empresa.regimen_fiscal_id == 615 else '' }}>615 Régimen de los ingresos por obtención de premios</option>
+                                                    <option value="616" {{ 'selected' if empresa.regimen_fiscal_id == 616 else '' }}>616 Sin obligaciones fiscales</option>
+                                                    <option value="621" {{ 'selected' if empresa.regimen_fiscal_id == 621 else '' }}>621 Incorporación Fiscal</option>
+                                                    <option value="625" {{ 'selected' if empresa.regimen_fiscal_id == 625 else '' }}>625 Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
+                                                    <option value="629" {{ 'selected' if empresa.regimen_fiscal_id == 629 else '' }}>629 De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales</option>
+                                                    <option value="630" {{ 'selected' if empresa.regimen_fiscal_id == 630 else '' }}>630 Enajenación de acciones en bolsa de valores</option>
+                                                </optgroup>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Selecciona un Régimen Fiscal
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                            <label for="RFC" class="form-label">RFC*</label>
+                                            <input type="text" class="form-control" id="RFC" name="RFC"
+                                                value="{{ empresa.rfc }}" maxlength="13" required>
+                                            <div class="invalid-feedback">
+                                                Completa RFC
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                            <label for="REPSE" class="form-label">REPSE*</label>
+                                            <input type="text" class="form-control" id="REPSE" name="REPSE"
+                                                placeholder="REPSE" required value="{{ empresa.repse }}">
+                                            <div class="invalid-feedback">
+                                                Completa REPSE
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <!--FIN INFORMACIÓN GENERAL-->
+                            <!--INICIA REGISTROS PATRONALES-->
+                            <div class="tab-pane fade" id="regitrosPatronales-tab-pane" role="tabpanel"
+                                aria-labelledby="regitrosPatronales-tab" tabindex="0">
+                                <br>
+                                <!--BOTONES ACCIONES-->
+                                <div class="container-fluid">
+                                    <div class="form-group row">
+                                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                            <button type="button" class="btn botones" onclick="añadirRegistro()"><i
+                                                    class="bi bi-person-add"></i> AGREGAR
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <!--VISTA DE CONTACTOS-->
+                                <div class="container-fluid">
+                                    <table class="table table-borderless" id="Registros_Patronales"
+                                        name="Registros_Patronales">
+                                        <colgroup>
+                                            <!-- Agrega más columnas según sea necesario -->
+
+                                            <col style="width: 250px;"> <!-- Tercera columna -->
+                                            <col style="width: 250px;"> <!-- Tercera columna -->
+                                            <col style="width: 40px;">
+                                        </colgroup>
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th scope="col">Registro Patronal</th>
+                                                <th scope="col">Empresa</th>
+                                                <th scope="col"></th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for registro in registrosPatronales %}
+                                            <tr>
+
+                                                <td>
+                                                    <!-- Campo editable Registro Patronal -->
+                                                    <input type="text" name="noRegistro[]"
+                                                        id="numero_registro_patronal_{{ loop.index }}"
+                                                        class="form-control"
+                                                        value="{{ registro.numero_registro_patronal }}">
+                                                </td>
+
+                                                <td>
+                                                    <!-- Campo editable Estado -->
+                                                    <input type="text" name="estado[]" id="estado_{{ loop.index }}"
+                                                        class="form-control" value="{{ registro.estado }}">
+                                                </td>
+                                                <td style="display: none;">
+                                                    <!-- Campo editable Estado -->
+                                                    <input type="text" name="fecha_registro_{{ loop.index }}"
+                                                        id="fecha_registro_{{ loop.index }}" class="form-control"
+                                                        value="{{ registro.fecha_registro }}">
+                                                </td>
+                                                <td style="display: none;">
+                                                    <!-- Campo editable Estado -->
+                                                    <input type="text" name="usuario_id_{{ loop.index }}"
+                                                        id="usuario_id_{{ loop.index }}" class="form-control"
+                                                        value="{{ registro.usuario_id }}">
+                                                </td>
+                                                <td style="display: none;">
+                                                    <!-- Campo editable Estado -->
+                                                    <input type="text" name="is_blocked_{{ loop.index }}"
+                                                        id="is_blocked_{{ loop.index }}" class="form-control"
+                                                        value="{{ registro.is_blocked }}">
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center"
+                                                        style="height: 100%;margin-top: 30px;">
+                                                        <button onclick="eliminarFila(this)" class="btn"><i
+                                                                class="bi bi-trash"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                                <!--FIN CONTACTO-->
+                            </div>
+                            <!--FIN REGISTROS PATRONALES-->
+                            <!-- INICIO REPRESENTANCTE LEGALES-->
+                            <div class="tab-pane fade" id="representantes-tab-pane" role="tabpanel"
+                                aria-labelledby="profile-tab" tabindex="0">
+                                <br>
+                                <p class="h4">REPRESENTANTE LEGAL</p>
+                                <hr>
+                                <br>
+                                <div class="container-fluid">
+                                    <div class="form-group row">
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="NOMBRE_REPRESENTANTE1" class="form-label">NOMBRE*</label>
+                                            <input type="text" class="form-control" id="NOMBRE_REPRESENTANTE1"
+                                                name="NOMBRE_REPRESENTANTE1"  value="{{ empresa.nombre_representante1 }}" required>
+                                            <div class="invalid-feedback">
+                                                Completar Nombre
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="APELLIDO_REPRESENTANTE1" class="form-label">APELLIDO*</label>
+                                            <input type="text" class="form-control" id="APELLIDO_REPRESENTANTE1"
+                                                name="APELLIDO_REPRESENTANTE1" value="{{ empresa.apellido_representante1 }}" required>
+                                            <div class="invalid-feedback">
+                                                Completar Apellido
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="TelefonoContacto1" class="form-label">TELEFONO*</label>
+                                            <input type="text" class="form-control" id="TELEFONO_REPRESENTANTE1"
+                                                name="TELEFONO_REPRESENTANTE1" value="{{ empresa.telefono_representante1 }}" required>
+                                            <div class="invalid-feedback">
+                                                Completar Teléfono
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="CORREO_REPRESENTANTE1" class="form-label">CORREO*</label>
+                                            <input type="email" class="form-control" id="CORREO_REPRESENTANTE1"
+                                                name="CORREO_REPRESENTANTE1" value="{{ empresa.correo_representante1 }}" required>
+                                            <div class="invalid-feedback">
+                                                Completar Correo electrónico
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- REPRESENTANTE LEGAL 2-->
+                                    <br>
+                                    <p class="h4">REPRESENTANTE LEGAL</p>
+                                    <hr>
+                                    <br>
+                                    <div class="form-group row">
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="NOMBRE_REPRESENTANTE2" class="form-label">NOMBRE</label>
+                                            <input type="text" class="form-control" id="NOMBRE_REPRESENTANTE2"
+                                                name="NOMBRE_REPRESENTANTE2" value="{{ empresa.nombre_representante2 }}">
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="APELLIDO_REPRESENTANTE2" class="form-label">APELLIDO</label>
+                                            <input type="text" class="form-control" id="APELLIDO_REPRESENTANTE2"
+                                                name="APELLIDO_REPRESENTANTE2" value="{{ empresa.apellido_representante2 }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="TELEFONO_REPRESENTANTE2" class="form-label">TELEFONO</label>
+                                            <input type="tel" class="form-control" id="TELEFONO_REPRESENTANTE2"
+                                                name="TELEFONO_REPRESENTANTE2" value="{{ empresa.telefono_representante2 }}">
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            <label for="CORREO_REPRESENTANTE2" class="form-label">CORREO</label>
+                                            <input type="email" class="form-control" id="CORREO_REPRESENTANTE2"
+                                                name="CORREO_REPRESENTANTE2" value="{{ empresa.correo_representante2 }}">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--FIN REPRESENTANTE LEGAL 1-->
+                                <br>
+                            </div>
+                            <!--FIN REPRESENTANTE LEGALES-->
+                            <!-- APODERADO LEGAL -->
+                            <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel"
+                                aria-labelledby="disabled-tab" tabindex="0">
+                                <br>
+                                <!--APODERADO LEGAL-->
+                                <div class="form-group row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <label for="NOMBRE_APODERADO" class="form-label">NOMBRE</label>
+                                        <input type="text" class="form-control" id="NOMBRE_APODERADO"
+                                            name="NOMBRE_APODERADO" value="{{ empresa.nombre_apoderado}}" >
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <label for="APELLIDO_APODERADO" class="form-label">APELLIDO</label>
+                                        <input type="text" class="form-control" id="APELLIDO_APODERADO"
+                                            name="APELLIDO_APODERADO" value="{{ empresa.apellido_apoderado}}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <label for="TELEFONO_APODERADO" class="form-label">TELEFONO</label>
+                                        <input type="text" class="form-control" id="TELEFONO_APODERADO"
+                                            name="TELEFONO_APODERADO" value="{{ empresa.telefono_apoderado }}">
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <label for="CORREO_APODERADO" class="form-label">CORREO</label>
+                                        <input type="email" class="form-control" id="CORREO_APODERADO"
+                                            name="CORREO_APODERADO" value="{{ empresa.correo_apoderado }}">
+                                    </div>
+                                </div>
+                                <!--FIN APODERADO LEGAL-->
+                                <br>
+                            </div>
+                            <!--DIRECCIÓN-->
+                            <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel"
+                                aria-labelledby="disabled-tab" tabindex="0">
+                                <br>
+                                <div class="form-group row">
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="CP" class="form-label">CP*</label>
+                                        <input type="text" class="form-control" id="CP" name="CP"
+                                             value="{{ empresa.cp }}" required>
+                                        <div class="invalid-feedback">
+                                            COMPLETAR Código Postal
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <label for="ESTADO" class="form-label">ESTADO</label>
+                                        <input type="text" class="form-control" id="ESTADO" name="ESTADO"
+                                            value="{{ empresa.estado }}">
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <label for="CIUDAD" class="form-label">CIUDAD</label>
+                                        <input type="text" class="form-control" id="CIUDAD" name="CIUDAD"
+                                           value="{{ empresa.ciudad }}">
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="DIRECCION" class="form-label">DIRECCIÓN</label>
+                                        <input type="text" class="form-control" id="DIRECCION" name="DIRECCION"
+                                            value="{{empresa.direccion}}">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- INICIO INFORMACIÓN BANCARÍA -->
+                            <div class="tab-pane fade" id="inf_banco-tab-pane" role="tabpanel"
+                                aria-labelledby="regitrosPatronales-tab" tabindex="0">
+                                <br>
+                                <!--BOTONES INFORMACION BANCARIA -->
+                                <div class="container-fluid">
+                                    <div class="form-group row">
+                                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+
+                                            <button class="btn botones" type="button"
+                                                onclick="añadirCuentasBancarias()">
+                                                <i class="bi bi-window-plus"></i> Agregar una cuenta bancaría
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--FIN BOTONES CONTACTOS-->
+                                <br>
+                                <!--TABLA REGISTROS PATRONALES-->
+                                <div class="container-fluid">
+                                    <table class="table table-borderless" id="Cuentas_Bancarias">
+                                        <colgroup>
+                                            <!-- Agrega más columnas según sea necesario -->
+                                            <col style="width: 250px;"> <!-- Primera columna -->
+                                            <col style="width: 250px;"> <!-- Segunda columna -->
+                                            <col style="width: 250px;"> <!-- Tercera columna -->
+                                            <col style="width: 40px;">
+                                        </colgroup>
+                                        <thead class="table">
+                                            <tr>
+                                                <th scope="col">BANCO</th>
+                                                <th scope="col">NO. Cuenta</th>
+                                                <th scope="col">CLABE</th>
+                                                <th scope="col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for cuenta in cuentas %}
+                                            <tr>
+                                                <td>
+                                                    <select name="BANCO[]" class="form-control" style="text-align: center;" required>
+                                                        {% for b in bancos %}
+                                                            <option value="{{ b.id }}" {% if cuenta.id_banco == b.id %}selected{% endif %}>{{ b.nombre }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="invalid-feedback">
+                                                        SELECCIONA UN BANCO
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" class="form-control" name="NO_CUENTA[]" maxlength="20" value="{{ cuenta.numero_cuenta }}"
+                                                        onchange="formatearCLABE(this)" required>
+                                                    <div class="invalid-feedback">
+                                                        Completa número de cuenta
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" class="form-control" name="CLABE[]" maxlength="19" value="{{ cuenta.clabe }}"
+                                                        onchange="formatearCLABE(this)" required>
+                                                    <div class="invalid-feedback">
+                                                        Completa CLABE
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-center" style="height: 100%; margin-top: 30px;">
+                                                        <button type="button" onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!--FIN TABLA REGISTROS PATRONALES-->
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <label for="ESTADO" class="form-label">Estado</label>
-                        <input type="text" class="form-control" id="ESTADO" name="ESTADO" placeholder="Estado"
-                            value="{{ empresa.estado }}">
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <label for="CIUDAD" class="form-label">Ciudad</label>
-                        <input type="text" class="form-control" id="CIUDAD" name="CIUDAD" placeholder="Ciudad"
-                            value="{{ empresa.ciudad}}">
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <label for="DIRECCION" class="form-label">Dirección</label>
-                        <input type="text" class="form-control" id="DIRECCION" name="DIRECCION" placeholder="Dirección"
-                            value="{{ empresa.direccion }}">
                     </div>
                 </div>
             </div>
@@ -303,22 +492,206 @@
         })
     })()
 
-    // Script para completar el modal de edición con la categoría seleccionada
-    const editCategoriaModal = document.getElementById('editCategoriaModal');
-    editCategoriaModal.addEventListener('show.bs.modal', event => {
-        const button = event.relatedTarget;
-        const id = button.getAttribute('data-id');
-        const categoria = button.getAttribute('data-categoria');
 
-        const modalTitle = editCategoriaModal.querySelector('.modal-title');
-        const inputCategoria = editCategoriaModal.querySelector('#EDIT_CATEGORIA');
 
-        // modalTitle.textContent = `Editar Categoría ${categoria}`;
-        inputCategoria.value = categoria;
 
-        const form = editCategoriaModal.querySelector('form');
-        form.action = `/edit_categoria/${id}`;
+    document.getElementById('EditarEmpresa').addEventListener('click', function () {
+        // Obtener el valor del ID
+        var idInput = document.getElementById('idInput');
+        if (!idInput) {
+            console.error('Elemento con id "idInput" no encontrado.');
+            return;
+        }
+        var id = idInput.value;
+
+        // Crear el objeto FormData
+        var formData = new FormData();
+
+        // Obtener y verificar cada campo antes de agregarlo a FormData
+        var fields = [
+            'REPSE',
+            'RAZON_SOCIAL',
+            'RFC',
+            'REG_FISCAL',
+            'NOMBRE_REPRESENTANTE1',
+            'APELLIDO_REPRESENTANTE1',
+            'TELEFONO_REPRESENTANTE1',
+            'CORREO_REPRESENTANTE1',
+            'NOMBRE_REPRESENTANTE2',
+            'APELLIDO_REPRESENTANTE2',
+            'TELEFONO_REPRESENTANTE2',
+            'CORREO_REPRESENTANTE2',
+            'NOMBRE_APODERADO',
+            'APELLIDO_APODERADO',
+            'TELEFONO_APODERADO',
+            'CORREO_APODERADO',
+            'CP',
+            'ESTADO',
+            'CIUDAD',
+            'DIRECCION'
+        ];
+
+
+        fields.forEach(function (fieldId) {
+            var field = document.getElementById(fieldId);
+            if (field) {
+                formData.append(fieldId, field.value);
+            } else {
+                console.warn('Elemento con id "' + fieldId + '" no encontrado.');
+            }
+        });
+
+        // Obtener el token CSRF por name
+        var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
+        if (csrfTokenInput) {
+            var csrfToken = csrfTokenInput.value;
+            formData.append('csrf_token', csrfToken); // Añadir el token CSRF a los datos del formulario
+        } else {
+            console.error('Elemento con name "csrf_token" no encontrado.');
+            return;
+        }
+
+        // Realizar la solicitud fetch
+        fetch('/api/update_empresa/' + id, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken // Añadir token CSRF a las cabeceras
+            }
+        })
+            .then(response => response.text())
+            .then(text => {
+                console.log(text); // Manejo de la respuesta
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        // Mostrar SweetAlert2
+                        Swal.fire({
+                            title: 'Éxito!',
+                            text: 'Empresa actualizada correctamente',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Limpiar todos los campos
+                            fields.forEach(function (fieldId) {
+                                var field = document.getElementById(fieldId);
+                                if (field) {
+                                    field.value = '';
+                                }
+                            });
+                            idInput.value = ''; // Limpiar el campo ID
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Error al actualizar la empresa: ' + data.error,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error al interpretar la respuesta como JSON:', err);
+                }
+            })
+            .catch(error => console.error('Error:', error));
     });
+
+    function añadirRegistro() {
+        var tabla = document.getElementById("Registros_Patronales");
+        var cuerpoTabla = tabla.getElementsByTagName("tbody")[0];
+        var newRow = cuerpoTabla.insertRow(0);
+
+        var cell1 = newRow.insertCell(0);
+        var cell2 = newRow.insertCell(1);
+        var cell3 = newRow.insertCell(2); // Celda para el botón de eliminar
+
+        cell1.innerHTML =
+            '<label class="form-label">NO REGISTRO PATRONAL</label>' +
+            '<input type="text"  class="form-control" name="noRegistro[]" required>' +
+            '<div class="invalid-feedback">' +
+            "Completa No de registro patronal" +
+            "</div>";
+        cell2.innerHTML =
+            '<label class="form-label">ESTADO</label>' +
+            '<input type="text" class="form-control" name="estado[]" required>' +
+            '<div class="invalid-feedback">' +
+            "Completa Estado de resgistro patronal" +
+            "</div>";
+        cell3.innerHTML =
+            '<div class="d-flex align-items-center justify-content-center" style="height: 100%;margin-top: 30px;">' +
+            '<button onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i></button>' +
+            "</div>";
+    }
+
+    function eliminarFila(btn) {
+        var row = btn.parentNode.parentNode.parentNode; // Navegar del botón a la celda, de la celda a la fila
+        row.parentNode.removeChild(row); // Eliminar la fila del DOM
+    }
+
+    function añadirCuentasBancarias() {
+        var tabla = document.getElementById("Cuentas_Bancarias");
+        var cuerpoTabla = tabla.getElementsByTagName("tbody")[0];
+        var newRow = cuerpoTabla.insertRow(0);
+
+        var cell1 = newRow.insertCell(0);
+        var cell2 = newRow.insertCell(1);
+        var cell3 = newRow.insertCell(2); // Celda para el botón de eliminar
+        var cell4 = newRow.insertCell(3);
+
+        cell1.innerHTML = `
+      <label class="form-label">SELECCIONA UN BANCO:</label>
+      <select id="SELECT_BANCO" name="BANCO[]" class="form-control" style="text-align: center;" required>
+        <option value="">Selecciona un banco</option>
+      </select>
+      <div class="invalid-feedback">
+        SELECIONA UN BANCO
+      </div>
+    `;
+
+        cell2.innerHTML = `
+      <label class="form-label">NO CUENTA</label>
+      <input type="text" class="form-control" name="NO_CUENTA[]" maxlength="21" oninput="formatearCLABE(this)" required>
+      <div class="invalid-feedback">
+      "Completa Estado de resgistro patronal"
+      </div>
+    `;
+
+        cell3.innerHTML = `
+      <label class="form-label">CLABE</label>
+      <input type="text" class="form-control" name="CLABE[]" maxlength="21" oninput="formatearCLABE(this)" required>
+      <div class="invalid-feedback">
+      "Completa  CLABE"
+      </div>
+    `;
+        cell4.innerHTML = `
+    <div class="d-flex align-items-center justify-content-center" style="height: 100%;margin-top: 30px;">
+      <button onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i></button>
+    </div>
+    `;
+
+        cargaBancos(newRow);
+    }
+
+    function cargaBancos(row) {
+        fetch("/api/obtener_bancos/")
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                const select = row.querySelector("#SELECT_BANCO");
+                data.forEach((banco) => {
+                    const option = document.createElement("option");
+                    option.value = banco.id;
+                    option.textContent = banco.nombre;
+                    select.appendChild(option);
+                });
+            })
+            .catch((error) => console.error("Error:", error));
+    }
 </script>
 
 {% endblock %}

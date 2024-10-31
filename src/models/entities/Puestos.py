@@ -1,20 +1,16 @@
 
 class Puesto():
 
-    def __init__(self,ent_IdPuesto,ent_IdCategoria,ent_Puesto,ent_SueldoDiario,ent_TipoEmpleado,
-                ent_TipoSueldo,ent_SueldoMensual,ent_SueldoIMSS,ent_SueldoMonedero,ent_HoraExtra,
-                ent_Sueldo,ent_is_blocked = False ) -> None:
-        
-            self.ent_IdPuesto = ent_IdPuesto
-            self.ent_IdCategoria = ent_IdCategoria
-            self.ent_Puesto = ent_Puesto
-            self.ent_TipoEmpleado = ent_TipoEmpleado
-            self.ent_TipoSueldo = ent_TipoSueldo
-            self.ent_Sueldo = ent_Sueldo
-            self.ent_SueldoDiario = ent_SueldoDiario
-            self.ent_SueldoMensual = ent_SueldoMensual
-            self.ent_SueldoIMSS = ent_SueldoIMSS
-            self.ent_SueldoMonedero = ent_SueldoMonedero
-            self.ent_HoraExtra = ent_HoraExtra
-            self.ent_is_blocked = ent_is_blocked
+    def __init__(self,id,puesto,sueldo_base,sueldo_tarjeta,
+                 horas_extras,categoria,is_blocked = False ) -> None:
+
+        self.id = id
+        self.puesto = puesto
+        self.sueldo_base = sueldo_base
+        self.sueldo_tarjeta = sueldo_tarjeta
+        self.horas_extras = horas_extras
+        self.categoria = categoria
+        self.is_blocked = is_blocked
+                
+            
             

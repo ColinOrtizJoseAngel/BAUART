@@ -1,27 +1,29 @@
 ul ul a {
   font-size: 0.9em !important;
   padding-left: 30px !important;
-
 }
 
+* {
+  text-transform: uppercase;
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-
-.imgnav{
+.imgnav {
   padding-left: 15px;
 }
 
 .offcanvas-backdrop.show {
-   opacity: 0; 
+  opacity: 0;
 }
-  .offcanvas {
+.offcanvas {
   background-color: #fff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
 
 .offcanvas-header {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
+  background-color: #fff;
+  border-bottom: 1px solid #74aceb;
 }
 
 .offcanvas-title {
@@ -52,65 +54,279 @@ ul ul a {
 }
 
 .navbar {
-      background-color: #1E2D4F; /* Color de fondo */
-      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
-    }
+  background-color: #ffffff; /* Color de fondo */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+}
 
-    .navbar-brand img {
-      max-width: 150px;
-    }
+.navbar-brand img {
+  max-width: 150px;
+}
 
-    .navbar-brand {
-      font-family: 'Arial', sans-serif; /* Fuente */
-      font-size: 20px;
-      color: #fff; /* Color del texto */
-    }
+.navbar-brand {
+  font-family: "Arial", sans-serif; /* Fuente */
+  font-size: 20px;
+  color: #fff; /* Color del texto */
+}
 
-    .navbar-brand:hover {
-      color: #74aceb; /* Color del texto al pasar el mouse */
-    }
+.navbar-brand:hover {
+  color: #74aceb; /* Color del texto al pasar el mouse */
+}
 
-    .navbar-toggler {
-      border: none;
-      background: none;
-      color: #fff;
-    }
+.navbar-toggler {
+  border: none;
+  background: none;
+  color: #fff;
+}
 
-    .navbar-toggler:hover {
-      color: #74aceb; /* Color del botón al pasar el mouse */
-    }
+.navbar-toggler:hover {
+  color: #74aceb; /* Color del botón al pasar el mouse */
+}
 
-    .navbar-toggler-icon {
-      width: 24px;
-      height: 24px;
-    }
+.navbar-toggler-icon {
+  width: 24px;
+  height: 24px;
+}
 
-    .nav-link {
-      font-family: 'Arial', sans-serif; /* Fuente */
-      font-size: 16px;
-      color: #000000; /* Color del texto */
-      transition: color 0.3s ease; /* Transición al pasar el mouse */
-    }
+.nav-link {
+  font-family: "Arial", sans-serif; /* Fuente */
+  font-size: 16px;
+  color: #000000; /* Color del texto */
+  transition: color 0.3s ease; /* Transición al pasar el mouse */
+}
 
-    .nav-link:hover {
-      color: #74aceb; /* Color del texto al pasar el mouse */
-    }
+.nav-link:hover {
+  color: #74aceb; /* Color del texto al pasar el mouse */
+}
 
-    .btn-outline-success {
-      color: #74aceb; /* Color del texto */
-      border-color:#74aceb; /* Color del borde */
-      transition: color 0.3s ease, border-color 0.3s ease; /* Transición al pasar el mouse */
-    }
+.btn-outline-success {
+  color: #74aceb; /* Color del texto */
+  border-color: #74aceb; /* Color del borde */
+  transition: color 0.3s ease, border-color 0.3s ease; /* Transición al pasar el mouse */
+}
 
-    .btn-outline-success:hover {
-      color: #000000; /* Color del texto al pasar el mouse */
-      background-color: #74aceb; /* Color de fondo al pasar el mouse */
-      border-color: #74aceb; /* Color del borde al pasar el mouse */
-    }
+.btn-outline-success:hover {
+  color: #000000; /* Color del texto al pasar el mouse */
+  background-color: #74aceb; /* Color de fondo al pasar el mouse */
+  border-color: #74aceb; /* Color del borde al pasar el mouse */
+}
 
-    .user-info p {
-      font-family: 'Arial', sans-serif; /* Fuente */
-      font-size: 16px;
-      color: #000000; /* Color del texto */
-      margin-right: 20px;
-    }
+.user-info p {
+  font-family: "Arial", sans-serif; /* Fuente */
+  font-size: 16px;
+  color: #000000; /* Color del texto */
+  margin-right: 20px;
+}
+
+body{
+  
+  background-color:#d9e3eb;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  position: relative;
+  /* Para colocar los resizers */
+}
+
+.thead-dark th {
+  background-color: #343a40;
+  color: #ffffff;
+  position: relative;
+  /* Para colocar los resizers */
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+/* Estilos para los resizers */
+.resizer {
+  width: 5px;
+  cursor: col-resize;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background-color: #ddd;
+  /* Color visible para el resizer */
+}
+
+.currency-input {
+  text-align: right;
+  /* Alinea el texto a la derecha para valores monetarios */
+}
+
+
+
+tfoot tr {
+  background-color: #f8f9fa;
+  /* Color de fondo para el pie de tabla */
+}
+
+tfoot td {
+  padding: 10px;
+  /* Espaciado interno en las celdas del pie de tabla */
+}
+
+th,
+td {
+  padding: 10px;
+  /* Espaciado interno para mejorar la legibilidad */
+  text-align: center;
+  /* Centra el texto de las celdas */
+  border: 1px solid #ddd;
+  /* Añade bordes a las celdas */
+}
+
+.table thead th {
+
+  position: sticky;
+  top: 0;
+  background-color: #0f2d3a;
+  color: #ffff;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0px;
+  z-index: 2;
+}
+
+.form-label {
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+
+}
+
+.form-control{
+  font-weight: normal;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #7F949F;
+  color: #333333;
+  border-radius: 2px;
+  background-color: #FCFDFE;
+  border: 1px solid #7F949F;
+  padding: 6px 5px 5px 5px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 28px;
+  margin: 0px;
+
+}
+
+.form-control:focus {
+  border-color: #161513; /* Cambia el color del borde */
+  box-shadow: 0 0 0 0.10rem #161513; /* Cambia el color de la sombra */
+}
+
+.nav-tabs .nav-link{
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.presupuesto {
+  background-color: #0f2d3a;
+  color: #ffff;
+  font-family: arial;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+
+.input-group-text{
+  height: 28px;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.table-container {
+  max-height: 1000px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  white-space: nowrap;
+  font-family: arial;
+
+}
+
+
+.borderless {
+  border: none;
+  box-shadow: none;
+  outline: none;
+
+}
+
+.xnu {
+  font-family: arial;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.card-header {
+  font-size: 12px;
+  font-family: arial;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+
+}
+
+
+
+a.link {
+  color: #0f2d3a;
+  font-size: 12px;
+  font-family: arial;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+
+.botones{
+    font-size: 12px;
+    background-color: #0f2d3a;
+    color: #ffff;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+}
+
+.boton-cerrar{
+  font-size: 12px; 
+  font-family: Arial, Helvetica, sans-serif; 
+  border-color: black;
+
+}
+

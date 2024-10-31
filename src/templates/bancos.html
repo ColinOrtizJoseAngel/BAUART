@@ -4,41 +4,25 @@
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 
-<style>
-    .tituloform {
-        background: #fff;
-        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
-        color: #052c65;
-        list-style-type: none;
-        border-radius: 10px;
-        display: flex;
-        padding: 20px 10px;
-        position: relative;
-        z-index: 10;
-    }
-
-    .btn-primary {
-        background-color: #052c65;
-        border-color: #052c65;
-    }
-</style>
 {% endblock %}
+
+{% block titutlo %}BANCOS{% endblock %}
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
-<!-- INICIA MODAL FILTRO CATEGORIA -->
+<!-- INICIA MODAL FILTRO BANCO -->
 <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="miModalLabel">Filtrar Categorias</h5>
+                <h5 class="modal-title" id="miModalLabel">FILTRAR BANCOS</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
-                        <label for="categoria" class="form-label">Categorias</label>
-                        <input type="text" class="form-control" id="categoria" name="categoria">
+                        <label for="BANCO" class="form-label">BANCO</label>
+                        <input type="text" class="form-control" id="BANCO" name="">
                     </div>
                     <div class="mb-3">
                         <label for="ESTATUS" class="form-label">Estado</label>
@@ -57,23 +41,21 @@
         </div>
     </div>
 </div>
-<!-- INICIA MODAL FILTRO CATEGORIA -->
+<!-- INICIA MODAL FILTRO BANCO -->
 
-<!-- INICIA MODAL ALTA CATEGORIA -->
+<!-- INICIA MODAL ALTA BANCO -->
 <div class="modal fade" id="altaBancoModal" tabindex="-1" aria-labelledby="altaBancoModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="container text-center">
-                    <h1 class="modal-title" id="altaBancoModalLabel">Alta banco</h1>
+                    <h4 class="modal-title" id="altaBancoModalLabel">ALTA BANCO</h4>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form class="needs-validation" action="{{ url_for('bancos') }}" method="post" novalidate>
-                <div class="container text-center">
-                    <p class="lead">Completa los datos del formularío para dar de alta un Banco </p>
-                </div>
+            <form class="needs-validation" " action="{{ url_for('bancos') }}" method="post" novalidate>
+                
                 <div class="modal-body">
                     <div class="container">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -91,7 +73,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Confirmar</button>
                 </div>
             </form>
@@ -100,58 +82,76 @@
 </div>
 <!-- FIN ALTA BANCO -->
 
+<!-- MODAL PARA EDITAR BANCO -->
+<div class="modal fade" id="editBancoModal" tabindex="-1" aria-labelledby="editBancoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBancoModalLabel">EDITAR BANCO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editBancoForm" action="" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" id="editBancoId" name="banco_id">
+                    
+                    <div class="mb-3">
+                        <label for="editBancoNombre" class="form-label">NOMBRE BANCO</label>
+                        <input type="text" class="form-control" id="editBancoNombre" name="BANCO" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <br>
 <div class="container-fluid">
     <br>
-    <div class="container tituloform">
-        <div class="container text-center">
-            <h1 class="display-2">Portal de Bancos</h1>
-            <p class="lead">Visualiza, edita y bloquea Categorias</p>
-        </div>
-
-    </div>
-    <br>
     <!--BOTONES ACCIONES-->
-    <div class="container">
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#altaBancoModal">
-                Añadir
-            </button>
-            <button class="btn btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
-                <i class="bi bi-search"></i> Filtrar
-            </button>
-        </div>
-    </div>
+    <div class="d-grid gap-2 d-md-flex justify-content-start">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn botones" data-bs-toggle="modal" data-bs-target="#altaBancoModal">
+           Añadir
+       </button>
+       <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+           <i class="bi bi-search"></i> Filtrar
+        </button>
+   </div>
     <br>
-    <div class="container-fluid">
+    <div class="table-container">
         <table class="table table-borderless">
             <thead class="table-dark">
                 <tr>
-                    <th class="col-3">Id</th>
-                    <th class="col-3">Banco</th>
-                    <th class="col-3">Estatus</th>
-                    <th class="col-3">Acciones</th>
+                    <th class="col-3">ID</th>
+                    <th class="col-3">BANCO</th>
+                    <th class="col-3">ESTATUS</th>
+                    <th class="col-3">ACCIONES</th>
                 </tr>
             </thead>
             <tbody>
                 {% for banco in bancos %}
                 {% if banco.is_blocked %}
                 <tr class="table-secondary">
-                    <td>{{ banco.id_banco }}</td>
-                    <td>{{ banco.banco }}</td>
-                    <td>Bloqueado</td>
+                    <td>{{ banco.id }}</td>
+                    <td>{{ banco.nombre }}</td>
+                    <td>BLOQEUADO</td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="">
                                 <li>
-                                    <form action="" method="post" style="display:inline;">
+                                    <form action="{{ url_for('unblock_banco', id=banco.id) }}" method="post" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Desbloquear</button>
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>
@@ -160,21 +160,25 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td>{{ banco.id_banco }}</td>
-                    <td>{{ banco.banco }}</td>
-                    <td>Activo</td>
+                    <td>{{ banco.id }}</td>
+                    <td>{{ banco.nombre }}</td>
+                    <td>ACTIVO</td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="">
-                                <li><a class="dropdown-item" href="">Editar</a></li>
                                 <li>
-                                    <form action="" method="post" >
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editBancoModal" data-banco="{{ banco.nombre }}" data-banco-id="{{ banco.id }}">
+                                        EDITAR
+                                    </button>
+                                </li>
+                                <li>
+                                    <form action="{{ url_for('block_banco', id=banco.id) }}" method="post" >
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Bloquear</button>
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>
@@ -185,6 +189,7 @@
                 {% endfor %}
             </tbody>
         </table>
+       
     </div>
 
 </div>
@@ -209,6 +214,26 @@
             }, false)
         })
     })()
+
+
+    // Script para completar el modal de edición con la especialidad seleccionada
+    const editBancoModal = document.getElementById('editBancoModal');
+    editBancoModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-banco-id');
+        const banco = button.getAttribute('data-banco');
+        console.log("SE EJCUENTA EDIT ESPECIALIDAD")
+        console.log("ESTA ES LA ESPECIALIDA"+id)
+
+
+
+        const inputBancoNombre = editBancoModal.querySelector('#editBancoNombre');
+        inputBancoNombre.value = banco;
+
+        const form = editBancoModal.querySelector('form');
+        console.log(form)
+        form.action = `/edit_banco/${id}`;
+    });
 </script>
 
 {% endblock %}

@@ -1,9 +1,10 @@
-class ResgistroPatronal():
+class RegistroPatronal:
 
-    def __init__(self,id_registro,registro_patronal,empresa,estado,is_blocked = False) -> None:
-        
-            self.id_registro = id_registro
-            self.registro_patronal = registro_patronal
-            self.empresa = empresa
-            self.estado = estado
-            self.is_blocked = is_blocked
+    def __init__(self, id_registro, id_empresa, numero_registro_patronal, estado, fecha_registro=None, usuario=None, is_blocked=False) -> None:
+        self.id_registro = id_registro
+        self.id_empresa = id_empresa
+        self.numero_registro_patronal = numero_registro_patronal
+        self.estado = estado
+        self.fecha_registro = fecha_registro
+        self.usuario = usuario
+        self.is_blocked = is_blocked

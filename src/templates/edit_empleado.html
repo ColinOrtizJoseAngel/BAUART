@@ -1,0 +1,294 @@
+<!--IMPOTRAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}EMPLEADOS{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styele_alta_empresas.css') }}">
+
+{% endblock %}
+
+{% block titutlo %}ALTA EMPLEADO{% endblock %}
+
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+<br>
+<form class="needs-validation" novalidate accion="/Altacliente" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="container-fluid">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <div class="text-center">
+                <button class="btn botones" type="submit">CONFIRMA</button>
+            </div>
+        </div>
+    </div>
+    <!--INICIA INFORMACIÓN GENERAL-->
+    <br>    
+    <div class="container" style="display: none;">
+        <div class="form-group row">
+            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                <label for="ID_EMPLEADO" class="form-label">SIGUIENTE EMPLEADO: </label>
+                <input type="text" class="form-control" style="text-align: center;" id="ID_EMPLEADO" name="ID_EMPLEADO"
+                    value="{{ empleado.id }}" readonly>
+            </div>
+        </div>
+    </div>
+
+    <!--INICIA CARD CLIENTES -->
+    <div class="container-fluid">
+        <div class="card mb-3">
+            <div class="card-header">
+
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+                    <br>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                                data-bs-target="#informacion-tab-pane" type="button" role="tab"
+                                aria-controls="informacion-tab-pane" aria-selected="true">EMPLEADO</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                data-bs-target="#direccion-tab-pane" type="button" role="tab"
+                                aria-controls="direccion-tab-pane" aria-selected="false">NÓMINA</button>
+                        </li>
+                    </ul>
+                    <!--INFORMACIÓN GENERAL-->
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="informacion-tab-pane" role="tabpanel"
+                            aria-labelledby="home-tab" tabindex="0">
+                            <br>
+
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="NOMBRE" class="form-label">NOMBRE*</label>
+                                    <input type="text" class="form-control" name="NOMBRE" id="NOMBRE"
+                                        value="{{ empleado.nombre }}" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA NOMBRE
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="RFC" class="form-label">APELLIDO*</label>
+                                    <input type="text" class="form-control" id="APELLIDO" name="APELLIDO"
+                                       value="{{ empleado.apellido }}" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA APELLIDO
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="EMPRESA" class="form-label">EMPRESA:*</label>
+                                    <select class="form-control" name="EMPRESA" id="EMPRESA" required>
+                                        {% for empresa in empresas %}
+                                            <option value="{{ empresa.id }}" {% if empleado.id_empresa == empresa.id %} selected {% endif %}>
+                                                {{ empresa.razon_social }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback"> 
+                                        SELECIONA UNA EMPRESA
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="PUESTO" class="form-label">PUESTO:*</label>
+                                    <select class="form-control" name="PUESTO" id="PUESTO" required>
+                                        {% for p in puesto  %}
+                                        <option value="{{ p.id }}" {% if empleado.puesto == p.id %} selected {% endif %}>
+                                            {{ p.puesto }}
+                                        </option>
+                                        {% endfor %}
+                                        
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        SELECIONA UN PUESTO
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="TIPO_EMPLEADO" class="form-label">TIPO EMPLEADO:*</label>
+                                    <select class="form-control" name="TIPO_EMPLEADO" id="TIPO_EMPLEADO" required>
+                                        <option style="text-align: center;" value="1" {{ 'selected' if empleado.tipo_empleado == 1 else '' }}>ADMINISTRATIVO</option>
+                                        <option style="text-align: center;" value="2" {{ 'selected' if empleado.tipo_empleado == 2 else '' }}>OBRA</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        SELECIONA UN PUESTO
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--FIN INFORMACIÓN GENERAL-->
+                        <!-- NOMINA  -->
+                        <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                            tabindex="0">
+                            <br>
+                            <div class="container-fluid">
+                                <div class="form-group row">
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="BANCO" class="form-label">BANCO:*</label>
+                                        <select class="form-control" name="BANCO" id="BANCO" required>
+                                            {% for b in bancos %}
+                                            <option value="{{ b.id }}" {% if empleado.banco == b.id %}selected{% endif %}>{{ b.nombre }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            SELECIONA UN BANCO
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="NUM_CUENTA" class="form-label">NÚMERO DE CUENTA:*</label>
+                                        <input type="text" class="form-control" name="NUM_CUENTA" maxlength="19" value="{{ empleado.numero_cuenta }}" required oninput="formatearCuenta(this)">
+                                        <div class="invalid-feedback">
+                                            COMPLETA NUMERO DE CUENTA
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="CLABE" class="form-label">CUENTA CLABE:*</label>
+                                        <input type="text" class="form-control" name="CLABE" maxlength="23" value="{{ empleado.clabe }}" required oninput="formatearCLABE(this)">
+                                        <div class="invalid-feedback">
+                                            COMPLETA CLABE
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="EMPRESA" class="form-label">TIPO NOMINA:*</label>
+                                        <select class="form-control" name="TIPO_NOMINA" id="TIPO_NOMINA" required>
+                                            <option style="text-align: center;" value="1" {{ 'selected' if empleado.tipo_nomina == 1 else '' }}>QUINCENAL</option>
+                                            <option style="text-align: center;" value="2" {{ 'selected' if empleado.tipo_nomina == 2 else '' }}>SEMANAL</option>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Seleciona un tipo de Nomina 
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="ESTADO" class="form-label">SUELDO IMSS*</label>
+                                        <input value="{{ empleado.sueldo_imss }}" type="text" class="form-control moneda" id="SUELDO_IMSS" name="SUELDO_IMSS"
+                                        placeholder="$0"  required>
+                                        <div class="invalid-feedback">
+                                            Completa Sueldo IMSS
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="MONEDERO" class="form-label">MONEDERO*</label>
+                                        <input value="{{ empleado.monedero }}" type="text" class="form-control moneda" name="MONEDERO" id="MONEDERO"
+                                        placeholder="$0" required>
+                                        <div class="invalid-feedback">
+                                            Completa pago monedero
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="NOMINA" class="form-label">NOMINA*</label>
+                                        <input value="{{ empleado.nomina }}" type="text" class="form-control moneda" name="NOMINA" id="NOMINA"
+                                            placeholder="$0" required>
+                                        <div class="invalid-feedback">
+                                            Completa pago nomina
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- FIN CARD CLIENTE -->
+
+
+</form>
+</div>
+<br>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        function cargaCFDI() {
+            fetch("/api/obtener_cfdi/")
+                .then((response) => {
+                    if (!response.ok) {
+                        console.error(`Error: ${response.status} - ${response.statusText}`);
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log(data);
+                    const select = document.querySelector("#USO_CFDI");
+
+                    // Asegúrate de que el elemento select exista antes de intentar manipularlo
+                    if (select) {
+                        data.forEach((cfdi) => {
+                            const option = document.createElement("option");
+                            cfdis = `${cfdi.nombre} - ${cfdi.decripcion}`;
+                            option.value = cfdi.id;
+                            option.textContent = cfdis  // Corregí la concatenación de clave y descripción
+                            select.appendChild(option);
+                        });
+                    } else {
+                        console.error("No se encontró el elemento select con el ID #USO_CFDI.");
+                    }
+                })
+                .catch((error) => console.error("Error:", error));
+        }
+
+        cargaCFDI();
+    });
+</script>
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (() => {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+
+<script>
+     // Función para formatear como moneda MXN
+     function formatearMonedaMXN(valor) {
+            let numero = parseFloat(valor.replace(/[^0-9.-]+/g, ''));
+            if (isNaN(numero)) return '';
+            return numero.toLocaleString('es-MX', {
+                style: 'currency',
+                currency: 'MXN'
+            });
+        }
+
+        // Evento que formatea los inputs al perder el foco
+        document.querySelectorAll('.moneda').forEach(input => {
+            input.addEventListener('blur', (event) => {
+                event.target.value = formatearMonedaMXN(event.target.value);
+            });
+
+            // Eliminar caracteres no numéricos al escribir
+            input.addEventListener('input', (event) => {
+                let valor = event.target.value.replace(/[^0-9.-]+/g, '');
+                event.target.value = valor;
+            });
+        });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="{{ url_for('static', filename='JS/funciones_Clientes.js') }}"></script>
+
+{% endblock %}

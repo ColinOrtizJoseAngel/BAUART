@@ -19,7 +19,7 @@
 
 <body>
     <!--INICIA NAVAR-->
-    <nav class="navbar bg-body-tertiary">
+    <nav class="navbar">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasWithBackdrop" aria-controls="offcanvasWithBackdrop">
@@ -50,44 +50,45 @@
         <div class="offcanvas-body">
             <ul class="user-menu list-unstyled">
                 <li class="active">
+                    <a href="/Home"><i class="bi bi-house"></i> HOME</a>
                     <a href="#ctalogosA" data-bs-toggle="collapse" aria-expanded="false"
-                        class="dropdown-toggle"><i class="bi bi-book-half"></i> Catalogos</a>
+                        class="dropdown-toggle"><i class="bi bi-book-half"></i> CATÁLOGOS</a>
                     <ul class="collapse list-unstyled" id="ctalogosA">
                         <li>
-                            <a href="/Periodos"><i class="bi bi-calendar-check"></i> Periodos</a>
+                            <a href="/Periodos"><i class="bi bi-calendar-check"></i> PERIODOS</a>
                         </li>
                         <li>
-                            <a href="/Empresas"><i class="bi bi-building-fill"></i> Empresas</a>
+                            <a href="/Empresas"><i class="bi bi-building-fill"></i> EMPRESAS</a>
                         </li>
                         <li>
-                            <a href="/Clientes"><i class="bi bi-people-fill"></i> Clientes</a>
+                            <a href="/Clientes"><i class="bi bi-people-fill"></i> CLIENTES</a>
                         </li>
                         <li>
-                            <a href="#"><i class="bi bi-tools"></i> Obra/Proyectos</a>
+                            <a href="/Proyectos"><i class="bi bi-tools"></i> OBRA/POYECTOS</a>
                         </li>
                         <li>
-                            <a href="#"><i class="bi bi-person-raised-hand"></i> Empleados</a>
+                            <a href="/Empleados"><i class="bi bi-person-raised-hand"></i> EMPLEADOS</a>
                         </li>
                         <li>
-                            <a href="/Puestos"><i class="bi bi-person-vcard"></i> Puestos</a>
+                            <a href="/Puestos"><i class="bi bi-person-vcard"></i> PUESTOS </a>
                         </li>
                         <li>
-                            <a href="#"><i class="bi bi-person-badge"></i> Contratistas</a>
+                            <a href="/Proveedores"><i class="bi bi-person-badge"></i> PROVEEDORES</a>
                         </li>
                         <li>
-                            <a href="#"><i class="bi bi-screwdriver"></i> Especialidades</a>
+                            <a href="/Especialidades"><i class="bi bi-screwdriver"></i> ESPECIALIDADES</a>
                         </li>
                         <li>
-                            <a href="/Categorias"><i class="bi bi-stack"></i> Categoria</a>
+                            <a href="/Categorias"><i class="bi bi-stack"></i> CATEGORÍAS</a>
                         </li>
                         <li>
-                            <a href="/Bancos"><i class="bi bi-piggy-bank"></i> Banco</a>
+                            <a href="/Bancos"><i class="bi bi-piggy-bank"></i> BANCOS</a>
                         </li>
                         <li>
-                            <a href="#"><i class="bi bi-cash"></i> Efectivos</a>
+                            <a href="#"><i class="bi bi-cash"></i> EFECTIVOS</a>
                         </li>
                         <li>
-                            <a href="#"><i class="bi bi-cash-coin"></i> Reembolsos</a>
+                            <a href="#"><i class="bi bi-cash-coin"></i> REEMBOLSOS</a>
                         </li>
                         <li>
                             <a href="#"><i class="bi bi-credit-card-2-front"></i> Tipo de Tarjeta</a>
@@ -98,13 +99,25 @@
                         <li>
                             <a href="#"><i class="bi bi-coin"></i> Caja Chica</a>
                         </li>
+                        <li>
+                            <a href="#Materiales" data-bs-toggle="collapse" aria-expanded="false"
+                                class="dropdown-toggle"><i class="bi bi-book-half"></i> MATERIALES & FAMILIAS</a>
+                            <ul class="collapse list-unstyled" id="Materiales">
+                                <li>
+                                    <a href="/materiales"><i class="bi bi-tools"></i> MATERIALES</a>
+                                </li>
+                                <li>
+                                    <a href="/familias"><i class="bi bi-folder"></i> FAMILIAS</a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
                 <li class="active">
                     <a href="#administracion" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-ui-checks-grid"></i> Administración</a>
                     <ul class="collapse list-unstyled" id="administracion">
                         <li>
-                            <a href="#"><i class="bi bi-file-earmark-bar-graph"></i> Presupuestos</a>
+                            <a href="/Presupuestos"><i class="bi bi-file-earmark-bar-graph"></i> Presupuestos</a>
                         </li>
                         <li>
                             <a href="#"><i class="bi bi-currency-dollar"></i> Pagos Sugeridos</a>
@@ -165,11 +178,37 @@
         </div>
     </div>
     <!--FIN MENU-->
+    
+    <!-- TITULO DE PATALLA -->
+    <nav class="navbar" style="background-color: #0f2d3a; color: #fff;">
+        <div class="container-fluid">
+            <h4 class="xnu">{% block titutlo %}{% endblock %}</h4>
+        </div>
+    </nav>
+    <!-- FIN TITULO DE PATALLA -->
+    
     <!--INICIA CONTENIDO DE PLANTILLA-->
     {% block content %}
     {% endblock %}
     <!--FIN CONTENIDO DE PLANTILLA-->
 
+    <script>
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Evita que se envíe el formulario al presionar Enter
+            }
+        });
+    
+        
+    </script>
+
+    <!--sweetalert2-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- IMPORTAR JS -->
+    <script src="{{ url_for('static', filename='JS/funciones_layout.js') }}"></script>
+    
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

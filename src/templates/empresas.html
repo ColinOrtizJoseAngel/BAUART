@@ -3,27 +3,12 @@
 {% block title %}Nuevo Proyecto{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
-
-<style>
-    .tituloform {
-    background: #fff;
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
-    color: #052c65;
-    list-style-type: none;
-    border-radius: 10px;
-    display: flex;
-    padding: 20px 10px;
-    position: relative;
-    z-index: 10;
-}
-
-.btn-primary {
-    background-color: #052c65;
-    border-color: #052c65;
-}
-
-</style>
 {% endblock %}
+
+<!-- TITULO DE PAGINA -->
+{% block titutlo %}EMPRESAS{% endblock %}
+<!-- FIN DE TITULO -->
+
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 <!-- Modal para Filtrar Empresa -->
@@ -31,7 +16,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="miModalLabel">Filtrar Empresa</h5>
+                <h5 class="modal-title" id="miModalLabel">FILTRAR EMPRESAS</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ url_for('empresas') }}" method="post">
@@ -63,8 +48,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn botones">Filtrar</button>
                 </div>
             </form>
         </div>
@@ -72,39 +57,40 @@
 </div>
 <br>
 <div class="container-fluid">
+    <div class="d-grid gap-2 d-md-flex justify-content-start">
+        <a class="btn botones" href="/Altaempresas">
+            <i class="bi bi-building-fill-add"></i> NUEVA EMPRESA
+        </a>
+        <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+            <i class="bi bi-search"></i> FILTRAR
+        </button>
+        <a class="btn botones" href="/Empresas">
+            <i class="bi bi-eraser"></i> LIMPIAR FILTRO
+        </a>
+    </div>
     <br>
-    <div class="container tituloform">
-        <div class="container text-center">
-            <h1 class="display-2">Portal de Empresas</h1>
-            <p class="lead">Visualiza, edita y bloquea Empresas</p>
-        </div>
+    <div class="table-container">
+        <table class="table table-hover">
+            <colgroup>
+                <col style="width: 30px;"> <!-- Primera columna de 150px -->
+                <col style="width: 250px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 150px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 150px;"> <!-- Primera columna de 150px -->
+                <col style="width: 100px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 100px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 125px;"> <!-- Primera columna de 150px -->
 
-    </div>
-    <br>
-    <!--BOTONES ACCIONES-->
-    <div class="container">
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a class="btn btn btn-dark" href="/Altaempresas">
-                <i class="bi bi-building-fill-add"></i> Nueva Empresa
-            </a>
-            <button class="btn btn btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
-                <i class="bi bi-search"></i> Filtrar Empresa
-            </button>
-        </div>
-    </div>
-    <br>
-    <div class="container-fluid">
-        <table class="table table-borderless">
+            </colgroup>
             <thead class="table-dark">
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Razón Social</th>
+                    <th scope="col">RAZÓN SOCIAL</th>
                     <th scope="col">RFC</th>
                     <th scope="col">REPSE</th>
                     <!--<th scope="col">No. Registro 1</th>-->
                     <th scope="col">CP</th>
-                    <th scope="col">Estatus</th>
-                    <th scope="col">Acciones</th>
+                    <th scope="col">ESTATUS</th>
+                    <th scope="col">ACCIONES</th>
                 </tr>
             </thead>
             <tbody>
@@ -118,20 +104,20 @@
                     <!--<td>{{ empresa.noregis1 }}</td>-->
                     <td>{{ empresa.cp }}</td>
                     <td>
-                        Bloqueado
+                        BLOQUEADO
                     </td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ empresa.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ empresa.id }}">
                                 <li>
                                     <form action="{{ url_for('unblock_empresa', id=empresa.id) }}" method="post"
                                         style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Desbloquear</button>
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>
@@ -147,22 +133,22 @@
                     <!--<td>{{ empresa.noregis1 }}</td>-->
                     <td>{{ empresa.cp }}</td>
                     <td>
-                        Activo
+                        ACTIVO
                     </td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ empresa.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ empresa.id }}">
                                 <li><a class="dropdown-item"
-                                        href="{{ url_for('edit_empresa', id=empresa.id) }}">Editar</a></li>
+                                        href="{{ url_for('edit_empresa', id=empresa.id) }}">EDITAR</a></li>
                                 <li>
                                     <form action="{{ url_for('block_empresa', id=empresa.id) }}" method="post"
                                         style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Bloquear</button>
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>

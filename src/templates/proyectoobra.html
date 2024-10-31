@@ -1,0 +1,401 @@
+<!--IMPOTRAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}Nuevo Proyecto{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+
+{% endblock %}
+
+<!-- TITULO DE PAGINA -->
+{% block titutlo %}PROYECTOS{% endblock %}
+<!-- FIN DE TITULO -->
+
+
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+<!-- INICIA MODAL FILTRO PROYECTO-OBRA -->
+<div class="modal fade" id="miModalProyecto" tabindex="-1" aria-labelledby="miModalProyectoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="miModalProyectoLabel">Filtrar Proyecto / Obra</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Proyecto</label>
+                        <input type="text" class="form-control" id="PROYECTO" name="PROYECTO">
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Cliente</label>
+                        <input type="text" class="form-control" id="CLIENTE" name="CLIENTE">
+                        <div id="suggestions" style="width: auto; position: absolute;" class="list-group"></div>
+                        <input type="text" class="form-control" id="CLIENTE_ID" style="display: none;"
+                            name="CLIENTE_ID">
+                    </div>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                   
+                    <div class="mb-3">
+                        <label for="ESTATUS" class="form-label">Estado</label>
+                        <select class="form-select" id="ESTATUS" name="ESTATUS">
+                            <option value="">Seleccionar</option>
+                            <option value="activo">Activo</option>
+                            <option value="bloqueado">Bloqueado</option>
+                        </select>
+                    </div>
+                </div>
+               
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn botones">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- FIN MODAL FILTRO PROYECTO-OBRA -->
+<br>
+
+<br>
+<!--BOTONES ACCIONES-->
+<div class="container-fluid">
+    <div class="d-grid gap-2 d-md-flex justify-content-start">
+        <a class="btn botones" href="/AltaProyectoObra">
+            <i class="bi bi-tools"></i> NUEVO POYECTO
+        </a>
+        <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModalProyecto">
+            <i class="bi bi-search"></i> FILTRAR
+        </button>
+        <a class="btn botones" href="/Proyectos">
+            <i class="bi bi-eraser"></i> LIMPIAR FILTRO
+        </a>
+    </div>
+    <br>
+    <div class="table-container">
+        <table class="table">
+            <colgroup>
+                <col style="width: 30px;">
+                <col style="width: 300px;">
+                <col style="width: 300px;">
+                <col style="width: 150px;">
+                <col style="width: 125px;">
+                <col style="width: 300px;">
+                <col style="width: 125px;">
+                <col style="width: 150px;">
+            </colgroup>
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">PROYECTO</th>
+                    <th scope="col">CLIENTE</th>
+                    <th scope="col">ESTADO </th>
+                    <th scope="col">CALLE</th>
+                    <th scope="col">C. COMERCIAL</th>
+                    <th scope="col">ESTATUS</th>
+                    <th scope="col">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proyecto in proyectos %}
+                {% if proyecto.is_blocked %}
+                <!-- Esta BLOQUEADO-->
+                <tr class="table-secondary">
+                    <td>{{ proyecto.id }}</td>
+                    <td>{{ proyecto.nombre_proyecto }}</td>
+                    <td>{{ proyecto.id_cliente }}</td>
+                    <td>{{ proyecto.estado }}</td>
+                    <td>{{ proyecto.calle }}</td>
+                    <td>{{ proyecto.centro_comercial }}</td>
+                    <td>BLOQUEADO</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle"
+                                id="dropdownMenuButton{{ proyecto.id }}" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                ACCIONES
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ proyecto.id }}">
+                                <li>
+                                    <form action="{{ url_for('unblock_proyecto', id=proyecto.id) }}" method="post"
+                                        style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td>{{ proyecto.id }}</td>
+                    <td>{{ proyecto.nombre_proyecto }}</td>
+                    <td>{{ proyecto.id_cliente }}</td>
+                 
+                    <td>{{ proyecto.estado }}</td>
+                    <td>{{ proyecto.calle }}</td>
+                    <td>{{ proyecto.centro_comercial }}</td>
+                    <td>ACTIVO</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Acciones
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="">
+                                <li><a class="dropdown-item"
+                                        href="{{ url_for('edit_proyecto', id=proyecto.id) }}">EDITAR</a></li>
+                                <li>
+                                    <form action="{{ url_for('block_proyecto', id=proyecto.id) }}" method="post"
+                                        style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (() => {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            const forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM completamente cargado y analizado"); // Verificar si el DOM está cargado
+            // Encuentra el input de cliente y empresa en el DOM
+            var inputCliente = document.querySelector("#CLIENTE");
+            var inputClienteId = document.querySelector("#CLIENTE_ID");
+            var inputEmpresa = document.querySelector("#EMPRESA")
+            var inputEmpresaId = document.querySelector("#EMPRESA_ID")
+
+
+            if (inputCliente) {
+                buscar_clientes(inputCliente, inputClienteId);
+               
+            }
+
+
+        });
+        function buscar_clientes(inputCliente, InputClienteId) {
+            var clientesDisponibles = [];
+            var opcionSeleccionada = false;
+
+            inputCliente.addEventListener("input", function () {
+                var val = this.value;
+                console.log(`Valor del input: ${val}`);
+
+                cerrarListaAutocompletado();
+                opcionSeleccionada = false;
+
+                if (!val) {
+                    inputCliente.value = ''; // Limpiar empresa si se borra el texto
+                    InputClienteId.value = ''; // Limpiar cliente_id si se borra el texto
+                    console.log("Valor vacío, limpiando inputEmpresa y inputClienteId");
+                    return false;
+                }
+
+                // Depuración: Log para verificar la solicitud
+                console.log(`Buscando clientes con el valor: ${val}`);
+
+                fetch(`/api/buscar_cliente/?query=${val}`)
+                    .then(response => {
+                        console.log("Respuesta del servidor:", response); // Verificar la respuesta del servidor
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Depuración: Log para verificar los datos recibidos
+                        console.log("Datos recibidos de la API:", data);
+
+                        clientesDisponibles = data;
+                        var divItems = document.querySelector("#suggestions");
+
+                        if (divItems) {
+                            divItems.innerHTML = ''; // Limpiar elementos anteriores
+                            data.forEach(cliente => {
+                                var razonSocial = cliente.razon_social;
+                                var id = cliente.id;
+                                var regex = new RegExp(`(${val})`, 'gi');
+                                var item = document.createElement("div");
+                                item.classList.add("list-group-item"); // Añadir una clase para estilo, si es necesario
+
+                                // Resaltar coincidencias en la razón social
+                                item.innerHTML = razonSocial.replace(regex, "<strong>$1</strong>");
+                                item.innerHTML += `<input type='hidden' value='${razonSocial}' data-id='${id}'>
+                        
+                        `;
+
+                                item.addEventListener("click", function () {
+                                    console.log("Elemento seleccionado:", this.querySelector("input").value); // Verificar el valor del elemento seleccionado
+                                    inputCliente.value = this.querySelector("input").value;
+                                    InputClienteId.value = this.querySelector("input").getAttribute("data-id"); // Cambiado aquí
+
+                                    opcionSeleccionada = true;
+                                    cerrarListaAutocompletado();
+                                });
+
+                                divItems.appendChild(item);
+                            });
+                        } else {
+                            console.log("No se encontró el contenedor de sugerencias.");
+                        }
+                    })
+                    .catch(error => console.error("Error en la solicitud Fetch:", error));
+            });
+            inputCliente.addEventListener("blur", function () {
+                setTimeout(() => {
+                    if (!opcionSeleccionada) {
+                        inputCliente.value = '';
+                        InputClienteId.value = '';
+                        console.log("No se seleccionó ninguna opción, limpiando los inputs.");
+                    }
+                }, 200);
+            });
+
+            function cerrarListaAutocompletado() {
+                var items = document.querySelectorAll("#suggestions .list-group-item");
+                items.forEach(item => item.remove());
+                console.log("Lista de autocompletado cerrada.");
+            }
+
+            document.addEventListener("click", function (e) {
+                // Cerrar lista si se hace clic fuera del campo de entrada y sugerencias
+                if (!e.target.matches('#cliente') && !e.target.matches('#suggestions') && !e.target.closest('#suggestions')) {
+                    cerrarListaAutocompletado();
+                    console.log("Hizo clic fuera del campo de entrada y sugerencias.");
+                }
+            });
+
+        }
+/*
+        function buscar_empresa(inputEmpresa, inputEmpresaId) {
+            var empresasDisponibles = [];
+            var opcionSeleccionada = false;
+
+            inputEmpresa.addEventListener("input", function () {
+                var val = this.value;
+                console.log(`Valor del input: ${val}`);
+
+                cerrarListaAutocompletado();
+                opcionSeleccionada = false;
+
+                if (!val) {
+                    inputEmpresa.value = ''; // Limpiar empresa si se borra el texto
+                    inputEmpresaId.value = ''; // Limpiar cliente_id si se borra el texto
+                    console.log("Valor vacío, limpiando inputEmpresa y inputClienteId");
+                    return false;
+                }
+
+                // Depuración: Log para verificar la solicitud
+                console.log(`Buscando clientes con el valor: ${val}`);
+
+                fetch(`/api/buscar_empresa/?query=${val}`)
+                    .then(response => {
+                        console.log("Respuesta del servidor:", response); // Verificar la respuesta del servidor
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Depuración: Log para verificar los datos recibidos
+                        console.log("Datos recibidos de la API:", data);
+
+                        empresasDisponibles = data;
+                        var divItems = document.querySelector("#suggestions-empresas");
+
+                        if (divItems) {
+                            divItems.innerHTML = ''; // Limpiar elementos anteriores
+                            data.forEach(cliente => {
+                                var razonSocial = cliente.razon_social;
+                                var id = cliente.id;
+                                var regex = new RegExp(`(${val})`, 'gi');
+                                var item = document.createElement("div");
+                                item.classList.add("list-group-item"); // Añadir una clase para estilo, si es necesario
+
+                                // Resaltar coincidencias en la razón social
+                                item.innerHTML = razonSocial.replace(regex, "<strong>$1</strong>");
+                                item.innerHTML += `<input type='hidden' value='${razonSocial}' data-id='${id}'>
+                        
+                        `;
+
+                                item.addEventListener("click", function () {
+                                    console.log("Elemento seleccionado:", this.querySelector("input").value); // Verificar el valor del elemento seleccionado
+                                    inputEmpresa.value = this.querySelector("input").value;
+                                    inputEmpresaId.value = this.querySelector("input").getAttribute("data-id"); // Cambiado aquí
+
+                                    opcionSeleccionada = true;
+                                    cerrarListaAutocompletado();
+                                });
+
+                                divItems.appendChild(item);
+                            });
+                        } else {
+                            console.log("No se encontró el contenedor de sugerencias.");
+                        }
+                    })
+                    .catch(error => console.error("Error en la solicitud Fetch:", error));
+            });
+            inputEmpresa.addEventListener("blur", function () {
+                setTimeout(() => {
+                    if (!opcionSeleccionada) {
+                        inputEmpresa.value = '';
+                        inputEmpresaId.value = '';
+                        console.log("No se seleccionó ninguna opción, limpiando los inputs.");
+                    }
+                }, 200);
+            });
+
+            function cerrarListaAutocompletado() {
+                var items = document.querySelectorAll("#suggestions-empresas .list-group-item");
+                items.forEach(item => item.remove());
+                console.log("Lista de autocompletado cerrada.");
+            }
+
+            document.addEventListener("click", function (e) {
+                // Cerrar lista si se hace clic fuera del campo de entrada y sugerencias
+                if (!e.target.matches('#empresa') && !e.target.matches('#suggestions-empresas') && !e.target.closest('#suggestions-empresas')) {
+                    cerrarListaAutocompletado();
+                    console.log("Hizo clic fuera del campo de entrada y sugerencias.");
+                }
+            });
+
+        }
+
+*/
+    </script>
+
+
+    {% endblock %}

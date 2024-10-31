@@ -1,0 +1,412 @@
+{% extends "layout.html" %}
+{% block title %}Presupuesto{% endblock %}
+
+{% block customCSS %}
+<style>
+    body{
+        background-color:#d9e3eb;
+    }
+
+    /* No es necesario realizar grandes cambios en CSS, pero lo dejo por referencia */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    position: relative;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+    position: relative;
+}
+
+th.resizable {
+    position: relative;
+}
+
+th.resizable::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    background-color: #ddd;
+}
+
+    .thead-dark th {
+        background-color: #343a40;
+        color: #ffffff;
+        position: relative;
+        /* Para colocar los resizers */
+    }
+
+    th,
+    td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ddd;
+        position: relative;
+        /* Estilo para ajustar el tamaño */
+    }
+
+    /* Estilos para los resizers */
+    .resizer {
+        width: 5px;
+        cursor: col-resize;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+        background-color: #ddd;
+        /* Color visible para el resizer */
+    }
+
+    .currency-input {
+        text-align: right;
+        /* Alinea el texto a la derecha para valores monetarios */
+    }
+
+    .borderless {
+        border: none;
+        /* Elimina los bordes de los inputs */
+    }
+
+    tfoot tr {
+        background-color: #f8f9fa;
+        /* Color de fondo para el pie de tabla */
+    }
+
+    tfoot td {
+        padding: 10px;
+        /* Espaciado interno en las celdas del pie de tabla */
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle;
+        white-space: nowrap;
+        font-family: arial;
+    }
+
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #536c6f;
+        color: #ffff;
+        font-size: 12px;
+        font-family: arial;
+        z-index: 2;
+    }
+
+    #DETALLE_PRESUPUESTO tfoot {
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        z-index: 2;
+    }
+
+    .table-presupuesto {
+        max-height: 500px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+</style>
+{% endblock %}
+
+{% block titutlo %}PRESUPUESTO{% endblock %}
+
+{% block content %}
+
+<br>
+<div class="container-fluid">
+    <div id="modal_presupuesto">
+
+    </div>
+    <!-- Resumen de Materiales -->
+    <div class="card mb-3">
+        
+        <div class="card-body">
+            <div class="form-group row">
+                <!-- PROYECTO -->
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <div style="display: none;">
+                        <input type="text" class="form-control" id="EMPRESA_ID" name="EMPRESA_ID" style="display: none;" readonly>
+                        <input type="text" class="form-control" id="CLIENTE_ID" name="CLIENTE_ID" style="display: none;" readonly>
+                    </div>
+                    <label for="PROYECTO" class="form-label">NOMBRE PROYECTO:</label>
+                    <input type="text" class="form-control" id="PROYECTO" name="PROYECTO">
+                    <input type="text" class="form-control" id="PROYECTO_ID" name="PROYECTO_ID" style="display: none;"
+                        readonly>
+                    <div id="suggestions" class="list-group"></div> <!-- Div para mostrar las sugerencias -->
+                </div>
+                
+                <!-- PRESUPUESTO CLIENTE -->
+                <div class="offset-3 col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                    <label for="PRESUPUESTO_CLIENTE" class="form-label">PRESUPUESTO CLIENTE:</label>
+                    <input type="text" class="form-control  currency-input" id="PRESUPUESTO_CLIENTE" placeholder="$0.00"
+                        readonly>
+                </div>
+                 <!-- FALTA POR COBRAR -->
+                 <div class="offset-1 col-md-2 col-sm-12 col-xs-12">
+                    <label for="FALTA_COBRAR"  class="form-label">FALTA POR COBRAR: </label>
+                    <input type="text" class="form-control currency-input" id="FALTA_COBRAR"
+                    placeholder="$0.00">
+                </div>
+                <!-- PROCENTACEJE PAGADO -->
+                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                    <label for="PROCENTACEJE_POR_COBRAR" class="form-label">%</label>
+                    <input type="text" class="form-control currency-input" id="PROCENTACEJE_POR_COBRAR"
+                    placeholder="$0.00"name="PROCENTACEJE_POR_COBRAR">
+                </div>
+                
+                <!-- CLIENTE -->
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12" style="display: none;">
+                    <label for="CLIENTE" class="form-label">CLIENTE:</label>
+                    <input type="text" class="form-control " id="CLIENTE" name="CLIENTE">
+                    <input type="text" class="form-control" id="CLIENTE_ID" name="CLIENTE_ID" style="display: none;"
+                        readonly>
+                </div>
+                <!-- EMPRESA -->
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12" style="display: none ">
+                    <label for="EMPRESA" class="form-label">EMPRESA:</label>
+                    <input type="text" class="form-control " id="EMPRESA" name="EMPRESA" readonly>
+                    <input type="text" class="form-control" id="EMPRESA_ID" name="EMPRESA_ID" style="display: none;"
+                        readonly>
+                </div>
+                
+            </div>
+            <div class="form-group row">
+                <!--DIRECION DE OBRA-->
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <label for="DIRECCION" class="form-label">Dirección:</label>
+                    <input type="text" class="form-control borderless" id="DIRECCION" name="DIRECCION" value="Perisur, CDMX"
+                        readonly>
+                </div>
+                 <!-- PAGADO CLIENTE -->
+                 <div class="offset-3 col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                    <label for="PAGADO_CLIENTE" class="form-label">PAGADO CLIENTE: </label>
+                    <input type="text" class="form-control currency-input" id="PAGADO_CLIENTE" 
+                        name="PAGADO_CLIENTE"  placeholder="$0.00">
+                </div>
+                <!-- PROCENTACEJE    -->
+                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                    <label for="PROCENTACEJE_POR_COBRAR" class="form-label">%</label>
+                    <input type="text" class="form-control currency-input" id="PROCENTACEJE_POR_COBRAR"
+                    placeholder="%0" name="PROCENTACEJE_POR_COBRAR">
+                </div>
+                
+                 <!-- FALTA POR GASTAR -->
+                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                    <label for="FALTA_GASTAR" class="form-label">FALTA POR GASTAR: </label>
+                    <input type="text" class="form-control  currency-input" id="FALTA_GASTAR"
+                        placeholder="$0.00">
+                </div>
+                <!-- PROCENTACEJE    -->
+                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                    <label for="PROCENTACEJE_POR_COBRAR" class="form-label">%</label>
+                    <input type="text" class="form-control currency-input" id="PROCENTACEJE_POR_COBRAR"
+                        placeholder="%0" name="PROCENTACEJE_POR_COBRAR">
+                </div>
+                
+            </div>
+            <div class="form-group row">
+                <!-- DIRECTOR -->
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <label for="DIRECTOR" class="form-label">DIRECTOR:</label>
+                    <input type="text" class="form-control borderless" id="DIRECTOR" name="DIRECTOR" value="Jose Miguel Gomez"
+                        readonly>
+                </div>
+                <!-- GASTADO REAL -->
+                <div class="offset-3 col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                    <label for="GASTADO_REAL" class="form-label">GASTADO REAL: </label>
+                    <input type="text" class="form-control currency-input" id="GASTADO_REAL"
+                        placeholder="$0.00">
+                </div>
+                <!-- PROCENTACEJE    -->
+                <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                    <label for="PROCENTACEJE_POR_COBRAR" class="form-label">%</label>
+                    <input type="text" class="form-control currency-input" id="PROCENTACEJE_POR_COBRAR"
+                        placeholder="%0" name="PROCENTACEJE_POR_COBRAR">
+                </div>
+                
+                
+                <!-- ESTATUS DE PROYECTO -->
+                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                    <label for="ESTATUS_PROYECTO" class="form-label">ESTATUS OBRA:</label>
+                    <input type="text" name="ESTATUS_PROYECTO" class="form-control  currency-input" id="ESTATUS_PROYECTO"
+                        placeholder="$0.00" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+            <div class="form-group row">
+                <!-- % POR COBRAR -->
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <label style="text-align: center;">% POR CORBRAR</label>
+                    <div class="progress" role="progressbar" aria-label="Example with label" aria-valuemin="0"
+                        aria-valuemax="100">
+                        <div class="progress-bar bg-success" id="progress-bar-cobrar" style="width: 25%">25%</div>
+                    </div>
+                </div>
+                 <!-- % PAGADO -->
+                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <label style="text-align: center;">% PAGADO</label>
+                    <div class="progress" role="progressbar" aria-label="Example with label" aria-valuemin="0"
+                        aria-valuemax="100">
+                        <div class="progress-bar bg-success" id="progress-bar-pagado" style="width: 100%">100%</div>
+                    </div>
+                </div>
+                <!-- % GASTADO -->
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <label style="text-align: center;">% GASTADO</label>
+                    <div class="progress" role="progressbar" aria-label="Example with label" aria-valuemin="0"
+                        aria-valuemax="100">
+                        <div class="progress-bar bg-success" id="progress-bar-gastado" style="width: 25%">25%</div>
+                    </div>
+                </div>
+               <!-- % POR GASTAR -->
+               <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <label style="text-align: center;">% POR PAGAR</label>
+                <div class="progress" role="progressbar" aria-label="Example with label" aria-valuemin="0"
+                    aria-valuemax="100">
+                    <div class="progress-bar bg-success" id="progress-bar-gastar" style="width: 25%">25%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="container-fluid">
+                <br>
+                <div class="form-group row">
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <button class="btn botones add-row-btn" onclick="añadirConcepto()">AGREGAR PARTIDA</button>
+                    </div>
+                </div>
+                <br>
+                <div class="table-presupuesto">
+                    <table id="DETALLE_PRESUPUESTO" class="table table-hover table-borderless">
+                        <colgroup>
+                            <!-- Define el ancho de las columnas -->
+                            <col style="max-width: 50px;">
+                            <col style="max-width: 200px;">
+                            <col style="max-width: 300px;">
+                            <col style="max-width: 250px;">
+                            <col style="max-width: 200px;">
+                            <col style="max-width: 150px;">
+                            <col style="max-width: 100px;">
+                            <col style="max-width: 120px;">
+                            <col style="max-width: 100px;">
+                        </colgroup>
+                        <thead class="thead-dark" style="text-align: center;">
+                            <tr>
+                                <th class="resizable">NO</th>
+                                <th class="resizable">PARTIDA PRESUPUESTAL</th>
+                                <th class="resizable">CONTRATISTA / PROVEEDOR</th>
+                                <th class="resizable">PRESUPUESTO CLIENTE COSTO DIRECTO IVA INC.</th>
+                                <th class="resizable">PRESUPUESTO CONTRATISTAS IVA INC.</th>
+                                <th class="resizable">DIFERENCIA PRESUPUESTOS</th>
+                                <th class="resizable">CONTRATO FIRMADO</th>
+                                <th class="resizable">ESTATUS</th>
+                                <th class="resizable">ELIMINAR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                        </tbody>
+                        <tfoot>
+                            <!-- Pie de tabla -->
+                            
+                            <tr>
+                                <td colspan="2" class="text-end">
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">INICIO PROYECTO:</span>
+                                        <input type="date" name="FECHA_INICIO" class="form-control" id="FECHA_INICIO" aria-describedby="basic-addon1" readonly>
+                                    </div>        
+                                </td>
+                                <td  class="text-end"><strong>SUBTOTAL:</strong></td>
+                                <td><input type="text" id="subtotalCliente" class="form-control currency-input borderless" placeholder="$0.00" readonly></td>
+                                <td><input type="text" id="subtotalContratista" class="form-control currency-input borderless" placeholder="$0.00" readonly></td>
+                                <td><input type="text" id="subtotalDiferencia" class="form-control currency-input borderless" placeholder="$0.00" readonly></td>
+                                <td colspan="3"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-end">
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">FIN PROYECTO:</span>
+                                        <input type="date" name="FECHA_FIN" class="form-control " id="FECHA_FIN" aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                    
+                                </td>
+                                <td class="text-end"><strong>% INDIRECTO:</strong></td>
+                                <td><input type="number" id="porcentajeIndirecto" min='0' placeholder="%0" class="form-control" style="text-align: center;" placeholder="0" onchange="calcularTotalConIndirecto()"></td>
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-end">
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">TOTAL DÍAS:</span>
+                                        <input type="text" name="DIAS_TOTALES" class="form-control " id="DIAS_TOTALES" aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                </td>
+                                <td class="text-end"><strong>TOTAL INDIRECTO:</strong></td>
+                                <td><input type="text" id="totalIndirectoCliente"  placeholder="$0.00"class="form-control currency-input borderless" readonly></td>
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>TOTAL:</strong></td>
+                                <td><input type="text" id="totalCliente" placeholder="$0.00" class="form-control currency-input borderless" readonly></td>
+                                <td><input type="text" id="totalContratista" placeholder="$0.00" class="form-control currency-input borderless" readonly></td>
+                                <td><input type="text" id="totalDiferencia" placeholder="$0.00" class="form-control currency-input borderless" readonly></td>
+                                <td colspan="4"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+</div>
+<script src="{{ url_for('static', filename='JS/funciones_Presupuestos.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const table = document.getElementById('DETALLE_PRESUPUESTO');
+        const thElements = table.querySelectorAll('th.resizable');
+        
+        thElements.forEach((th, index) => {
+            const resizer = document.createElement('div');
+            resizer.classList.add('resizer');
+            th.appendChild(resizer);
+            
+            let startX, startWidth;
+    
+            resizer.addEventListener('mousedown', (e) => {
+                startX = e.pageX;
+                startWidth = th.offsetWidth;
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+            });
+    
+            function mouseMoveHandler(e) {
+                const newWidth = startWidth + (e.pageX - startX);
+                th.style.width = `${newWidth}px`;
+            }
+    
+            function mouseUpHandler() {
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            }
+        });
+    });
+    </script>
+{% endblock %}

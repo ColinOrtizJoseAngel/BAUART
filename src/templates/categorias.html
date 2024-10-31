@@ -1,0 +1,239 @@
+<!--IMPOTRAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}CATEGORIAS{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+
+{% endblock %}
+
+{% block titutlo %}CATEGORIAS{% endblock %}
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+<!-- INICIA MODAL FILTRO BANCO -->
+<div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="miModalLabel">FILTRAR CATEGORIA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="CATEGORIA" class="form-label">CATEGORIA</label>
+                        <input type="text" class="form-control" id="CATEGORIA" name="CATEGORIA">
+                    </div>
+                    <div class="mb-3">
+                        <label for="ESTATUS" class="form-label">ESTADO</label>
+                        <select class="form-select" id="ESTATUS" name="ESTATUS">
+                            <option value="">Seleccionar</option>
+                            <option value="activo">Activo</option>
+                            <option value="bloqueado">Bloqueado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- INICIA MODAL FILTRO BANCO -->
+
+<!-- INICIA MODAL ALTA categoria -->
+<div class="modal fade" id="altaBancoModal" tabindex="-1" aria-labelledby="altaBancoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="container text-center">
+                    <h4 class="modal-title" id="altaBancoModalLabel">ALTA CATEGORIA</h4>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="needs-validation" action="{{ url_for('categorias') }}" method="post" novalidate>
+                
+                <div class="modal-body">
+                    <div class="container">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <br>
+                        <div classzform-group row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <label for="CATEGORIA" class="form-label">CATEGORIA:</label>
+                                <input type="text" class="form-control" id="CATEGORIA" name="CATEGORIA" required>
+                                <div class="invalid-feedback">
+                                    Completa CATEGORIA
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CERRAR</button>
+                    <button type="submit" class="btn btn-primary">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- FIN ALTA BANCO -->
+
+<!-- Modal para editar especialidad -->
+<div class="modal fade" id="editBancoModal" tabindex="-1" aria-labelledby="editBancoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBancoModalLabel">EDITAR CATEGORIA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editBancoForm" action="" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" id="editBancoId" name="">
+                    
+                    <div class="mb-3">
+                        <label for="editBancoNombre" class="form-label">CATEGORIA</label>
+                        <input type="text" class="form-control" id="editBancoNombre" name="EDIT_CATEGORIA" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+<div class="container-fluid">
+    <br>
+    <!--BOTONES ACCIONES-->
+    <div class="d-grid gap-2 d-md-flex justify-content-start">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn botones" data-bs-toggle="modal" data-bs-target="#altaBancoModal">
+           Añadir
+       </button>
+       <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
+           <i class="bi bi-search"></i> Filtrar
+        </button>
+   </div>
+    <br>
+    <div class="table-container">
+        <table class="table table-borderless">
+            <thead class="table-dark">
+                <tr>
+                    <th class="col-3">ID</th>
+                    <th class="col-3">CATEGORIA</th>
+                    <th class="col-3">ESTATUS</th>
+                    <th class="col-3">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in categorias %}
+                {% if c._is_blocked %}
+                <tr class="table-secondary">
+                    <td>{{ c.idCategoria }}</td>
+                    <td>{{ c.categoria }}</td>
+                    <td>BLOQEUADO</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="{{ c.idCategoria }}" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="">
+                                <li>
+                                    <form action="{{ url_for('unblock_categoria', id=c.idCategoria) }}" method="post" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td>{{ c.idCategoria }}</td>
+                    <td>{{ c.categoria }}</td>
+                    <td>ACTIVO</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="">
+                                <li>
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editBancoModal" data-banco="{{ c.categoria }}" data-banco-id="{{ c.idCategoria }}">
+                                        EDITAR
+                                    </button>
+                                </li>
+                                <li>
+                                    <form action="{{ url_for('block_categoria', id=c.idCategoria) }}" method="post" >
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+       
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (() => {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+
+    // Script para completar el modal de edición con la especialidad seleccionada
+    const editBancoModal = document.getElementById('editBancoModal');
+    editBancoModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-banco-id');
+        const banco = button.getAttribute('data-banco');
+        console.log("SE EJCUENTA EDIT ESPECIALIDAD")
+        console.log("ESTA ES LA ESPECIALIDA"+id)
+
+
+
+        const inputBancoNombre = editBancoModal.querySelector('#editBancoNombre');
+        inputBancoNombre.value = banco;
+
+        const form = editBancoModal.querySelector('form');
+        console.log(form)
+        form.action = `/edit_categoria/${id}`;
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,303 @@
+<!--IMPORTAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}Alta proyecto{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/styele_alta_empresas.css') }}">
+{% endblock %}
+
+{% block titutlo %}ALTA OBRA{% endblock %}
+
+
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+
+<br>
+<form class="needs-validation" novalidate action="/AltaProyectoObra" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!--INICIA CARD CLIENTES -->
+    <div class="container-fluid">
+        <br>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <div class="text-center">
+                <button class="btn botones" type="submit">Confirmar</button>
+            </div>
+        </div>
+        <br>
+        <div class="card mb-3">
+            <div class="card-header">
+
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                                data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
+                                aria-selected="true">Información
+                                General</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="direccion-tab" data-bs-toggle="tab"
+                                data-bs-target="#direccion-tab-pane" type="button" role="tab"
+                                aria-controls="direccion-tab-pane" aria-selected="false">Direccion de
+                                Proyecto/Obra</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="ejecutiva-tab" data-bs-toggle="tab"
+                                data-bs-target="#ejecutiva-tab-pane" type="button" role="tab"
+                                aria-controls="ejecutiva-tab-pane" aria-selected="false">Direccion Ejecutiva</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel"
+                            aria-labelledby="home-tab" tabindex="0">
+                            <br>
+                            <!--Informacion General-->
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="cliente" class="form-label">CLIENTE*:</label>
+                                    <input class="form-control" name="cliente" id="cliente" required autocomplete="off" placeholder="BUSCAR">
+                                    <input class="form-control" name="cliente_id" id="cliente_id" style="display: none;" 
+                                        required>
+                                    <div class="invalid-feedback">BUSCA UN CLIENTE</div>
+                                    <div id="suggestions" style="width: auto; position: absolute;" class="list-group"></div>
+                                    <!-- Div para mostrar las sugerencias -->
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" style="display: none;">
+                                    <label for="empresa" class="form-label">EMPRESA:</label>
+                                    <input class="form-control" name="nombre_empresa" id="nombre_empresa" readonly required>
+                                    </input>
+                                    <input class="form-control" name="empresa" id="empresa" style="display: none;"
+                                        required>
+                                    </input>
+                                    <div class="invalid-feedback">
+                                        Seleccione un Empresa
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="nombre_proyecto" class="form-label">NOMBRE DEL PROYECTO U OBRA</label>
+                                    <input type="tel" class="form-control" name="nombre_proyecto" id="nombre_proyecto"
+                                        placeholder="Enter value" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA NOMBRE DEL PROYECTO
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="probra" class="form-label">SELECIONA UN PROYECTO U OBRA</label>
+                                    <select class="form-control" name="probra" id="probra" required>
+                                        <option value="" style="text-align: center;">------SELECCIONA------</option>
+                                        <option value="1">PROYECTO</option>
+                                        <option value="2">OBRA</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Seleccione que tipo sera
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="fecha_inicio" class="form-label">FECHA INICIO</label>
+                                    <input type="date" class="form-control" onchange="validarFechas()" name="fecha_inicio" id="fecha_inicio"
+                                        placeholder="Enter value" required>
+                                    <div class="invalid-feedback">
+                                        SELECIONE LA FECHA DE INICIO
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="fecha_fin" class="form-label">FECHA FIN</label>
+                                    <input type="date" class="form-control" onchange="validarFechas()" name="fecha_fin" id="fecha_fin"
+                                        placeholder="Enter value" required>
+                                    <div class="invalid-feedback">
+                                        SELECIONE LA FECHA FIN
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Fin info general-->
+                        </div>
+                        <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel"
+                            aria-labelledby="direccion-tab" tabindex="0">
+                            <br>
+                            <!--Direccion de proyecto/obra-->
+                            <div class="form-group row">
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <label for="CP" class="form-label">CP*</label>
+                                    <input type="text" class="form-control" id="CP" name="CP" ma
+                                        placeholder="Código Postal" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA CODIGO POSTAL
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="ESTADO" class="form-label">ESTADO*</label>
+                                    <input type="text" class="form-control" id="ESTADO" name="ESTADO"
+                                        placeholder="Estado" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA ESTADO
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
+                                    <input type="text" class="form-control" name="MUNICIPIO" id="MUNICIPIO"
+                                        placeholder="Municipio" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA MUNICIPIO
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <label for="PAIS" class="form-label">PAÍS*</label>
+                                    <input type="text" class="form-control" name="PAIS" id="PAIS" value="MÉXICO"
+                                        required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA PAÍS
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="CALLE" class="form-label">CALLE*</label>
+                                    <input type="text" class="form-control" id="CALLE" name="CALLE" maxlength="50"
+                                        placeholder="Calle" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA CALLE
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="NO_EXTERIOR" class="form-label">NO. EXTERIOR</label>
+                                    <input type="text" class="form-control" name="NO_EXTERIOR" id="NO_EXTERIOR"
+                                        placeholder="Numero Exterior" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA NÚMERO EXTERIOR
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="NO_EXTERIOR" class="form-label">NO. INTERIOR</label>
+                                    <input type="text" class="form-control" name="NO_INTERIOR" id="NO_INTERIOR"
+                                        placeholder="Numero Interior">
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="centro_comercial" class="form-label">CENTRO COMERCIAL</label>
+                                    <input type="text" class="form-control" name="centro_comercial"
+                                        id="centro_comercial" placeholder="Enter value">
+                                </div>
+                            </div>
+                            <!--Fin de direccion proyecto/obra-->
+                        </div>
+                        <div class="tab-pane fade" id="ejecutiva-tab-pane" role="tabpanel"
+                            aria-labelledby="ejecutiva-tab" tabindex="0">
+                            <br>
+                            <!--Direccion Ejecutiva-->
+                            <div class="form-group row">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <label for="nombre_director" class="form-label">Director</label>
+                                    <select class="form-control" name="nombre_director" id="nombre_director" required>
+                                        <option value="" style="text-align: center;">------Selecciona------</option>
+                                        <option value=0>Catalogo de DIRECTORES</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Selecciona un Director
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <label for="nombre_gerente" class="form-label">GERENTE</label>
+                                    <select class="form-control" name="nombre_gerente" id="nombre_gerente">
+                                        <option value="" style="text-align: center;">------Selecciona------</option>
+                                        <option value=0>Catalogo de GERENTES</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <label for="lider1_proyecto" class="form-label">LIDER DE PROYECTO 1*</label>
+                                    <select class="form-control" name="lider1_proyecto" id="lider1_proyecto" required>
+                                        <option value="">------SELECIONA------</option>
+                                        <option value=0>Catalogo de LIDER </option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Selecciona un Lider de Proyecto 1
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <label for="lider2_proyecto" class="form-label">LIDER DE PROYECYO 2</label>
+                                    <select class="form-control" name="lider2_proyecto" id="lider2_proyecto">
+                                        <option value="">------SELECIONA------</option>
+                                        <option value=0>Catalogo de LIDER</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!--Fin direccion ejecutiva-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+<br>
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (() => {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+<script>
+    
+  document.addEventListener('DOMContentLoaded', function () {
+    const fechaInicio = document.getElementById('fecha_inicio');
+    const fechaFin = document.getElementById('fecha_fin');
+
+    console.log("hola myundojnsaidhhaso"+fechaInicio)
+    // Validar las fechas cuando una de ellas cambia
+    fechaInicio.addEventListener('change', validarFechas);
+    fechaFin.addEventListener('change', validarFechas);
+
+    function validarFechas() {
+        const inicio = new Date(fechaInicio.value);
+        const fin = new Date(fechaFin.value);
+
+        if (inicio && fin) {
+            if (fin < inicio) {
+                fechaFin.setCustomValidity("La fecha de fin no puede ser menor que la fecha de inicio.");
+                fechaInicio.setCustomValidity("La fecha de inicio no puede ser mayor que la fecha de fin.");
+            } else {
+                // Restablecer el mensaje de error si las fechas son válidas
+                fechaFin.setCustomValidity("");
+                fechaInicio.setCustomValidity("");
+            }
+        }
+    }
+});
+</script>
+<script>
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Evita que se envíe el formulario al presionar Enter
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='JS/funciones_AltaProyectoObra.js') }}"></script>
+
+{% endblock %}
