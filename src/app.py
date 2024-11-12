@@ -1447,7 +1447,6 @@ def unblock_especialidades(id):
             return jsonify({'error': str(e)}), 500                
             
 
-# API LLENAR PORYECTO
 @app.route('/api/buscar_proyecto/', methods=['GET'])
 def buscar_proyecto():
     try:
@@ -1484,7 +1483,6 @@ def buscar_proyecto():
     except Exception as e:
         # Capturar cualquier otro error y devolverlo al cliente
         return jsonify({'error': f"Error inesperado: {str(e)}"}), 500
-    
     
 # API LLENAR FAMILIA
 @app.route('/api/llenar_familia/', methods=['GET'])
