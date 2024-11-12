@@ -1447,43 +1447,45 @@ def unblock_especialidades(id):
             return jsonify({'error': str(e)}), 500                
             
 
+# API LLENAR PORYECTO
 @app.route('/api/buscar_proyecto/', methods=['GET'])
 def buscar_proyecto():
     try:
-        query = request.args.get('query', '').strip()
-        proyectos = ModelProyectoObra.get_proyectos_not_block(db)  # Cargar proyectos desde la base de datos
+        query = request.args.get('query', '')
+        proyectos = ModelProyectoObra.get_proyectos_not_block(db)
         proyectos_filtradas = []
 
         for p in proyectos:
-            # Verificar si el nombre del proyecto coincide con la consulta
             if query.lower() in p.nombre_proyecto.lower():
-                # Validar que las fechas sean válidas
-                if p.fecha_inicio and p.fecha_fin:
-                    # Calcular semanas entre las fechas
-                    diferencia = (p.fecha_fin - p.fecha_inicio).days
-                    semanas = round(diferencia / 7)
+                # Definir las fechas como cadenas para evitar el error de `datetime.date`
+                fecha_inicio = datetime.strptime(str(p.fecha_inicio), '%Y-%m-%d')
+                fecha_fin = datetime.strptime(str(p.fecha_fin), '%Y-%m-%d')
+                
+                # Calcular la diferencia entre las dos fechas
+                diferencia = fecha_fin - fecha_inicio
+                semanas = round(diferencia.days / 7)
 
-                    proyectos_filtradas.append({
-                        'id': p.id,
-                        'id_cliente': p.id_cliente,
-                        'nombre_proyecto': p.nombre_proyecto,
-                        'fecha_inicio': p.fecha_inicio.strftime('%Y-%m-%d'),  # Convertir a cadena
-                        'fecha_fin': p.fecha_fin.strftime('%Y-%m-%d'),        # Convertir a cadena
-                        'semanas': semanas,
-                        'director_proyecto': p.director_proyecto
-                    })
-
-        # Devolver lista filtrada o vacía si no hay resultados
-        return jsonify(proyectos_filtradas), 200
-
-    except AttributeError as attr_error:
-        # Manejar errores de atributos, como campos inexistentes
-        return jsonify({'error': f"Error en los datos: {attr_error}"}), 500
+                proyectos_filtradas.append({
+                    'id': p.id,
+                    'id_cliente': p.id_cliente,
+                    'nombre_proyecto': p.nombre_proyecto,
+                    'fecha_inicio': p.fecha_inicio,
+                    'fecha_fin': p.fecha_fin,
+                    'semanas': semanas,
+                    'director_proyecto': p.director_proyecto
+                })
+        
+        if proyectos_filtradas:
+            return jsonify(proyectos_filtradas), 200
+        else:
+            return jsonify([]), 200
 
     except Exception as e:
-        # Capturar cualquier otro error y devolverlo al cliente
-        return jsonify({'error': f"Error inesperado: {str(e)}"}), 500
+        return jsonify({'error': str(e)}), 500
+
     
+
+
 # API LLENAR FAMILIA
 @app.route('/api/llenar_familia/', methods=['GET'])
 def get_all_familia():
