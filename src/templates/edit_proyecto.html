@@ -15,6 +15,7 @@
 <br>
 <form class="needs-validation" novalidate action="{{ url_for('edit_proyecto', id=proyecto.id) }}"  method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="token" value="{{ token }}">
 
     <!--INICIA CARD CLIENTES -->
     <div class="container-fluid">

@@ -1,0 +1,248 @@
+{% extends "layout.html" %}
+{% block title %}CONSULTAR REQUISICIONES{% endblock %}
+{% block customCSS %}
+{% endblock %}
+
+{% block titutlo %}REQUISICIONES{% endblock %}
+
+{% block content %}
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar esta requisición y todas sus partidas? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal para Filtrar Requisiciones -->
+<div class="modal fade" id="filtroRequisicionesModal" tabindex="-1" aria-labelledby="filtroRequisicionesLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filtroRequisicionesLabel">FILTRAR REQUISICIONES</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('ConsultarRequisicionesPartidas_view') }}" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="proyecto" class="form-label">Nombre del Proyecto</label>
+                        <input type="text" class="form-control" id="proyecto" name="proyecto">
+                    </div>
+                    <div class="mb-3">
+                        <label for="concepto" class="form-label">Concepto</label>
+                        <input type="text" class="form-control" id="concepto" name="concepto">
+                    </div>
+                    <div class="mb-3">
+                        <label for="estatus" class="form-label">Estatus</label>
+                        <select class="form-select" id="estatus" name="estatus">
+                            <option value="">Seleccionar</option>
+                            <option value="0">Pendiente</option>
+                            <option value="1">Recibido</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn botones">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<br>
+<div class="container-fluid">
+    <div class="d-grid gap-2 d-md-flex justify-content-start">
+        <a class="btn botones" href="/Requisiciones">
+            <i class="bi bi-building-fill-add"></i> NUEVA REQUISICIÓN
+        </a>
+        <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#filtroRequisicionesModal">
+            <i class="bi bi-search"></i> FILTRAR
+        </button>
+        <a class="btn botones" href="{{ url_for('ConsultarRequisicionesPartidas_view') }}">
+            <i class="bi bi-eraser"></i> LIMPIAR FILTRO
+        </a>
+    </div>
+    <br>
+    <div class="table-container">
+        <table class="table table-hover">
+            <colgroup>
+                <col style="width: 30px;">
+                <col style="width: 200px;">
+                <col style="width: 150px;">
+                <col style="width: 150px;">
+                <col style="width: 100px;">
+                <col style="width: 125px;">
+            </colgroup>
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">PROYECTO</th>
+                    <th scope="col">CONCEPTO</th>
+                    <th scope="col">FECHA LLEGADA</th>
+                    <th scope="col">ESTATUS</th>
+                    <th scope="col">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for requisicion in requisiciones %}
+                <tr data-id="{{ requisicion.id }}">
+                    <td onclick="showPartidasModal(this.parentElement)">{{ requisicion.id }}</td>
+                    <td onclick="showPartidasModal(this.parentElement)">{{ requisicion.nombre_proyecto }}</td>
+                    <td onclick="showPartidasModal(this.parentElement)">{{ requisicion.concepto }}</td>
+                    <td onclick="showPartidasModal(this.parentElement)">{{ requisicion.fecha_recibido if requisicion.status == 1 else 'N/A' }}</td>
+                    <td onclick="showPartidasModal(this.parentElement)">{{ 'Recibido' if requisicion.status == 1 else 'Pendiente' }}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ requisicion.id }}"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ requisicion.id }}">
+                                <li>
+                                    <form action="{{ url_for('update_requisicion_status', id=requisicion.id) }}" method="post" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="status" value="0">
+                                        <button type="submit" class="dropdown-item">Pendiente</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form action="{{ url_for('update_requisicion_status', id=requisicion.id) }}" method="post" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="status" value="1">
+                                        <button type="submit" class="dropdown-item">Recibido</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item text-danger" onclick="confirmDelete('{{ requisicion.id }}')">Eliminar</button>
+                                </li>
+                                <!-- Nueva opción para Generar Orden de Compra -->
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('orden_de_compra', requisicion_id=requisicion.id) }}">Generar Orden de Compra</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>                    
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+    </div>
+</div>
+
+<!-- Modal for Partitions -->
+<div class="modal fade" id="partidasModal" tabindex="-1" aria-labelledby="partidasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="partidasModalLabel">Particiones de la Requisición</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>DESCRIPCIÓN</th>
+                            <th>UNIDAD</th>
+                            <th>CANTIDAD</th>
+                            <th>FECHA CREACIÓN</th>
+                            <th>DETALLES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="partidasTableBody">
+                        <!-- Data will be injected here via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function showPartidasModal(row) {
+        // Get the requisition ID from the data attribute
+        const requisicionId = row.getAttribute("data-id");
+        
+        // Fetch partition data for the requisition
+        fetch(`/get_partidas/${requisicionId}`)
+            .then(response => response.json())
+            .then(data => {
+                // Populate the modal table with partition data
+                const tableBody = document.getElementById("partidasTableBody");
+                tableBody.innerHTML = ""; // Clear any previous data
+                
+                data.partidas.forEach(partida => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${partida.id}</td>
+                        <td>${partida.descripcion}</td>
+                        <td>${partida.unidad}</td>
+                        <td>${partida.cantidad}</td>
+                        <td>${partida.fecha_creacion}</td>
+                        <td>${partida.detalles}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                // Show the modal
+                new bootstrap.Modal(document.getElementById("partidasModal")).show();
+            })
+            .catch(error => console.error("Error fetching partition data:", error));
+    }
+    
+    function confirmDelete(requisicionId) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción eliminará la requisición y todas sus partidas. No se puede deshacer.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/delete_requisicion/${requisicionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        Swal.fire(
+                            'Eliminado',
+                            'La requisición y sus partidas han sido eliminadas.',
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            'Hubo un problema al eliminar la requisición.',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => console.error("Error al eliminar la requisición:", error));
+            }
+        });
+    }
+</script>
+{% endblock %}

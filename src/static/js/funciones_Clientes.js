@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   data.forEach((cfdi) => {
                       const option = document.createElement("option");
                       cfdis = `${cfdi.nombre} - ${cfdi.decripcion}`;
-                      option.value = cfdi.id;
+                      option.value = cfdi.clave;
                       option.textContent = cfdis  // Corregí la concatenación de clave y descripción
                       select.appendChild(option);
                   });
@@ -141,7 +141,7 @@ function añadirContacto() {
       </div>`;
 
   cell6.innerHTML =
-    '<div class="d-flex align-items-center justify-content-center" style="height: 100%;margin-top: 30px;">' +
+    '<div class="d-flex align-items-center justify-content-center" style="height: 100%;">' +
     '<button onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i></button>' +
     "</div>";
 }
@@ -184,7 +184,7 @@ function añadirCuenta() {
       </div>`;
 
   cell4.innerHTML = `
-      <div class="d-flex align-items-center justify-content-center" style="height: 100%;margin-top: 30px;">
+      <div class="d-flex align-items-center justify-content-center" style="height: 100%;">
         <button onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i> </button>
       </div>`;
 

@@ -29,12 +29,7 @@
             <a class="navbar-brand" href="#">
                 <img src="{{ url_for('static', filename='img/Bauart-Logo-Pantalla-RGB.MED.JPG') }}" alt="Logo" class="imgnav">
             </a>
-            <div class="ms-auto d-flex flex-row align-items-center user-info">
-                <p class="me-3 mb-0">Usuario: Admin</p>
-                <br>
-                <p  class="me-3 mb-0">Empresa: 01</p>
-                <a href="" class="btn btn-outline-dark"><i class="bi bi-door-open"></i> Cerrar sesión</a>
-            </div>
+            
         </div>
     </nav>
     <!--FIN NAVAR-->
@@ -159,7 +154,7 @@
                     <a href="#compras" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-cart"></i> Compras</a>
                     <ul class="collapse list-unstyled" id="compras">
                         <li>
-                            <a href="#"><i class="bi bi-list-ol"></i> Requisiciones</a>
+                            <a href="/ConsultarRequisiciones"><i class="bi bi-list-ol"></i> Requisiciones</a>
                         </li>
                     </ul>
                 </li>
@@ -175,6 +170,21 @@
                     </ul>
                 </li>
             </ul>
+        </div>
+        <div class="offcanvas-end">
+            <div class="container-fluid info_user">
+                {% if current_user.is_authenticated %}
+                <p>USUARIO: {{ current_user.usuario }}</p> 
+                <p>EMPRESA: 0{{ current_user.id_empresa}}</p>
+                <p>CORREO: {{ current_user.email}}</p>
+                
+                {% endif %}
+                <div class="text-center">
+                    <a href="{{ url_for('logout') }}" class="btn"><i class="bi bi-person-walking"></i> CERRAR SESIÓN</a>
+                </div>
+                <br>
+            </div>
+
         </div>
     </div>
     <!--FIN MENU-->

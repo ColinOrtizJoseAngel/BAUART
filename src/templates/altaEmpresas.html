@@ -15,6 +15,7 @@
 <br>
 <form class="needs-validation" novalidate accion="/Altaempresas" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="token" value="{{ token }}">
     <div class="container-fluid">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <div class="text-center">
@@ -328,7 +329,7 @@
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="ESTADO" class="form-label">ESTADO</label>
-                                    <select id="ESTADO" class="form-control" name="estado[]" required>
+                                    <select id="ESTADO" class="form-control" name="ESTADO" required>
                                         <option value="" style="text-align: center;">SELECIONA</option>
                                         <option value="AGUASCALIENTES">AGUASCALIENTES</option>
                                         <option value="BAJA CALIFORNIA">BAJA CALIFORNIA</option>

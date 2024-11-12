@@ -51,6 +51,8 @@
             <form action="/Empleados" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="token" value="{{ token }}">
+
                     <div class="mb-3">
                         <label for="NOMBRE" class="form-label">NOMBRE</label>
                         <input type="text" class="form-control" id="NOMBRE" name="NOMBRE">

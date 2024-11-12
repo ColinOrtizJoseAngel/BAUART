@@ -118,14 +118,14 @@
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ cliente.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ cliente.id }}">
                                 <li>
                                     <form action="{{ url_for('unblock_cliente', id=cliente.id) }}" method="post"
                                         style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Desbloquear</button>
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>
@@ -157,16 +157,16 @@
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ cliente.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ cliente.id }}">
                                 <li><a class="dropdown-item"
-                                        href="{{ url_for('edit_cliente', id=cliente.id) }}">Editar</a></li>
+                                        href="{{ url_for('edit_cliente', id=cliente.id) }}">EDITAR</a></li>
                                 <li>
                                     <form action="{{ url_for('block_cliente', id=cliente.id) }}" method="post"
                                         style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Bloquear</button>
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>

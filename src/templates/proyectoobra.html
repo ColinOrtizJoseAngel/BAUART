@@ -21,9 +21,11 @@
                 <h5 class="modal-title" id="miModalProyectoLabel">Filtrar Proyecto / Obra</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" method="post">
+            <form action="/Proyectos" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="token" value="{{ token }}">
+
                     <div class="mb-3">
                         <label for="categoria" class="form-label">Proyecto</label>
                         <input type="text" class="form-control" id="PROYECTO" name="PROYECTO">
@@ -35,8 +37,6 @@
                         <input type="text" class="form-control" id="CLIENTE_ID" style="display: none;"
                             name="CLIENTE_ID">
                     </div>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                   
                     <div class="mb-3">
                         <label for="ESTATUS" class="form-label">Estado</label>
                         <select class="form-select" id="ESTATUS" name="ESTATUS">
@@ -76,7 +76,7 @@
     <div class="table-container">
         <table class="table">
             <colgroup>
-                <col style="width: 30px;">
+                <col style="width: 40px;">
                 <col style="width: 300px;">
                 <col style="width: 300px;">
                 <col style="width: 150px;">

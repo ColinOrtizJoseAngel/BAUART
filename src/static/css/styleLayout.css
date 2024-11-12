@@ -119,6 +119,7 @@ ul ul a {
 
 body{
   
+  text-transform: uppercase;
   background-color:#d9e3eb;
   font-size: 12px;
   font-family: Arial, Helvetica, sans-serif;

@@ -152,7 +152,7 @@ function añadirRegistro() {
           SELECIONA UN ESTADO
         </div>`;
   cell3.innerHTML =
-    '<div class="d-flex align-items-center justify-content-center" style="height: 100%;margin-top: 30px;">' +
+    '<div class="d-flex align-items-center justify-content-center">' +
     '<button onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i></button>' +
     "</div>";
 }
@@ -197,7 +197,7 @@ function añadirCuentasBancarias() {
       </div>
     `;
   cell4.innerHTML = `
-    <div class="d-flex align-items-center justify-content-center" style="height: 100%;margin-top: 30px;">
+    <div class="d-flex align-items-center justify-content-center" style="height: 100%;">
       <button onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i></button>
     </div>
     `;

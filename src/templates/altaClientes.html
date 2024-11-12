@@ -14,7 +14,7 @@
 <br>
 <form class="needs-validation" novalidate accion="/Altacliente" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
+    <input type="hidden" name="token" value="{{ token }}">
     <div class="container-fluid">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <div class="text-center">
@@ -222,7 +222,7 @@
                             </div>
                             
                             <br>
-                            <div class="container-fluid">
+                            <div class="table-container">
                                 <table class="table table-borderless" id="Contactos">
                                     <colgroup>
                                         <!-- Agrega más columnas según sea necesario -->
@@ -363,7 +363,7 @@
                                 </div>
                             </div>
                             <br>
-                            <div class="container-fluid">
+                            <div class="table-container">
                                 <table class="table table-borderless" id="Cuentas">
                                     <colgroup>
                                         <!-- Agrega más columnas según sea necesario -->

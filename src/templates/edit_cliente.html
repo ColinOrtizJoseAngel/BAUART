@@ -7,13 +7,15 @@
 
 {% endblock %}
 
-{% block titutlo %}ALTA CLIENTE{% endblock %}
+{% block titutlo %}EDITAR CLIENTE{% endblock %}
 
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 <br>
 <form class="needs-validation" novalidate accion="/Altacliente" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="token" value="{{ token }}">
+    
 
     <div class="container">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -47,27 +49,27 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
                                 data-bs-target="#informacion-tab-pane" type="button" role="tab"
-                                aria-controls="informacion-tab-pane" aria-selected="true">Cliente</button>
+                                aria-controls="informacion-tab-pane" aria-selected="true">CLIENTE</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
                                 data-bs-target="#direccion-tab-pane" type="button" role="tab"
-                                aria-controls="direccion-tab-pane" aria-selected="false">Dirección</button>
+                                aria-controls="direccion-tab-pane" aria-selected="false">DIRECCIÓN</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
                                 data-bs-target="#contacto-tab-pane" type="button" role="tab"
-                                aria-controls="contacto-tab-pane" aria-selected="false">Contacto</button>
+                                aria-controls="contacto-tab-pane" aria-selected="false">CONTACTO</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
                                 data-bs-target="#facturacion-tab-pane" type="button" role="tab"
-                                aria-controls="facturacion-tab-pane" aria-selected="false">Facturación</button>
+                                aria-controls="facturacion-tab-pane" aria-selected="false">FACTURACIÓN</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
                                 data-bs-target="#Cuentas-tab-pane" type="button" role="tab"
-                                aria-controls="Cuentas-tab-pane" aria-selected="false">Cuentas</button>
+                                aria-controls="Cuentas-tab-pane" aria-selected="false">CUENTAS</button>
                         </li>
                     </ul>
                     <!--INFORMACIÓN GENERAL-->
@@ -188,7 +190,7 @@
                             </div>
                             
                             <br>
-                            <div class="container-fluid">
+                            <div class="table-container">
                                 <table class="table table-borderless" id="Contactos">
                                     <colgroup>
                                         <!-- Agrega más columnas según sea necesario -->
@@ -311,12 +313,17 @@
                                 <div class="col-lg-6 col-md-5 col-sm-12 col-xs-12">
                                     <label for="USO_CFDI" class="form-label">Uso de CFDI:</label>
                                     <select class="form-control" name="USO_CFDI" id="USO_CFDI" required>
-                                        <option value="{{ uso_cfdi.id }}">{{ uso_cfdi.clave }} - {{ uso_cfdi.decripcion }}</option>
+                                    {% for u in uso_cfdi %}
+                                    <option value="{{ u.id }}" {{ 'selected' if cliente.uso_cfdi_id == u.id else '' }}>
+                                        {{ u.id }} - {{ u.decripcion }}
+                                    </option>
+                                    {% endfor %}
                                     </select>
                                     <div class="invalid-feedback">
                                         Selecciona Uso de CFDI
                                     </div>
-                                </div>                                
+                                </div>
+                                                              
                             </div>
                             <br>
                             <p class="h6">CONDICIONES COMERCIALES</p>
@@ -372,7 +379,7 @@
                                 </div>
                             </div>
                             <br>
-                            <div class="container-fluid">
+                            <div class="table-container">
                                 <table class="table table-borderless" id="Cuentas">
                                     <colgroup>
                                         <!-- Agrega más columnas según sea necesario -->
@@ -396,7 +403,9 @@
                                             <td>
                                                 <select name="ID_BANCO[]" class="form-control" style="text-align: center;" required>
                                                     {% for b in bancos %}
-                                                        <option value="{{ b.id }}" {% if cuenta.id_banco == b.id %}selected{% endif %}>{{ b.nombre }}</option>
+                                                        <option value="{{ b.id }}" {{ 'selected' if cuenta.id_banco == b.id else '' }}>
+                                                            {{ b.nombre }}
+                                                        </option>
                                                     {% endfor %}
                                                 </select>
                                                 <div class="invalid-feedback">
@@ -446,41 +455,7 @@
 </form>
 </div>
 <br>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
 
-        function cargaCFDI() {
-            fetch("/api/obtener_cfdi/")
-                .then((response) => {
-                    if (!response.ok) {
-                        console.error(`Error: ${response.status} - ${response.statusText}`);
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    console.log(data);
-                    const select = document.querySelector("#USO_CFDI");
-
-                    // Asegúrate de que el elemento select exista antes de intentar manipularlo
-                    if (select) {
-                        data.forEach((cfdi) => {
-                            const option = document.createElement("option");
-                            cfdis = `${cfdi.nombre} - ${cfdi.decripcion}`;
-                            option.value = cfdi.id;
-                            option.textContent = cfdis  // Corregí la concatenación de clave y descripción
-                            select.appendChild(option);
-                        });
-                    } else {
-                        console.error("No se encontró el elemento select con el ID #USO_CFDI.");
-                    }
-                })
-                .catch((error) => console.error("Error:", error));
-        }
-
-        cargaCFDI();
-    });
-</script>
 <script>
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (() => {
@@ -506,6 +481,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script src="{{ url_for('static', filename='JS/funciones_Clientes.js') }}"></script>
+<script src="{{ url_for('static', filename='JS/FuncionesEditarCliente.js') }}"></script>
 
 {% endblock %}

@@ -15,6 +15,8 @@
 <br>
 <form class="needs-validation" novalidate action="/AltaProyectoObra" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="token" value="{{ token }}">
+
 
     <!--INICIA CARD CLIENTES -->
     <div class="container-fluid">
@@ -35,19 +37,17 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
                                 data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
-                                aria-selected="true">Información
-                                General</button>
+                                aria-selected="true">INFORMACIÓN GENERAL</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="direccion-tab" data-bs-toggle="tab"
                                 data-bs-target="#direccion-tab-pane" type="button" role="tab"
-                                aria-controls="direccion-tab-pane" aria-selected="false">Direccion de
-                                Proyecto/Obra</button>
+                                aria-controls="direccion-tab-pane" aria-selected="false">DIRECCIÓN PROYECTO/OBRA</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="ejecutiva-tab" data-bs-toggle="tab"
                                 data-bs-target="#ejecutiva-tab-pane" type="button" role="tab"
-                                aria-controls="ejecutiva-tab-pane" aria-selected="false">Direccion Ejecutiva</button>
+                                aria-controls="ejecutiva-tab-pane" aria-selected="false">DIRECCION EJECUTIVA</button>
                         </li>
                     </ul>
                     <div class="tab-content" id="myTabContent">
@@ -59,7 +59,7 @@
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="cliente" class="form-label">CLIENTE*:</label>
                                     <input class="form-control" name="cliente" id="cliente" required autocomplete="off" placeholder="BUSCAR">
-                                    <input class="form-control" name="cliente_id" id="cliente_id" style="display: none;" 
+                                    <input class="form-control" name="cliente_id" id="cliente_id" style="display: none; width: 100%;" 
                                         required>
                                     <div class="invalid-feedback">BUSCA UN CLIENTE</div>
                                     <div id="suggestions" style="width: auto; position: absolute;" class="list-group"></div>

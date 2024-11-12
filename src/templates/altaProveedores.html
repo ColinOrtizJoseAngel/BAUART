@@ -13,6 +13,8 @@
 <br>
 <form class="needs-validation" novalidate action="/Altaproveedores" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="token" value="{{ token }}">
+
         <div class="container-fluid">
             <div  class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <div class="text-center">

@@ -16,7 +16,7 @@
     <style>
 
         body {
-            background-image: url("/static/img/fondo.png");;
+            background-image: url("/static/img/fondo.png");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -78,7 +78,18 @@
                     <div class="card-body p-4">
                         <h5 class="text-center mb-4">INICIO DE SESIÓN</h5>
                         <form action="/login" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="mb-3">
+                                {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                <br>
+                                {% for message in messages %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                {% endwith %}
                                 <label for="USUARIO" class="form-label">USUARIO</label>
                                 <input type="text" class="form-control" id="USUARIO" name="USUARIO" required
                                     placeholder="INGRESA TU USUARIO">

@@ -3,6 +3,12 @@
 {% block title %}Nuevo Proyecto{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
+<style>
+    body {
+    background-image: url("/static/img/fondo.png");;
+    }
+</style>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='CSS/styleHome.css') }}">
 {% endblock %}
 
