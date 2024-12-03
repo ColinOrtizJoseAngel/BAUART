@@ -91,76 +91,30 @@
                     <th scope="col">CLIENTE</th>
                     <th scope="col">PROYECTO</th>
                     <th scope="col">EMPRESA</th>
-                    <!--<th scope="col">No. Registro 1</th>-->
                     <th scope="col">TOTLA PRESUPUSTO CLIENTE</th>
                     <th scope="col">TOTAL PRESUPUESTO PROVEEDOR</th>
                     <th scope="col">DIREFENCIA</th>
-                    <th scope="col">ACCIONES</th>
                 </tr>
             </thead>
             <tbody>
-                {% for empresa in empresas %}
-                {% if empresa.is_blocked %}
-                <tr class="table-secondary">
-                    <td>{{ empresa.id }}</td>
-                    <td>{{ empresa.razon_social }}</td>
-                    <td>{{ empresa.rfc }}</td>
-                    <td>{{ empresa.repse }}</td>
-                    <!--<td>{{ empresa.noregis1 }}</td>-->
-                    <td>{{ empresa.cp }}</td>
-                    <td>
-                        BLOQUEADO
-                    </td>
-                    <td>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ empresa.id }}"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                ACCIONES
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ empresa.id }}">
-                                <li>
-                                    <form action="{{ url_for('unblock_empresa', id=empresa.id) }}" method="post"
-                                        style="display:inline;">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-                {% else %}
+                {% for p in presupuestos %}
                 <tr>
-                    <td>{{ empresa.id }}</td>
-                    <td>{{ empresa.razon_social }}</td>
-                    <td>{{ empresa.rfc }}</td>
-                    <td>{{ empresa.repse }}</td>
-                    <!--<td>{{ empresa.noregis1 }}</td>-->
-                    <td>{{ empresa.cp }}</td>
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.proyecto }}</td>
+                    <td>{{ p.cliente }}</td>
+                    <td>{{ p.total_cliente_iva }}</td>
+                    <td>{{ p.cp }}</td>
                     <td>
-                        ACTIVO
+                        {% if p.estatus == 0 %}
+                            PRESUPUESTO CARGADO
+                        {% elif p.estatus == 1 %}
+                            PRESUPUESTO APROBADO POR DIRECTOR
+                        {% elif p.estatus == 2 %}
+                            PRESUPUESTO EN PROCESO
+                        {% else %}
+                            ESTATUS DESCONOCIDO
+                        {% endif %}
                     </td>
-                    <td>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ empresa.id }}"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                ACCIONES
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ empresa.id }}">
-                                <li><a class="dropdown-item"
-                                        href="{{ url_for('edit_empresa', id=empresa.id) }}">EDITAR</a></li>
-                                <li>
-                                    <form action="{{ url_for('block_empresa', id=empresa.id) }}" method="post"
-                                        style="display:inline;">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-                {% endif %}
                 {% endfor %}
 
             </tbody>

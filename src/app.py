@@ -2481,6 +2481,7 @@ def get_bauart_presupuestos(proyecto_id):
         print(f"Error al obtener presupuestos Bauart: {e}")
         return jsonify({"error": f"Error al obtener presupuestos Bauart: {e}"}), 500
 
+
 @app.route('/api/get_bauart_conceptos/<int:proyecto_id>/<int:presupuesto_id>/<int:detalle_id>', methods=['GET'])
 def get_bauart_conceptos(proyecto_id, presupuesto_id, detalle_id):
     try:

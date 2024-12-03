@@ -135,3 +135,21 @@ class ModelMateriales:
             return list_materiales
         except Exception as ex:
             raise Exception(ex)
+
+    @classmethod
+    def get_material_by_name(cls, db, material_name):
+            try:
+                cursor = db.cursor()
+                # Consulta para buscar el material por su nombre
+                query = "SELECT MATERIAL, UNIDAD_MEDIDA FROM CATALOGO_MATERIALES_FAMILIAS WHERE MATERIAL = ? AND IS_BLOCKED = 0"
+                cursor.execute(query, (material_name,))
+                row = cursor.fetchone()
+                # Si se encuentra el material, retornamos un diccionario con los datos
+                if row:
+                    return {
+                        "material": row[0],
+                        "unidad_medida": row[1]
+                    }
+                return None  # Si no se encuentra, retornamos None
+            except Exception as ex:
+                raise Exception(f"Error al obtener material por nombre: {ex}")
