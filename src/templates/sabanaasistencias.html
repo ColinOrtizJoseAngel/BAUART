@@ -1,0 +1,428 @@
+{% extends "layout.html" %}
+{% block title %}Consultar Asistencia{% endblock %}
+{% block customCSS %}
+<style>
+    .header-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        flex-direction: column;
+        gap: 15px;
+        max-width: 600px;
+        margin: 0 auto 20px;
+    }
+
+    .week-selector {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .week-selector button {
+        background-color: #0f2d3a;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .week-selector button:hover {
+        background-color: white;
+        color: #0f2d3a;
+        border: 1px solid #0f2d3a;
+    }
+
+    .week-selector span {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .export-button {
+        background-color: #0f2d3a;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .export-button:hover {
+        background-color: white;
+        color: #0f2d3a;
+        border: 1px solid #0f2d3a;
+    }
+
+
+    #map {
+        width: 100%;
+        height: 300px; /* Ajusta según tu diseño */
+        margin-top: 10px;
+    }
+    
+    #projectInput {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+</style>
+
+{% endblock %}
+
+{% block titutlo %}SÁBANA DE ASISTENCIA{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <br>
+    <div class="header-container">
+        <div class="week-selector">
+            <button id="prevWeek">Semana Anterior</button>
+            <span id="currentWeek">21 Nov. 2024 - 25 Nov. 2024</span>
+            <button id="nextWeek">Semana Siguiente</button>
+        </div>
+    
+        <!-- Mostrar el nombre del proyecto seleccionado -->
+        <h4 id="projectName">Todos los proyectos</h4>
+    
+        <!-- Input autocompletar para proyectos -->
+        <input type="text" id="projectInput" class="form-control" placeholder="Buscar proyecto..." style="width: 100%; max-width: 400px;" />
+        
+        <button class="export-button" id="exportExcel">Exportar a Excel</button>
+    </div>
+    
+    
+
+    <!-- Tabla de Asistencia -->
+    <div class="table-container">
+        <table class="table table-hover" id="asistenciaTable">
+            <colgroup>
+                <col style="width: 200px;"> <!-- Nombre del empleado -->
+                <col style="width: 100px;"> <!-- Lunes -->
+                <col style="width: 100px;"> <!-- Martes -->
+                <col style="width: 100px;"> <!-- Miércoles -->
+                <col style="width: 100px;"> <!-- Jueves -->
+                <col style="width: 100px;"> <!-- Viernes -->
+            </colgroup>
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">EMPLEADO</th>
+                    <th scope="col">LUNES</th>
+                    <th scope="col">MARTES</th>
+                    <th scope="col">MIÉRCOLES</th>
+                    <th scope="col">JUEVES</th>
+                    <th scope="col">VIERNES</th>
+                </tr>
+            </thead>
+            <tbody id="tablaAsistencia">
+                <!-- Aquí se inyectarán los empleados dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="asistenciaModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Detalles de Asistencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+
+                <p><strong>Empleado:</strong> <span id="modalEmpleado"></span></p>
+                <p><strong>Día:</strong> <span id="modalDia"></span></p>
+                <p><strong>Hora de Entrada:</strong> <span id="modalEntrada"></span></p>
+                <p><strong>Hora de Salida:</strong> <span id="modalSalida"></span></p>
+                <div id="modalFotoContainer"></div>
+                <h5>Ubicación</h5>
+                <div id="map"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Declaración de variables globales
+    let currentStartDate;
+    let map, marker;
+
+    // Inicializar el mapa con coordenadas específicas
+    function initMap(lat, lng) {
+        const location = { lat: parseFloat(lat), lng: parseFloat(lng) };
+        const mapOptions = {
+            center: location,
+            zoom: 15,
+        };
+
+        // Verificar si el mapa ya está inicializado
+        if (!map) {
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            marker = new google.maps.Marker({
+                position: location,
+                map: map,
+            });
+        } else {
+            // Actualizar el centro y marcador
+            map.setCenter(location);
+            marker.setPosition(location);
+        }
+    }
+
+    // Formatear fecha en formato YYYY-MM-DD
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    // Actualizar el rango de fechas en el encabezado
+    function updateWeekDisplay(startDate) {
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 4);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        document.getElementById("currentWeek").textContent = `${startDate.toLocaleDateString('es-ES', options)} - ${endDate.toLocaleDateString('es-ES', options)}`;
+    }
+
+    // Cargar las asistencias desde el servidor
+    function cargarAsistencias(startDate, projectId = null) {
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 4);
+        let url = `/api/asistencias_general?fecha_inicio=${formatDate(startDate)}&fecha_fin=${formatDate(endDate)}`;
+        if (projectId) {
+            url += `&id_proyecto=${projectId}`;
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const tabla = document.getElementById("tablaAsistencia");
+                tabla.innerHTML = ""; // Limpiar tabla
+
+                // Construir filas de la tabla
+                data.forEach(empleado => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${empleado.nombre_empleado}</td>
+                        <td>${formatAsistencia(empleado.Lunes)}</td>
+                        <td>${formatAsistencia(empleado.Martes)}</td>
+                        <td>${formatAsistencia(empleado.Miércoles)}</td>
+                        <td>${formatAsistencia(empleado.Jueves)}</td>
+                        <td>${formatAsistencia(empleado.Viernes)}</td>
+                    `;
+                    tabla.appendChild(row);
+                });
+
+                // Agregar eventos a los botones de asistencia
+                attachAsistenciaEvents();
+            })
+            .catch(error => console.error("Error al cargar asistencias:", error));
+    }
+
+    // Formatear asistencia en HTML
+    function formatAsistencia(dia, diaSemana) {
+    if (!dia) return `<button class="btn btn-link asistencia-btn" disabled>N/A</button>`;
+    return `
+        <button class="btn btn-link asistencia-btn" 
+            data-dia="${dia.dia}" 
+            data-proyecto="${dia.nombre_proyecto}" 
+            data-empleado="${dia.nombre_empleado}" 
+            data-entrada="${dia.hora_entrada || '--'}" 
+            data-salida="${dia.hora_salida || '--'}" 
+            data-foto="${dia.foto_base64 || ''}" 
+            data-lat="${dia.latitud || ''}" 
+            data-lng="${dia.longitud || ''}">
+            ${dia.estado || 'F'}
+        </button>
+    `;
+}
+
+
+    // Agregar eventos a los botones de asistencia
+    function attachAsistenciaEvents() {
+        document.querySelectorAll(".asistencia-btn").forEach(button => {
+            button.addEventListener("click", function () {
+    const row = this.closest("tr");
+    const empleado = row.cells[0].textContent.trim();
+    const dia = this.getAttribute("data-dia");  
+
+    document.getElementById("modalEmpleado").textContent = empleado;
+    document.getElementById("modalDia").textContent = dia;  
+
+
+    const proyecto = this.getAttribute("data-proyecto");
+    const entrada = this.getAttribute("data-entrada");
+    const salida = this.getAttribute("data-salida");
+    const foto = this.getAttribute("data-foto");
+    const lat = this.getAttribute("data-lat");
+    const lng = this.getAttribute("data-lng");
+
+    document.getElementById("modalEntrada").textContent = entrada;
+    document.getElementById("modalSalida").textContent = salida;
+
+    const modalFotoContainer = document.getElementById("modalFotoContainer");
+    modalFotoContainer.innerHTML = foto
+        ? `<img src="${foto.startsWith("data:image") ? foto : `data:image/png;base64,${foto}`}" alt="Foto de Asistencia" style="width: 100%;">`
+        : "";
+
+    if (lat && lng) {
+        initMap(lat, lng);
+    } else {
+        document.getElementById("map").innerHTML = "<p>Sin ubicación disponible.</p>";
+    }
+
+    const modal = new bootstrap.Modal(document.getElementById("asistenciaModal"));
+    modal.show();
+});
+
+
+        });
+    }
+
+    // Configurar el autocompletado del input de proyectos
+    function configurarAutocompletado() {
+    const projectInput = document.getElementById("projectInput");
+    const projectName = document.getElementById("projectName"); // Referencia al encabezado
+
+    projectInput.addEventListener("input", async (event) => {
+        const query = event.target.value.trim();
+        if (query.length < 2) return; // Esperar al menos 2 caracteres
+
+        const projects = await fetch(`/api/buscar_proyecto?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error("Error al buscar proyectos:", error);
+                return [];
+            });
+
+        const datalistId = "projectSuggestions";
+        let datalist = document.getElementById(datalistId);
+        if (!datalist) {
+            datalist = document.createElement("datalist");
+            datalist.id = datalistId;
+            document.body.appendChild(datalist);
+        }
+
+        datalist.innerHTML = ""; // Limpiar sugerencias previas
+        projects.forEach(project => {
+            const option = document.createElement("option");
+            option.value = project.nombre_proyecto;
+            option.dataset.projectId = project.id; // Guardar ID
+            datalist.appendChild(option);
+        });
+
+        projectInput.setAttribute("list", datalistId);
+    });
+
+    projectInput.addEventListener("change", () => {
+        const selectedOption = Array.from(document.querySelectorAll(`#projectSuggestions option`))
+            .find(option => option.value === projectInput.value);
+
+        if (selectedOption) {
+            const projectId = selectedOption.dataset.projectId;
+            const projectNameText = selectedOption.value;
+
+            // Actualizar el encabezado con el nombre del proyecto
+            projectName.textContent = projectNameText;
+
+            // Cargar asistencias con filtro
+            cargarAsistencias(currentStartDate, projectId);
+        } else {
+            // Mostrar "Todos los proyectos" si no se selecciona nada
+            projectName.textContent = "Todos los proyectos";
+            cargarAsistencias(currentStartDate);
+        }
+    });
+}
+
+
+    // Inicializar eventos y datos
+    document.addEventListener("DOMContentLoaded", function () {
+        currentStartDate = new Date();
+        currentStartDate.setDate(currentStartDate.getDate() - currentStartDate.getDay() + 1);
+        updateWeekDisplay(currentStartDate);
+        cargarAsistencias(currentStartDate);
+        configurarAutocompletado();
+
+        document.getElementById("prevWeek").addEventListener("click", () => {
+            currentStartDate.setDate(currentStartDate.getDate() - 7);
+            updateWeekDisplay(currentStartDate);
+            cargarAsistencias(currentStartDate);
+        });
+
+        document.getElementById("nextWeek").addEventListener("click", () => {
+            currentStartDate.setDate(currentStartDate.getDate() + 7);
+            updateWeekDisplay(currentStartDate);
+            cargarAsistencias(currentStartDate);
+        });
+    });
+
+    document.getElementById("exportExcel").addEventListener("click", () => {
+    const projectName = document.getElementById("projectName").textContent.trim(); // Nombre del proyecto
+    const currentWeek = document.getElementById("currentWeek").textContent.trim(); // Rango de la semana
+    const table = document.getElementById("asistenciaTable"); // Tabla de asistencias
+
+    // Crear los datos del encabezado
+    const headerData = [
+        [`Proyecto: ${projectName}`],  // Nombre del proyecto
+        [`Semana: ${currentWeek}`],   // Rango de la semana
+        []                            // Espacio vacío antes de la tabla
+    ];
+
+    // Encabezados de la tabla (lunes, martes, miércoles, etc.)
+    const tableHeaders = Array.from(table.querySelectorAll("thead th")).map(th => th.textContent.trim());
+    headerData.push(tableHeaders); // Añadir encabezados de la tabla
+
+    // Filtrar sólo las filas visibles de la tabla
+    const tableData = Array.from(table.querySelectorAll("tbody tr")).map(row => {
+        return Array.from(row.cells).map(cell => {
+            if (cell.querySelector("button")) {
+                const button = cell.querySelector("button");
+                const estado = button.textContent.trim(); // F, A, N/A
+                const horaEntrada = button.getAttribute("data-entrada") || "--";
+                const horaSalida = button.getAttribute("data-salida") || "--";
+
+                if (estado === "A") {
+                    return `${horaEntrada} - ${horaSalida}`; // Concatenar para A
+                } else {
+                    return estado; // F o N/A
+                }
+            }
+            return cell.textContent.trim(); // Otras celdas
+        });
+    });
+
+    // Combinar el encabezado y los datos de la tabla
+    const wsData = [...headerData, ...tableData];
+
+    // Crear el archivo Excel
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "Asistencias");
+
+    // Crear el nombre del archivo
+    const sanitizedProjectName = projectName.replace(/[^a-zA-Z0-9 ]/g, '').replace(/\s+/g, '_'); // Eliminar caracteres no válidos
+    const sanitizedDateRange = currentWeek.replace(/[^a-zA-Z0-9 -]/g, '').replace(/\s+/g, '_'); // Formatear rango de fechas
+    const fileName = `Sabana_de_Asistencia_${sanitizedDateRange}_${sanitizedProjectName}.xlsx`;
+
+    // Descargar el archivo
+    XLSX.writeFile(wb, fileName);
+});
+
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNo8vETZRevilZe3c1pmM7CzrdI3VTXi0&callback=initMap"></script>
+{% endblock %}

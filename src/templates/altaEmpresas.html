@@ -49,6 +49,13 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                data-bs-target="#direccion-tab-pane" type="button" role="tab"
+                                aria-controls="disabled-tab-pane" aria-selected="false">
+                            DIRECCIÓN
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
                                 data-bs-target="#regitrosPatronales-tab-pane" type="button" role="tab"
                                 aria-controls="regitrosPatronales-tab-pane" aria-selected="false">
@@ -69,13 +76,7 @@
                             APODERADO LEGAL
                             </button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
-                                data-bs-target="#direccion-tab-pane" type="button" role="tab"
-                                aria-controls="disabled-tab-pane" aria-selected="false">
-                            DIRECCIÓN
-                            </button>
-                        </li>
+                        
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
                                 data-bs-target="#inf_banco-tab-pane" type="button" role="tab"
@@ -319,16 +320,34 @@
                             aria-labelledby="disabled-tab" tabindex="0">
                             <br>
                             <div class="form-group row">
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="CALLE" class="form-label">CALLE*</label>
+                                    <input type="text" class="form-control" id="CALLE" name="CALLE" maxlength="50"
+                                        placeholder="CALLE" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA CALLE
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <label for="NO_EXTERIOR" class="form-label">NO. EXTERIOR</label>
+                                    <input type="text" class="form-control" name="NO_EXTERIOR" id="NO_EXTERIOR"
+                                        placeholder="NO. EXTERIOR">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <label for="NO_EXTERIOR" class="form-label">NO. INTERIOR</label>
+                                    <input type="text" class="form-control" name="NO_INTERIOR" id="NO_INTERIOR"
+                                        placeholder="NO. INTERIOR">
+                                </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <label for="CP" class="form-label">CP*</label>
-                                    <input type="text" class="form-control" id="CP" name="CP"
+                                    <input type="text" class="form-control" id="CP" name="CP" ma
                                         placeholder="CODIGO POSTAL" required>
                                     <div class="invalid-feedback">
-                                        COMPLETAR CODIGO POSTAL
+                                        COMPLETA CODIGO POSTAL
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                    <label for="ESTADO" class="form-label">ESTADO</label>
+                                    <label for="ESTADO" class="form-label">ESTADO*</label>
                                     <select id="ESTADO" class="form-control" name="ESTADO" required>
                                         <option value="" style="text-align: center;">SELECIONA</option>
                                         <option value="AGUASCALIENTES">AGUASCALIENTES</option>
@@ -352,6 +371,7 @@
                                         <option value="OAXACA">OAXACA</option>
                                         <option value="PUEBLA">PUEBLA</option>
                                         <option value="QUERÉTARO">QUERÉTARO</option>
+                                        <option value="QUINTANA ROO">QUINTANA ROO</option>
                                         <option value="SAN LUIS POTOSÍ">SAN LUIS POTOSÍ</option>
                                         <option value="SIN LOCALIDAD">SIN LOCALIDAD</option>
                                         <option value="SINALOA">SINALOA</option>
@@ -367,15 +387,25 @@
                                         SELECIONA UN ESTADO
                                       </div>
                                 </div>
-                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                    <label for="CIUDAD" class="form-label">CIUDAD</label>
-                                    <input type="text" class="form-control" id="CIUDAD" name="CIUDAD"
-                                        placeholder="CIUDAD">
-                                </div>
+                            </div>
+                            <div class="form-group row">
+                               
+                                
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="DIRECCION" class="form-label">DIRECCIÓN</label>
-                                    <input type="text" class="form-control" id="DIRECCION" name="DIRECCION"
-                                        placeholder="DIRECCION">
+                                    <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
+                                    <input type="text" class="form-control" name="MUNICIPIO" id="MUNICIPIO"
+                                        placeholder="MUNICIPIO" required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA MUNICIPIO
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                    <label for="PAIS" class="form-label">PAÍS*</label>
+                                    <input type="text" class="form-control" name="PAIS" id="PAIS" value="MÉXICO"
+                                        required>
+                                    <div class="invalid-feedback">
+                                        COMPLETA PAÍS
+                                    </div>
                                 </div>
                             </div>
                         </div>

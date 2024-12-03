@@ -16,8 +16,10 @@ class User(UserMixin):
     def check_pass(self,hashed_password,password):
         return check_password_hash(hashed_password,password)
 
+    
+    def hash_password(password):
+        return generate_password_hash(password)
 
-
-
+    print(hash_password("Bauart@2024$"))
         
         

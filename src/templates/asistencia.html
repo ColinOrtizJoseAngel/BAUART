@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Asistencia</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <style>
+        body {
+            background-image: url("/static/img/fondo.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            font-size: 26px;
+            color: #0f2d3a;
+        }
+
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+
+        input, video, img {
+            width: 100%;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #0f2d3a;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: white;
+            color: #0f2d3a;
+            border: 1px solid #0f2d3a;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="BAUART">
+        </div>
+        <h2>Registro de Asistencia</h2>
+        <form id="formAsistencia">
+            <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" id="empleado" placeholder="Escribe el nombre del empleado" required>
+            <input type="hidden" id="id_empleado">
+
+            <input type="text" id="proyecto" placeholder="Escribe el nombre del proyecto" required>
+            <input type="hidden" id="id_proyecto">
+
+            <input type="hidden" id="latitud">
+            <input type="hidden" id="longitud">
+
+            <video id="video" autoplay></video>
+            <img id="foto" class="hidden" alt="Captura">
+            <button type="button" id="btnCapturar">Capturar Foto</button>
+            <input type="hidden" id="foto_base64">
+
+            <button type="button" id="btnRegistrarAsistencia" class="hidden">Registrar Asistencia</button>
+            <button type="button" id="btnRegistrarSalida" class="hidden">Registrar Salida</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            const csrfToken = $("#csrf_token").val();
+            let canvas = document.createElement('canvas');
+
+            function obtenerGeolocalizacion() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
+                            $("#latitud").val(position.coords.latitude);
+                            $("#longitud").val(position.coords.longitude);
+                        },
+                        function (error) {
+                            Swal.fire("Error", "No se pudo obtener la ubicación: " + error.message, "error");
+                        }
+                    );
+                } else {
+                    Swal.fire("Error", "Tu navegador no soporta geolocalización.", "error");
+                }
+            }
+
+            function inicializarCamara() {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (stream) {
+                        const video = document.getElementById("video");
+                        video.srcObject = stream;
+                    })
+                    .catch(function (error) {
+                        Swal.fire("Error", "No se pudo acceder a la cámara: " + error.message, "error");
+                    });
+            }
+
+            $("#btnCapturar").on("click", function () {
+                const video = document.getElementById("video");
+                const foto = document.getElementById("foto");
+                const context = canvas.getContext("2d");
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const dataURL = canvas.toDataURL("image/png");
+                $("#foto_base64").val(dataURL);
+                foto.src = dataURL;
+                foto.classList.remove("hidden");
+                video.classList.add("hidden");
+            });
+
+            $("#empleado").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/api/buscar_empleado/",
+                        type: "GET",
+                        data: { query: request.term },
+                        success: function (data) {
+                            response(data.map(empleado => ({
+                                label: `${empleado.nombre} ${empleado.apellido}`,
+                                value: `${empleado.nombre} ${empleado.apellido}`,
+                                id: empleado.id
+                            })));
+                        },
+                        error: function () {
+                            Swal.fire("Error", "No se pudieron cargar los empleados.", "error");
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    const idEmpleado = ui.item.id;
+                    $("#id_empleado").val(idEmpleado);
+
+                    $.ajax({
+                        url: "/verificar_asistencia",
+                        type: "GET",
+                        data: { id_empleado: idEmpleado },
+                        success: function (data) {
+                            if (data.asistencia_registrada) {
+                                $("#btnRegistrarAsistencia").addClass("hidden");
+                                $("#btnRegistrarSalida").removeClass("hidden");
+                            } else {
+                                $("#btnRegistrarAsistencia").removeClass("hidden");
+                                $("#btnRegistrarSalida").addClass("hidden");
+                            }
+                        },
+                        error: function () {
+                            Swal.fire("Error", "No se pudo verificar la asistencia.", "error");
+                        }
+                    });
+                }
+            });
+
+            $("#proyecto").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/api/buscar_proyecto/",
+                        type: "GET",
+                        data: { query: request.term },
+                        success: function (data) {
+                            response(data.map(proyecto => ({
+                                label: proyecto.nombre_proyecto,
+                                value: proyecto.nombre_proyecto,
+                                id: proyecto.id
+                            })));
+                        },
+                        error: function () {
+                            Swal.fire("Error", "No se pudieron cargar los proyectos.", "error");
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    $("#id_proyecto").val(ui.item.id);
+                }
+            });
+
+            $("#btnRegistrarAsistencia").on("click", async function () {
+                const datos = {
+                    id_empleado: parseInt($("#id_empleado").val()),
+                    id_proyecto: parseInt($("#id_proyecto").val()),
+                    dia: new Date().toISOString().split("T")[0],
+                    hora_entrada: new Date().toLocaleTimeString("es-MX", { hour12: false }),
+                    latitud: $("#latitud").val(),
+                    longitud: $("#longitud").val(),
+                    foto_base64: $("#foto_base64").val()
+                };
+
+                try {
+                    const respuesta = await fetch('/registrar_asistencia_empleado', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                        body: JSON.stringify(datos)
+                    });
+
+                    const resultado = await respuesta.json();
+                    if (respuesta.ok) {
+                        Swal.fire("Éxito", resultado.mensaje, "success").then(() => {
+                            $("#formAsistencia")[0].reset();
+                            $("#btnRegistrarAsistencia, #btnRegistrarSalida").addClass("hidden");
+                        });
+                    } else {
+                        Swal.fire("Error", resultado.error || "Error desconocido.", "error");
+                    }
+                } catch (error) {
+                    Swal.fire("Error", "No se pudo registrar la asistencia.", "error");
+                }
+            });
+
+            $("#btnRegistrarSalida").on("click", async function () {
+                const idEmpleado = $("#id_empleado").val();
+                Swal.fire({
+                    title: "¿Confirmas registrar tu salida?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Sí, confirmar",
+                    cancelButtonText: "Cancelar"
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        try {
+                            const respuesta = await fetch('/registrar_hora_salida', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                                body: JSON.stringify({ id_empleado: parseInt(idEmpleado) })
+                            });
+
+                            const resultado = await respuesta.json();
+                            if (respuesta.ok) {
+                                Swal.fire("Éxito", resultado.mensaje, "success").then(() => {
+                                    $("#formAsistencia")[0].reset();
+                                    $("#btnRegistrarSalida").addClass("hidden");
+                                });
+                            } else {
+                                Swal.fire("Error", resultado.error || "Error desconocido.", "error");
+                            }
+                        } catch (error) {
+                            Swal.fire("Error", "No se pudo registrar la salida.", "error");
+                        }
+                    }
+                });
+            });
+
+            obtenerGeolocalizacion();
+            inicializarCamara();
+        });
+    </script>
+</body>
+</html>

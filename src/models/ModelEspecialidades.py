@@ -107,7 +107,7 @@ class ModelEspecialidades:
             params = []
 
             if especialidad:
-                query += " AND ESPECILIDAD LIKE ?"
+                query += " AND NOMBRE LIKE ?"
                 params.append(f'%{especialidad}%')
 
             if estado:
@@ -121,8 +121,8 @@ class ModelEspecialidades:
             list_especialidades = []
             for row in rows:
                 list_especialidades.append(Especialidades(
-                    id=row[0], id_proveedor=row[1], especialidad=row[2], fecha_registro=row[3],
-                    usuario=row[4], is_blocked=row[5]
+                    id=row[0],nombre=row[1],fecha_registro=row[2],
+                    usuario=row[3],is_blocked=row[4]
                 ))
             cursor.close()
             return list_especialidades

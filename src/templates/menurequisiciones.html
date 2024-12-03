@@ -75,6 +75,7 @@
         </a>
     </div>
     <br>
+    
     <div class="table-container">
         <table class="table table-hover">
             <colgroup>
@@ -124,13 +125,14 @@
                                         <button type="submit" class="dropdown-item">Recibido</button>
                                     </form>
                                 </li>
+                                <!-- Nueva opción para Generar Orden de Compra -->
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('generar_orden_view', id=requisicion.id) }}">Generar Orden de Compra</a>
+                                </li>
                                 <li>
                                     <button class="dropdown-item text-danger" onclick="confirmDelete('{{ requisicion.id }}')">Eliminar</button>
                                 </li>
-                                <!-- Nueva opción para Generar Orden de Compra -->
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('orden_de_compra', requisicion_id=requisicion.id) }}">Generar Orden de Compra</a>
-                                </li>
+                                
                             </ul>
                         </div>
                     </td>                    

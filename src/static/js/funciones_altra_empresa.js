@@ -113,8 +113,8 @@ function añadirRegistro() {
       </div>
   `;
   cell2.innerHTML =`
-        <select id="SELECT_BANCO" class="form-control" name="estado[]" required>
-          <option value="" style="text-align: center;">SELECIONA UN ESTADO</option>
+        <select id="selectEstados" class="form-control" name="estado[]" required>
+          <option id="selectEstados" value="" style="text-align: center;">SELECIONA UN ESTADO</option>
           <option value="AGUASCALIENTES">AGUASCALIENTES</option>
           <option value="BAJA CALIFORNIA">BAJA CALIFORNIA</option>
           <option value="BAJA CALIFORNIA SUR">BAJA CALIFORNIA SUR</option>
@@ -136,6 +136,7 @@ function añadirRegistro() {
           <option value="OAXACA">OAXACA</option>
           <option value="PUEBLA">PUEBLA</option>
           <option value="QUERÉTARO">QUERÉTARO</option>
+          <option value="QUINTANA ROO">QUINTANA ROO</option>
           <option value="SAN LUIS POTOSÍ">SAN LUIS POTOSÍ</option>
           <option value="SIN LOCALIDAD">SIN LOCALIDAD</option>
           <option value="SINALOA">SINALOA</option>
@@ -146,6 +147,8 @@ function añadirRegistro() {
           <option value="VERACRUZ">VERACRUZ</option>
           <option value="YUCATÁN">YUCATÁN</option>
           <option value="ZACATECAS">ZACATECAS</option>
+          <option value="SIN LOCALIDAD">SIN LOCALIDAD</option>
+
         </select>
 
         <div class="invalid-feedback">

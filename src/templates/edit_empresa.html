@@ -20,6 +20,8 @@
 <div class="container-fluid">
     <form class="needs-validation" novalidate accion="{{ url_for('edit_empresa', id=empresa.id) }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="token" value="{{ token }}">
+
         <div class="container">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <div class="text-center">
@@ -48,37 +50,39 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
                                     data-bs-target="#home-tab-pane" type="button" role="tab"
-                                    aria-controls="home-tab-pane" aria-selected="true">Información
-                                    general</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
-                                    data-bs-target="#regitrosPatronales-tab-pane" type="button" role="tab"
-                                    aria-controls="regitrosPatronales-tab-pane" aria-selected="false">Registros
-                                    patronales</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
-                                    data-bs-target="#representantes-tab-pane" type="button" role="tab"
-                                    aria-controls="representantes-tab-pane" aria-selected="false">Representantes
-                                    legales</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
-                                    data-bs-target="#disabled-tab-pane" type="button" role="tab"
-                                    aria-controls="disabled-tab-pane" aria-selected="false">Apoderado
-                                    legal</button>
+                                    aria-controls="home-tab-pane" aria-selected="true">INFORMACIÓN GENERAL
+                                    </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
                                     data-bs-target="#direccion-tab-pane" type="button" role="tab"
-                                    aria-controls="disabled-tab-pane" aria-selected="false">Dirección</button>
+                                    aria-controls="disabled-tab-pane" aria-selected="false">DIRECCIÓN</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                    data-bs-target="#regitrosPatronales-tab-pane" type="button" role="tab"
+                                    aria-controls="regitrosPatronales-tab-pane" aria-selected="false">
+                                    REGISTROS PATRONALES</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                    data-bs-target="#representantes-tab-pane" type="button" role="tab"
+                                    aria-controls="representantes-tab-pane" aria-selected="false">
+                                    REPRESENTANTES LEGALES
+                                    </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                    data-bs-target="#disabled-tab-pane" type="button" role="tab"
+                                    aria-controls="disabled-tab-pane" aria-selected="false">APODERADOR LEGARL</button>
+                            </li>
+                           
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
                                     data-bs-target="#inf_banco-tab-pane" type="button" role="tab"
-                                    aria-controls="disabled-tab-pane" aria-selected="false">Información
-                                    bancaría</button>
+                                    aria-controls="disabled-tab-pane" aria-selected="false">
+                                INFORMACION BANCARIA
+                                </button>
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
@@ -89,15 +93,15 @@
                                     <!--INFORMACIÓN GENERAL-->
                                     <div class="form-group row">
                                         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                            <label for="RAZON_SOCIAL" class="form-label">Razón Social*</label>
+                                            <label for="RAZON_SOCIAL" class="form-label">RAZÓN SOCIAL*</label>
                                             <input type="text" class="form-control" id="RAZON_SOCIAL"
                                                 name="RAZON_SOCIAL" value="{{ empresa.razon_social }}" required>
                                             <div class="invalid-feedback">
-                                                Completa Razón Social
+                                                COMPLETA
                                             </div>
                                         </div>
                                         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                            <label for="REGIMEN_FISCAL" class="form-label">Régimen Fiscal</label>
+                                            <label for="REGIMEN_FISCAL" class="form-label">REGIMEN FISCAL*</label>
                                             <select class="form-control" name="REGIMEN_FISCAL" id="REGIMEN_FISCAL" required>
                                                 <option value="" style="text-align: center;">------Selecciona------</option>
                                         
@@ -202,24 +206,61 @@
                                                 </td>
 
                                                 <td>
-                                                    <!-- Campo editable Estado -->
-                                                    <input type="text" name="estado[]" id="estado_{{ loop.index }}"
-                                                        class="form-control" value="{{ registro.estado }}">
+                                                    <select id="estadoRegistrosP_{{ loop.index }}" style="text-align: center;" class="form-control" name="estado[]" required>
+                                                        <option id="selectEstados" value="">SELECIONA UN ESTADO</option>
+                                                        <option value="AGUASCALIENTES"  {{ 'selected' if registro.estado == "AGUASCALIENTES" else '' }} >AGUASCALIENTES</option>
+                                                        <option value="BAJA CALIFORNIA" {{ 'selected' if registro.estado == "BAJA CALIFORNIA" else '' }} >BAJA CALIFORNIA</option>
+                                                        <option value="BAJA CALIFORNIA SUR" {{ 'selected'  if registro.estado == "BAJA CALIFORNIA SUR" else '' }}>BAJA CALIFORNIA SUR</option>
+                                                        <option value="CHIAPAS" {{ 'selected' if registro.estado == "CHIAPAS" }}>CHIAPAS</option>
+                                                        <option value="CHIHUAHUA"  {{ 'selected' if registro.estado == "CHIHUAHUA" }} >CHIHUAHUA</option>
+                                                        <option value="CIUDAD DE MÉXICO"  {{ 'selected' if registro.estado == "CIUDAD DE MÉXICO" }} >CIUDAD DE MÉXICO</option>
+                                                        <option value="COAHUILA" {{ 'selected' if registro.estado == "COAHUILA" }}>COAHUILA</option>
+                                                        <option value="COLIMA" {{ 'selected' if registro.estado == "COLIMA" }}>COLIMA</option>
+                                                        <option value="DURANGO" {{ 'selected' if registro.estado == "DURANGO" }}>DURANGO</option>
+                                                        <option value="ESTADO DE MÉXICO" {{ 'selected' if registro.estado == "ESTADO DE MÉXICO" }}>ESTADO DE MÉXICO</option>
+                                                        <option value="GUANAJUATO" {{ 'selected' if registro.estado == "GUANAJUATO" }}>GUANAJUATO</option>
+                                                        <option value="GUERRERO" {{ 'selected' if registro.estado == "GUERRERO" }}>GUERRERO</option>
+                                                        <option value="HIDALGO"  {{ 'selected' if registro.estado == "HIDALGO" }} >HIDALGO</option>
+                                                        <option value="JALISCO"  {{ 'selected' if registro.estado == "JALISCO" }} >JALISCO</option>
+                                                        <option value="MICHOACÁN" {{ 'selected' if registro.estado == "MICHOACÁN" }}>MICHOACÁN</option>
+                                                        <option value="MORELOS" {{ 'selected' if registro.estado == "MORELOS" }}>MORELOS</option>
+                                                        <option value="NAYARIT" {{ 'selected' if registro.estado == "NAYARIT" }} >NAYARIT</option>
+                                                        <option value="NUEVO LEÓN" {{ 'selected' if registro.estado == "NUEVO LEÓN" else '' }}>NUEVO LEÓN</option>
+                                                        <option value="OAXACA" {{ 'selected' if registro.estado == "OAXACA" else '' }}>OAXACA</option>
+                                                        <option value="PUEBLA" {{ 'selected' if registro.estado == "PUEBLA" else '' }}>PUEBLA</option>
+                                                        <option value="QUERÉTARO" {{ 'selected' if registro.estado == "QUERÉTARO" else '' }}>QUERÉTARO</option>
+                                                        <option value="QUINTANA ROO" {{ 'selected' if registro.estado == "QUINTANA ROO" else '' }}>QUINTANA ROO</option>
+                                                        <option value="SAN LUIS POTOSÍ" {{ 'selected' if registro.estado == "SAN LUIS POTOSÍ" else '' }}>SAN LUIS POTOSÍ</option>
+                                                        <option value="SIN LOCALIDAD" {{ 'selected' if registro.estado == "SIN LOCALIDAD" else '' }}>SIN LOCALIDAD</option>
+                                                        <option value="SINALOA" {{ 'selected' if registro.estado == "SINALOA" else '' }}>SINALOA</option>
+                                                        <option value="SONORA" {{ 'selected' if registro.estado == "SONORA" else '' }}>SONORA</option>
+                                                        <option value="TABASCO" {{ 'selected' if registro.estado == "TABASCO" else '' }}>TABASCO</option>
+                                                        <option value="TAMAULIPAS" {{ 'selected' if registro.estado == "TAMAULIPAS" else '' }}>TAMAULIPAS</option>
+                                                        <option value="TLAXCALA" {{ 'selected' if registro.estado == "TLAXCALA" else '' }}>TLAXCALA</option>
+                                                        <option value="VERACRUZ" {{ 'selected' if registro.estado == "VERACRUZ" else '' }}>VERACRUZ</option>
+                                                        <option value="YUCATÁN" {{ 'selected' if registro.estado == "YUCATÁN" else '' }}>YUCATÁN</option>
+                                                        <option value="ZACATECAS" {{ 'selected' if registro.estado == "ZACATECAS" else '' }}>ZACATECAS</option>
+                                                        <option value="ZACATECAS" {{ 'selected' if registro.estado == "ZACATECAS" else '' }}>ZACATECAS</option>
+
+                                                    </select>
+                                                    <div class="invalid-feedback">
+                                                        SELECIONA UN ESTADO
+                                                    </div>
                                                 </td>
                                                 <td style="display: none;">
-                                                    <!-- Campo editable Estado -->
+                                                
                                                     <input type="text" name="fecha_registro_{{ loop.index }}"
                                                         id="fecha_registro_{{ loop.index }}" class="form-control"
                                                         value="{{ registro.fecha_registro }}">
                                                 </td>
                                                 <td style="display: none;">
-                                                    <!-- Campo editable Estado -->
+                                                    
                                                     <input type="text" name="usuario_id_{{ loop.index }}"
                                                         id="usuario_id_{{ loop.index }}" class="form-control"
                                                         value="{{ registro.usuario_id }}">
                                                 </td>
                                                 <td style="display: none;">
-                                                    <!-- Campo editable Estado -->
+                                                    
                                                     <input type="text" name="is_blocked_{{ loop.index }}"
                                                         id="is_blocked_{{ loop.index }}" class="form-control"
                                                         value="{{ registro.is_blocked }}">
@@ -356,9 +397,27 @@
                                 aria-labelledby="disabled-tab" tabindex="0">
                                 <br>
                                 <div class="form-group row">
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <label for="CALLE" class="form-label">CALLE*</label>
+                                        <input type="text" class="form-control" id="CALLE" name="CALLE" maxlength="50"
+                                            placeholder="CALLE" value="{{ empresa.calle }}" required>
+                                        <div class="invalid-feedback">
+                                            COMPLETA CALLE
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="NO_EXTERIOR" class="form-label">NO. EXTERIOR</label>
+                                        <input type="text" class="form-control" value="{{ empresa.no_exterior }}" name="NO_EXTERIOR" id="NO_EXTERIOR"
+                                            placeholder="NO. EXTERIOR">
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="NO_EXTERIOR" class="form-label">NO. INTERIOR</label>
+                                        <input type="text" class="form-control" value="{{ empresa.no_interior }}" name="NO_INTERIOR" id="NO_INTERIOR"
+                                            placeholder="NO. INTERIOR">
+                                    </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="CP" class="form-label">CP*</label>
-                                        <input type="text" class="form-control" id="CP" name="CP"
+                                        <input type="text" class="form-control" id="CP" value="{{ empresa.cp }}" name="CP"
                                              value="{{ empresa.cp }}" required>
                                         <div class="invalid-feedback">
                                             COMPLETAR Código Postal
@@ -366,18 +425,62 @@
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                         <label for="ESTADO" class="form-label">ESTADO</label>
-                                        <input type="text" class="form-control" id="ESTADO" name="ESTADO"
-                                            value="{{ empresa.estado }}">
+                                        <select style="text-align: center;" class="form-control" name="ESTADO" required>
+                                            <option id="ESTADO" value="">SELECIONA UN ESTADO</option>
+                                            <option value="AGUASCALIENTES"  {{ 'selected' if empresa.estado == "AGUASCALIENTES" else '' }} >AGUASCALIENTES</option>
+                                            <option value="BAJA CALIFORNIA" {{ 'selected' if empresa.estado == "BAJA CALIFORNIA" else '' }} >BAJA CALIFORNIA</option>
+                                            <option value="BAJA CALIFORNIA SUR" {{ 'selected'  if empresa.estado == "BAJA CALIFORNIA SUR" else '' }}>BAJA CALIFORNIA SUR</option>
+                                            <option value="CHIAPAS" {{ 'selected' if empresa.estado == "CHIAPAS" }}>CHIAPAS</option>
+                                            <option value="CHIHUAHUA"  {{ 'selected' if empresa.estado == "CHIHUAHUA" }} >CHIHUAHUA</option>
+                                            <option value="CIUDAD DE MÉXICO"  {{ 'selected' if empresa.estado == "CIUDAD DE MÉXICO" }} >CIUDAD DE MÉXICO</option>
+                                            <option value="COAHUILA" {{ 'selected' if empresa.estado == "COAHUILA" }}>COAHUILA</option>
+                                            <option value="COLIMA" {{ 'selected' if empresa.estado == "COLIMA" }}>COLIMA</option>
+                                            <option value="DURANGO" {{ 'selected' if empresa.estado == "DURANGO" }}>DURANGO</option>
+                                            <option value="ESTADO DE MÉXICO" {{ 'selected' if empresa.estado == "ESTADO DE MÉXICO" }}>ESTADO DE MÉXICO</option>
+                                            <option value="GUANAJUATO" {{ 'selected' if empresa.estado == "GUANAJUATO" }}>GUANAJUATO</option>
+                                            <option value="GUERRERO" {{ 'selected' if empresa.estado == "GUERRERO" }}>GUERRERO</option>
+                                            <option value="HIDALGO"  {{ 'selected' if empresa.estado == "HIDALGO" }} >HIDALGO</option>
+                                            <option value="JALISCO"  {{ 'selected' if empresa.estado == "JALISCO" }} >JALISCO</option>
+                                            <option value="MICHOACÁN" {{ 'selected' if empresa.estado == "MICHOACÁN" }}>MICHOACÁN</option>
+                                            <option value="MORELOS" {{ 'selected' if empresa.estado == "MORELOS" }}>MORELOS</option>
+                                            <option value="NAYARIT" {{ 'selected' if empresa.estado == "NAYARIT" }} >NAYARIT</option>
+                                            <option value="NUEVO LEÓN" {{ 'selected' if empresa.estado == "NUEVO LEÓN" else '' }}>NUEVO LEÓN</option>
+                                            <option value="OAXACA" {{ 'selected' if empresa.estado == "OAXACA" else '' }}>OAXACA</option>
+                                            <option value="PUEBLA" {{ 'selected' if empresa.estado == "PUEBLA" else '' }}>PUEBLA</option>
+                                            <option value="QUERÉTARO" {{ 'selected' if empresa.estado == "QUERÉTARO" else '' }}>QUERÉTARO</option>
+                                            <option value="QUINTANA ROO" {{ 'selected' if empresa.estado == "QUINTANA ROO" else '' }}>QUINTANA ROO</option>
+                                            <option value="SAN LUIS POTOSÍ" {{ 'selected' if empresa.estado == "SAN LUIS POTOSÍ" else '' }}>SAN LUIS POTOSÍ</option>
+                                            <option value="SIN LOCALIDAD" {{ 'selected' if empresa.estado == "SIN LOCALIDAD" else '' }}>SIN LOCALIDAD</option>
+                                            <option value="SINALOA" {{ 'selected' if empresa.estado == "SINALOA" else '' }}>SINALOA</option>
+                                            <option value="SONORA" {{ 'selected' if empresa.estado == "SONORA" else '' }}>SONORA</option>
+                                            <option value="TABASCO" {{ 'selected' if empresa.estado == "TABASCO" else '' }}>TABASCO</option>
+                                            <option value="TAMAULIPAS" {{ 'selected' if empresa.estado == "TAMAULIPAS" else '' }}>TAMAULIPAS</option>
+                                            <option value="TLAXCALA" {{ 'selected' if empresa.estado == "TLAXCALA" else '' }}>TLAXCALA</option>
+                                            <option value="VERACRUZ" {{ 'selected' if empresa.estado == "VERACRUZ" else '' }}>VERACRUZ</option>
+                                            <option value="YUCATÁN" {{ 'selected' if empresa.estado == "YUCATÁN" else '' }}>YUCATÁN</option>
+                                            <option value="ZACATECAS" {{ 'selected' if empresa.estado == "ZACATECAS" else '' }}>ZACATECAS</option>
+                                          </select>
+                                          <div class="invalid-feedback">
+                                            SELECIONA UN ESTADO
+                                          </div>
                                     </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                        <label for="CIUDAD" class="form-label">CIUDAD</label>
-                                        <input type="text" class="form-control" id="CIUDAD" name="CIUDAD"
-                                           value="{{ empresa.ciudad }}">
-                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label for="DIRECCION" class="form-label">DIRECCIÓN</label>
-                                        <input type="text" class="form-control" id="DIRECCION" name="DIRECCION"
-                                            value="{{empresa.direccion}}">
+                                        <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
+                                        <input type="text" class="form-control" name="MUNICIPIO" id="MUNICIPIO"
+                                            placeholder="MUNICIPIO" value="{{ empresa.municipio}}" required>
+                                        <div class="invalid-feedback">
+                                            COMPLETA MUNICIPIO
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="PAIS" class="form-label">PAÍS*</label>
+                                        <input type="text" class="form-control" value="{{empresa.pais}}" name="PAIS" id="PAIS" value="MÉXICO"
+                                            required>
+                                        <div class="invalid-feedback">
+                                            COMPLETA PAÍS
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -606,17 +709,51 @@
         var cell3 = newRow.insertCell(2); // Celda para el botón de eliminar
 
         cell1.innerHTML =
-            '<label class="form-label">NO REGISTRO PATRONAL</label>' +
             '<input type="text"  class="form-control" name="noRegistro[]" required>' +
             '<div class="invalid-feedback">' +
             "Completa No de registro patronal" +
             "</div>";
-        cell2.innerHTML =
-            '<label class="form-label">ESTADO</label>' +
-            '<input type="text" class="form-control" name="estado[]" required>' +
-            '<div class="invalid-feedback">' +
-            "Completa Estado de resgistro patronal" +
-            "</div>";
+        cell2.innerHTML =`
+        <select id="selectEstados" class="form-control" name="estado[]" required>
+          <option id="selectEstados" value="" style="text-align: center;">SELECIONA UN ESTADO</option>
+          <option value="AGUASCALIENTES">AGUASCALIENTES</option>
+          <option value="BAJA CALIFORNIA">BAJA CALIFORNIA</option>
+          <option value="BAJA CALIFORNIA SUR">BAJA CALIFORNIA SUR</option>
+          <option value="CHIAPAS">CHIAPAS</option>
+          <option value="CHIHUAHUA">CHIHUAHUA</option>
+          <option value="CIUDAD DE MÉXICO">CIUDAD DE MÉXICO</option>
+          <option value="COAHUILA">COAHUILA</option>
+          <option value="COLIMA">COLIMA</option>
+          <option value="DURANGO">DURANGO</option>
+          <option value="ESTADO DE MÉXICO">ESTADO DE MÉXICO</option>
+          <option value="GUANAJUATO">GUANAJUATO</option>
+          <option value="GUERRERO">GUERRERO</option>
+          <option value="HIDALGO">HIDALGO</option>
+          <option value="JALISCO">JALISCO</option>
+          <option value="MICHOACÁN">MICHOACÁN</option>
+          <option value="MORELOS">MORELOS</option>
+          <option value="NAYARIT">NAYARIT</option>
+          <option value="NUEVO LEÓN">NUEVO LEÓN</option>
+          <option value="OAXACA">OAXACA</option>
+          <option value="PUEBLA">PUEBLA</option>
+          <option value="QUERÉTARO">QUERÉTARO</option>
+          <option value="QUINTANA ROO">QUINTANA ROO</option>
+          <option value="SAN LUIS POTOSÍ">SAN LUIS POTOSÍ</option>
+          <option value="SIN LOCALIDAD">SIN LOCALIDAD</option>
+          <option value="SINALOA">SINALOA</option>
+          <option value="SONORA">SONORA</option>
+          <option value="TABASCO">TABASCO</option>
+          <option value="TAMAULIPAS">TAMAULIPAS</option>
+          <option value="TLAXCALA">TLAXCALA</option>
+          <option value="VERACRUZ">VERACRUZ</option>
+          <option value="YUCATÁN">YUCATÁN</option>
+          <option value="ZACATECAS">ZACATECAS</option>
+          <option value="SIN LOCALIDAD">SIN LOCALIDAD</option>
+        </select>
+
+        <div class="invalid-feedback">
+          SELECIONA UN ESTADO
+        </div>`;
         cell3.innerHTML =
             '<div class="d-flex align-items-center justify-content-center" style="height: 100%;margin-top: 30px;">' +
             '<button onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i></button>' +

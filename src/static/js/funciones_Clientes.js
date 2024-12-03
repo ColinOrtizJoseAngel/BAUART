@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   data.forEach((cfdi) => {
                       const option = document.createElement("option");
                       cfdis = `${cfdi.nombre} - ${cfdi.decripcion}`;
-                      option.value = cfdi.clave;
+                      option.value = cfdi.id;
                       option.textContent = cfdis  // Corregí la concatenación de clave y descripción
                       select.appendChild(option);
                   });

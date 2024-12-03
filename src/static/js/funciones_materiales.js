@@ -122,3 +122,35 @@ function configurar_autocompletado(FamiliaFiltro, FamiliaID) {
     }
   });
 }
+
+ // Script para completar el modal de edición con la especialidad seleccionada
+ const editMaterialesModal = document.getElementById('editMaterialesModal');
+ editMaterialesModal.addEventListener('show.bs.modal', event => {
+      const button = event.relatedTarget;
+      const id = button.getAttribute('data-material-id');
+      console.log(id)
+      const material = button.getAttribute('data-material');
+      const familia = button.getAttribute('data-material');
+      const uom = button.getAttribute('data-data-material-uom');
+  
+
+  
+      const material_id = editEspecialidadModal.querySelector('#material_id');
+      material_id.value = id;
+
+      const inputFamilia = editEspecialidadModal.querySelector('#inputIdFamilia');
+      inputFamilia.value = familia;
+
+      const inputDecripcion = editEspecialidadModal.querySelector('#inputDecripcion');
+      inputDecripcion.value = material;
+
+      const inputUOM  = editEspecialidadModal.querySelector('#inputUOM');
+      inputUOM.value = uom;
+
+
+
+
+      const form = editEspecialidadModal.querySelector('form');
+      console.log(form)
+      form.action = `/edit_materiales/${id}`;
+  });

@@ -324,6 +324,18 @@ a.link {
     display: block;
 }
 
+.boton-nomina{
+  font-size: 12px;
+  background-color: #74aceb;
+  color: #ffff;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+
 .boton-cerrar{
   font-size: 12px; 
   font-family: Arial, Helvetica, sans-serif; 

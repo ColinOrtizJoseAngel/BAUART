@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orden de Compra</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        .titulo-superior {
+            background-color: #082341;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 16px;
+            margin-bottom: 0; /* Elimina margen inferior */
+        }
+    
+        .encabezado {
+            border: 1px solid #082341;
+            padding: 10px;
+            overflow: hidden;
+            margin-bottom: 0; /* Elimina margen entre cuadros */
+        }
+    
+        .encabezado .column {
+            float: left;
+            width: 48%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+    
+        .encabezado .column img {
+            max-width: 100%;
+            height: auto;
+        }
+    
+        .encabezado .column:last-child {
+            text-align: right;
+        }
+    
+        .encabezado .column p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    
+        .titulo-doble {
+            width: 100%;
+            overflow: hidden;
+            background-color: #082341;
+            color: white;
+            padding: 10px;
+            margin-bottom: 0; /* Elimina margen inferior */
+            border: 1px solid #082341;
+            box-sizing: border-box;
+        }
+    
+        .titulo-doble .column {
+            float: left;
+            width: 48%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+    
+        .titulo-doble .column:last-child {
+            margin-left: 2%;
+        }
+    
+        .recuadro {
+            border: 1px solid #082341;
+            padding: 10px;
+            overflow: hidden;
+            margin-bottom: 0; /* Elimina margen entre cuadros */
+        }
+    
+        .recuadro .column {
+            float: left;
+            width: 48%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+    
+        .recuadro .column:last-child {
+            margin-left: 2%;
+        }
+    
+        .recuadro .column p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    
+        .titulo-cuadro {
+            background-color: #082341;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid #082341;
+            margin-bottom: 0; /* Elimina margen inferior */
+        }
+    
+        .datos-entrega {
+            border: 1px solid #082341;
+            padding: 10px;
+            margin-bottom: 0; /* Elimina margen entre cuadros */
+            font-size: 14px;
+        }
+    
+        .tabla-productos {
+            border: 1px solid #082341;
+            width: 100%;
+            margin-bottom: 0; /* Elimina margen inferior */
+        }
+    
+        .tabla-productos th {
+            background-color: #082341;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+        }
+    
+        .tabla-productos td {
+            text-align: center;
+            font-size: 14px;
+            border: 1px solid #082341;
+            padding: 5px;
+        }
+    
+        /* Estilo para la sección de totales */
+        .totals-section {
+            border: 1px solid #082341;
+            margin-top: 0; /* Reduce separación superior */
+            margin-bottom: 0; /* Elimina margen entre cuadros */
+            overflow: hidden;
+            padding: 10px;
+        }
+    
+        .totals-section .column {
+            float: left;
+            width: 48%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+    
+        .totals-section .column:last-child {
+            margin-left: 2%;
+        }
+    
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    
+        .totals-table td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
+        }
+    
+        .totals-table .highlight {
+            background-color: yellow;
+            font-weight: bold;
+            text-align: center;
+        }
+    
+        .totals-table .amount {
+            text-align: right;
+        }
+    
+        /* Estilo para las firmas */
+        .signatures-section {
+            margin-top: 0; /* Reduce espacio superior */
+            text-align: center;
+        }
+    
+        .signatures-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0; /* Reduce espacio superior */
+        }
+    
+        .signatures-table td {
+            text-align: center;
+            vertical-align: top;
+            padding: 20px;
+            border: none;
+        }
+    
+        .signature-line {
+    margin: 50px auto; /* Aumenta el espacio superior de la línea */
+    border-top: 1px solid #000;
+    width: 80%;
+}
+    
+.signature-title {
+    margin-top: -40px; /* Reduce el espacio entre la línea y el texto */
+    font-weight: bold;
+    font-size: 14px; /* Ajusta el tamaño del texto si es necesario */
+}
+
+        .page-break {
+    page-break-before: always; /* Fuerza un salto de página antes de este elemento */
+    margin-top: 0;
+}
+    </style>    
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado superior -->
+        <div class="titulo-superior">
+            Orden de Compra Compras
+        </div>
+
+        <!-- Primer recuadro -->
+        <div class="encabezado">
+            <div class="column">
+                <img src="data:image/jpeg;base64,{{ base64_logo }}" alt="Logo">
+            </div>
+            <div class="column">
+                <p><strong>OCC:</strong> {{ requisicion.occ or '' }}</p>
+                <p><strong>Obra:</strong> {{ requisicion.nombre_proyecto or '' }}</p>
+                <p><strong>Req.:</strong> {{ requisicion.id or '' }}</p>
+                <p><strong>Concepto:</strong> {{ requisicion.concepto or '' }}</p>
+                <p><strong>Fecha:</strong> {{ requisicion.fecha_solicitud or '' }}</p>
+            </div>
+        </div>
+
+        <!-- Encabezado del segundo recuadro -->
+        <div class="titulo-doble">
+            <div class="column">Datos Bauart</div>
+            <div class="column">Proveedor Asignado</div>
+        </div>
+
+        <!-- Segundo recuadro -->
+        <div class="recuadro">
+            <div class="column">
+                <p><strong>Razón social:</strong> {{ empresa.razon_social }}</p>
+<p><strong>RFC:</strong> {{ empresa.rfc }}</p>
+<p><strong>Dirección:</strong> {{ empresa.direccion }}</p>
+<p><strong>Colonia:</strong> {{ empresa.colonia }}</p>
+<p><strong>Delg.:</strong> {{ empresa.delegacion }}</p>
+<p><strong>CP:</strong> {{ empresa.cp }}</p>
+
+<p><strong>DATOS DE FACTURACIÓN</strong></p>
+<p><strong>CFD:</strong> {{ empresa.regimen_fiscal }}</p>
+<p><strong>Método de Pago:</strong> {{ empresa.metodo_pago }}</p>
+<p><strong>Forma de Pago:</strong> {{ empresa.forma_pago }}</p>
+<p><strong>Cuentas en Pesos:</strong> {{ empresa.cuenta_pesos }}</p>
+<p><strong>CLABE Interbancaria:</strong> {{ empresa.clabe }}</p>
+            </div>
+            <div class="column">
+                <p><strong>Razón Social:</strong> {{ proveedor.razon_social or 'No disponible' }}</p>
+                <p><strong>RFC:</strong> {{ proveedor.rfc or 'No disponible' }}</p>
+                <p><strong>Banco:</strong> {{ proveedor.banco or 'No disponible' }}</p>
+                <p><strong>CLABE:</strong> {{ proveedor.clabe or 'No disponible' }}</p>
+                <p><strong>Cuenta Pesos:</strong> {{ proveedor.cuenta_pesos or 'No disponible' }}</p>
+                <p><strong>e-mail:</strong> {{ contactos[0].CORREO or 'No disponible' }}</p>
+                <p><strong>Contacto:</strong> {{ contactos[0].NOMBRE or 'No disponible' }}</p>
+                <p><strong>Telefono:</strong> {{ contactos[0].TELEFONO or 'No disponible' }}</p>
+            </div>
+        </div>
+
+        <!-- Datos de entrega -->
+        <div class="titulo-cuadro">DATOS DE ENTREGA</div>
+        <div class="datos-entrega">
+            <p><strong>Fecha y Hora de Entrega:</strong> {{ fecha_hora_entrega }}</p>
+            <p><strong>Dirección de Entrega:</strong> {{ direccion_entrega }}</p>
+            <p><strong>Contacto:</strong> {{ contacto }}</p>
+            <p><strong>Teléfono:</strong> {{ telefono }}</p>
+        </div>
+
+        <!-- Tabla de partidas -->
+        <table class="tabla-productos">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Descripción</th>
+                    <th>Unidad</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for partida in partidas %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ partida.descripcion or '' }}</td>
+                    <td>{{ partida.unidad or '' }}</td>
+                    <td>{{ partida.cantidad or '' }}</td>
+                    <td>${{ "%.2f" | format(partida.precio_unitario or 0) }}</td>
+                    <td>${{ "%.2f" | format(partida.total or 0) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Sección de totales -->
+        <div class="totals-section">
+            <div class="column">
+                <p>
+                    *El proveedor acepta enviar la siguiente documentación una vez suministrado:
+                    <strong>Orden de Compra</strong>, <strong>Remisión de Entrega</strong>, <strong>Factura</strong>, y
+                    <strong>XML</strong> al comprador que emite este documento.
+                </p>
+            </div>
+            <div class="column">
+                <table class="totals-table">
+                    <tr>
+                        <td>SUBTOTAL</td>
+                        <td>$</td>
+                        <td class="amount">{{ "%.2f" | format(subtotal or 0) }}</td>
+                    </tr>
+                    <tr>
+                        <td>DESCUENTO (%)</td>
+                        <td>{{ "%.2f" | format(porcentaje_descuento or 0) }}%</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>DESCUENTO APLICADO</td>
+                        <td>$</td>
+                        <td class="amount">{{ "%.2f" | format(descuento or 0) }}</td>
+                    </tr>
+                    <tr>
+                        <td>SUBTOTAL (CON DESCUENTO)</td>
+                        <td>$</td>
+                        <td class="amount">{{ "%.2f" | format(subtotal_descuento or 0) }}</td>
+                    </tr>
+                    <tr>
+                        <td>IVA 16%</td>
+                        <td>$</td>
+                        <td class="amount">{{ "%.2f" | format(iva or 0) }}</td>
+                    </tr>
+                    <tr class="highlight">
+                        <td>TOTAL</td>
+                        <td>$</td>
+                        <td class="amount">{{ "%.2f" | format(total or 0) }}</td>
+                    </tr>
+                </table>
+            </div>            
+        </div>
+
+        <!-- Sección de firmas -->
+        <div class="signatures-section">
+            <table class="signatures-table">
+                <tr>
+                    <td>
+                        <div class="signature-line"></div>
+                        <p class="signature-title">Elaboró</p>
+                        <p>Nombre del Responsable</p>
+                    </td>
+                    <td>
+                        <div class="signature-line"></div>
+                        <p class="signature-title">Autorizó</p>
+                        <p>Nombre del Autorizador</p>
+                    </td>
+                    <td>
+                        <div class="signature-line"></div>
+                        <p class="signature-title">Proveedor</p>
+                        <p>{{ proveedor.razon_social or 'No disponible' }}</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Términos y Condiciones -->
+        <div class="page-break"></div>
+<div class="recuadro">
+    <div class="titulo-cuadro">TÉRMINOS Y CONDICIONES DE LA ORDEN DE COMPRA</div>
+    <div style="font-size: 12px; text-align: justify; padding: 10px;">
+        <p><b>TÉRMINOS Y CONDICIONES DE LA ORDEN DE COMPRA</b></p>
+        <p>
+La presente orden de compra (en lo sucesivo la “ORDEN”) estará sujeta a los términos y condiciones estipuladas en las cláusulas que a continuación se indican, cualquier cambio en los términos y condiciones deberá hacerse por escrito y firmado por el representante autorizado del “COMPRADOR”. 1.- Efectos legales de la ORDEN.- Para todos los efectos legales esta ORDEN, cuyas especificaciones, montos y condiciones se especifican al reverso de esta hoja, se considerará como un contrato de compra-venta entre el VENDEDOR y el COMPRADOR. Dicho contrato se celebra en el momento en que el VENDEDOR acepte esta ORDEN, ya sea expresa o tácitamente y se regirá por las disposiciones del Código de Comercio y supletoriamente por las del Código Civil Federal. Tanto el VENDEDOR como a quien legalmente representa, serán considerados como legalmente responsables y solidarios de las obligaciones previstas en esta ORDEN y en la Ley aplicable.  2.- Aceptación de la ORDEN.- Se considerará que el VENDEDOR acepta esta ORDEN así como todos sus términos y condiciones cuando el COMPRADOR reciba una copia de dicha ORDEN, debidamente firmada por el VENDEDOR, y/o cuando el COMPRADOR reciba una factura (CFDI) parcial o total de los materiales que amparan esta ORDEN y/o cuando el VENDEDOR entregue total o parcialmente los materiales, equipos y/o mercancías (referidos en conjunto como los “materiales”) a que la propia ORDEN se refiere.  3.- Entregas.- El VENDEDOR reconoce que la entrega de los materiales amparados por esta ORDEN serán precisamente en las cantidades, calidades y en las fechas que se señalan en la presente ORDEN y a reserva que se indique lo contrario, incluye su entrega en el domicilio especificado por el COMPRADOR en horas y días hábiles. No obstante, el COMPRADOR se reserva el derecho de recoger o retirar directamente la mercancía de que se trate, en las bodegas o establecimientos del VENDEDOR, si así lo deseare el COMPRADOR. El VENDEDOR reconoce y acepta tener por canceladas todas aquellas entregas de materiales posteriores a la fecha solicitada si así lo requiere el COMPRADOR, y sin costo alguno para el COMPRADOR.  4.- Embarques.- El VENDEDOR se obliga a procesar el envío de los materiales amparados por esta ORDEN precisamente en la forma que se establece en la misma. El VENDEDOR se obliga a avisar por escrito al COMPRADOR, si así lo requiere el COMPRADOR, el haber iniciado el envío de los materiales de que se trate y a enviarle evidencia de lo anterior. Todos los cargos que se causaren por demoras en el retiro o recibo de materiales sin culpa del COMPRADOR serán por cuenta exclusiva del VENDEDOR.  5.- Entregas parciales.- El COMPRADOR a su elección podrá aceptar entregas parciales de materiales en términos o plazos distintos de los establecidos en su programa de entregas de materiales.  6.- Entregas Especiales.- Si el VENDEDOR no cumple con la entrega de los materiales en tiempo, calidad y forma, éste tendrá el derecho de exigir la misma entrega mediante un transporte diferente y más ágil al pactado originalmente y a la calidad pactada, y el VENDEDOR reembolsará al COMPRADOR de cualquier costo que ocasione dicho transporte, pudiendo el COMPRADOR rescindir el presente Contrato, sin responsabilidad alguna, incluyendo las de pago, para el COMPRADOR. Si el VENDEDOR no cumple una entrega, el COMPRADOR tendrá derecho de exigir el reembolso por parte del VENDEDOR de los gastos adicionales al precio pactado con el VENDEDOR ocasionado por adquirir un producto sustituto nacional o extranjero. Asimismo, el VENDEDOR deberá cubrir al COMPRADOR todos los daños y perjuicios ocasionados por su incumplimiento. El COMPRADOR está autorizado a deducir de cualquier pago que deba hacer al VENDEDOR, cualquier gasto o costo de los mencionados en este párrafo.  7.- Riesgos de Pérdida o Daños.- Todos los riesgos de pérdida o daños que pudieren sufrir los materiales a que se refiere esta ORDEN durante el transporte o manejo de los mismos, serán por cuenta y a cargo del VENDEDOR hasta el momento de su entrega en el lugar acordado con el COMPRADOR. El VENDEDOR se obliga a reembolsar al COMPRADOR cualquier cantidad que éste tuviere que pagar con motivo de las pérdidas o daños indicados hasta en tanto no se emita reporte de aceptación según  lo que se especifica más adelante.  8.- Calidad.- El VENDEDOR se obliga a que los materiales que suministre al COMPRADOR, estarán de acuerdo y cumplirán cabalmente con las y especificaciones proporcionadas previamente por el COMPRADOR, y estarán libres de cualquier defecto de fabricación, elaboración, material y mano de obra y servirán precisamente para el propósito que les pretende dar el COMPRADOR.  9.- Inspección.- El VENDEDOR conviene que los materiales que la presente ORDEN ampara se entregarán sujetos a inspección por parte del COMPRADOR y que dichos materiales no se considerarán aceptados por el COMPRADOR hasta que éste los hubiere inspeccionado y emitido un reporte de aceptación correspondiente. El COMPRADOR se reserva el derecho de devolver dichos materiales si no se ajustan a los requerimientos pactados, no incurriendo en responsabilidad alguna, incluyendo de pago, por dicha devolución.  10.- Precios.- El Precio es el que aquí se pacta, y no podrá ser modificado sin previo acuerdo por escrito de las Partes.  11.- Cancelación de la ORDEN.- El COMPRADOR se reserva el derecho de cancelar ésta ORDEN y por lo mismo de rescindir el contrato que la misma constituye sin responsabilidad alguna de su parte, en los siguientes casos:  a) Si el material no le es entregado precisamente en el lugar, forma y demás condiciones establecidas en ésta ORDEN, en cuyo caso el VENDEDOR será además responsable de los daños y perjuicios que por su incumplimiento se causen al COMPRADOR, incluyendo el reembolso por parte del VENDEDOR de los gastos adicionales al precio pactado con el VENDEDOR ocasionado por adquirir un producto sustituto nacional o extranjero. b) En caso de que cualquier parte de los materiales amparados por ésta ORDEN no cumplan con la calidad, especificaciones y demás requisitos establecidos en la misma. c) En caso de Concurso, suspensión de pagos o quiebra del VENDEDOR. d) En caso de que el COMPRADOR tuviere que suspender total o parcialmente sus operaciones debido a huelgas, paros, clausuras, intervenciones y en general a cualquier caso fortuito o de fuerza mayor,  o por causas fuera del control del COMPRADOR.  12.- Conflictos Laborales.- El VENDEDOR informará inmediatamente al COMPRADOR cualquier conflicto real o potencial que amenace retrasar los tiempos de entrega establecidos en ésta ORDEN incluyendo toda información importante al respecto. El COMPRADOR podrá optar por cancelar la presente ORDEN sin responsabilidad alguna.  13.- Responsabilidad del VENDEDOR .- El VENDEDOR se obliga a cumplir con todas las leyes, reglamentos y disposiciones gubernamentales de cualquier clase que fueren aplicables a la fabricación, venta o transporte de los materiales amparados por ésta ORDEN y conviene en que serán por su exclusiva cuenta cualquier sanción o responsabilidad por violación a dichas leyes, reglamentos o disposiciones, así como cualquier responsabilidad derivada de las relaciones obrero-patronales con sus trabajadores y empleados y de las relaciones contractuales con subcontratistas o suministradores del VENDEDOR. Igualmente el VENDEDOR será el único responsable por cualesquiera daños o lesiones a bienes o personas que cause el personal a su servicio.  14.- Traspaso o Cesión de esta ORDEN.- Salvo el consentimiento expreso por escrito del COMPRADOR, el VENDEDOR no podrá ceder o traspasar total o parcialmente la presente ORDEN de Compra y si así lo hiciere, el traspaso o cesión de que se trate serán nulos y no producirán efecto legal alguno.  15.- Jurisdicción.- Para lo relativo a la interpretación, cumplimiento y ejecución de la presente ORDEN de Compra El COMPRADOR y el VENDEDOR se someten expresamente a los tribunales competentes de la Cd. de México, DF, renunciando al fuero que pudiere corresponderles por cualquier otro domicilio actual o futuro o por cualquier otra causa.  16.- Instrucciones de Facturación.- El VENDEDOR conviene en remitir a la atención de Cuentas por Pagar del VENDEDOR las facturas correspondientes que cumplan con todos los requisitos fiscales.  17.- Entendimiento Total.-  La presente ORDEN, sus especificaciones en el reverso que forman parte de la misma, junto con sus Anexos y cualquier otro documento referido en la misma ORDEN,  constituyen el entendimiento total entre el VENDEDOR y el COMPRADOR, y reemplaza cualesquiera otros actos, convenios, contratos o entendimientos anteriores o contemporáneos entre las partes del presente en relación con el objeto del mismo, ya sean verbales o escritos.  18.- Encabezados y Títulos.-   Los encabezados y títulos de las diversas Cláusulas e incisos de esta ORDEN son para efecto de mera referencia y de ninguna manera podrán modificar o afectar el significado o interpretación de cualquiera de los términos o disposiciones de esta ORDEN DE COMPRA.
+
+        </p>
+    </div>
+</div>
+    </div>
+</div>
+</body>
+</html>

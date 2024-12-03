@@ -19,17 +19,17 @@
                 <h4 class="modal-title" id="miModalLabel">FILTAR</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" method="post">
+            <form action="{{ url_for('fitro_especialidad') }}" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
-                        <label for="ht_alta_Especialidad" class="form-label">ESPECIALIDAD</label>
-                        <input type="text" class="form-control" id="ht_alta_Especialidad" name="ht_alta_Especialidad">
+                        <label for="especialidad" class="form-label">ESPECIALIDAD</label>
+                        <input type="text" class="form-control" id="especialidad" name="especialidad">
                     </div>
                     <div class="mb-3">
                         <label for="ESTATUS" class="form-label">ESTADO</label>
-                        <select class="form-select" id="ESTATUS" name="ESTATUS">
-                            <option value="" style="text-align: center;">SELECCIONA</option>
+                        <select class="form-select" id="ESTATUS" name="estatus">
+                            <option value="">SELECCIONA</option>
                             <option value="activo">ACTIVO</option>
                             <option value="bloqueado">BLOQUEADO</option>
                         </select>
@@ -37,11 +37,12 @@
                 </div>
                 <div class="modal-footer">
                     <div class="d-grid gap-2 d-md-flex justify-content-start">
-                        <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
-                        <button type="submit" class="btn botones"> <i class="bi bi-search"></i> FILTRAR</button>
+                        <button type="button" class="btn botones" data-bs-dismiss="modal">CERRAR</button>
+                        <button type="submit" class="btn botones">FILTRAR</button>
                     </div>
                 </div>
             </form>
+            
         </div>
     </div>
 </div>
@@ -124,6 +125,9 @@
         <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
             <i class="bi bi-search"></i> FILTRAR
         </button>
+        <a class="btn botones" href="/Especialidades">
+            <i class="bi bi-eraser"></i> LIMPIAR FILTRO
+        </a>
     </div>
     <br>
 

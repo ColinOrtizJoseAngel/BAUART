@@ -1,9 +1,17 @@
 from flask import Flask, render_template, request, url_for,redirect, flash, jsonify,session
 from database import db_sql_server
 from flask_login import LoginManager,login_user, logout_user, login_required,current_user
-from datetime import datetime
 from flask_wtf.csrf import CSRFProtect
 import uuid
+from datetime import datetime, timedelta
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from datetime import datetime
+from reportlab.lib.pagesizes import A4
+import pdfkit
+from flask import make_response
+import base64
+
 
 
 # Configuracion app
@@ -33,6 +41,11 @@ from models.ModelMateriales import ModelMateriales
 from models.ModelEmpleado import ModelEmpleado
 from models.ModelUser import ModelUser
 from models.ModelRequisiciones import ModelRequisiciones
+from models.ModelPresupuesto import ModelPresupuesto
+from models.ModelAsistencias import AsistenciaModel
+from models.ModelRequisiciones import ModelRequisiciones
+from models.ModelOrden import MyOrdendeCompra
+from models.ModelPDF import ModelPDF
 
 # Entities
 from models.entities.Empresas import Empresas
@@ -56,6 +69,8 @@ from models.entities.Familias import Familias
 from models.entities.MaterialesFamilia import MaterialesFamilia
 from models.entities.Empleados import Empleados
 from models.entities.Usuarios import User
+from models.entities.Presupuestos import Presupuesto,DetallePresupuesto,PresupuestoBauart,DetalleBauart
+
 
 
 app = Flask(__name__)
@@ -87,7 +102,7 @@ def logout():
 
 @app.route('/')
 def index():
-    return redirect(url_for('home'))
+    return redirect(url_for('login'))
 
 
         
@@ -157,15 +172,22 @@ def altaempresas():
             session.pop('token', None)
         
             new_empresa = Empresas(
-                id=0, 
-                razon_social = request.form['RAZON_SOCIAL'],
-                rfc=request.form['RFC'],
+                id=request.form['ID_EMPRESA'],
                 repse=request.form['REPSE'],
-                regimen_fiscal_id=request.form['REGIMEN_FISCAL'],
+                razon_social=request.form['RAZON_SOCIAL'],
+                rfc=request.form['RFC'],
                 nombre_representante1=request.form['NOMBRE_REPRESENTANTE1'],
                 apellido_representante1=request.form['APELLIDO_REPRESENTANTE1'],
                 telefono_representante1=request.form['TELEFONO_REPRESENTANTE1'],
                 correo_representante1=request.form['CORREO_REPRESENTANTE1'],
+                calle=request.form['CALLE'],
+                no_exterior= request.form.get('NO_EXTERIOR', ""),
+                no_interior= request.form.get('NO_INTERIOR', ""),
+                cp=request.form['CP'],
+                estado=request.form['ESTADO'],
+                municipio=request.form['MUNICIPIO'],
+                pais=request.form['PAIS'],
+                regimen_fiscal_id=request.form['REGIMEN_FISCAL'],
                 nombre_representante2=request.form.get('NOMBRE_REPRESENTANTE2', ""),
                 apellido_representante2=request.form.get('APELLIDO_REPRESENTANTE2', ""),
                 telefono_representante2=request.form.get('TELEFONO_REPRESENTANTE2', ""),
@@ -173,13 +195,8 @@ def altaempresas():
                 nombre_apoderado=request.form.get('NOMBRE_APODERADO', ""),
                 apellido_apoderado=request.form.get('APELLIDO_APODERADO', ""),
                 telefono_apoderado=request.form.get('TELEFONO_APODERADO', ""),
-                correo_apoderado=request.form.get('CORREO_APODERADO', ""),
-                cp=request.form['CP'],
-                estado=request.form.get('ESTADO', ""),
-                ciudad=request.form.get('CIUDAD', ""),
-                direccion=request.form.get('DIRECCION', ""),
-                usuario=current_user.id              
-                
+                correo_apoderado=request.form.get('CORREO_APODERADO', "")
+               
             )
 
         
@@ -295,7 +312,7 @@ def edit_empresa(id):
             session.pop('token', None)
             
             empresa = Empresas(
-                id=request.form['ID_EMPRESA'],
+                id=id,
                 repse=request.form['REPSE'],
                 razon_social=request.form['RAZON_SOCIAL'],
                 rfc=request.form['RFC'],
@@ -303,7 +320,13 @@ def edit_empresa(id):
                 apellido_representante1=request.form['APELLIDO_REPRESENTANTE1'],
                 telefono_representante1=request.form['TELEFONO_REPRESENTANTE1'],
                 correo_representante1=request.form['CORREO_REPRESENTANTE1'],
+                calle=request.form['CALLE'],
+                no_exterior= request.form.get('NO_EXTERIOR', ""),
+                no_interior= request.form.get('NO_INTERIOR', ""),
                 cp=request.form['CP'],
+                estado=request.form['ESTADO'],
+                municipio=request.form['MUNICIPIO'],
+                pais=request.form['PAIS'],
                 regimen_fiscal_id=request.form['REGIMEN_FISCAL'],
                 nombre_representante2=request.form.get('NOMBRE_REPRESENTANTE2', ""),
                 apellido_representante2=request.form.get('APELLIDO_REPRESENTANTE2', ""),
@@ -312,11 +335,10 @@ def edit_empresa(id):
                 nombre_apoderado=request.form.get('NOMBRE_APODERADO', ""),
                 apellido_apoderado=request.form.get('APELLIDO_APODERADO', ""),
                 telefono_apoderado=request.form.get('TELEFONO_APODERADO', ""),
-                correo_apoderado=request.form.get('CORREO_APODERADO', ""),
-                estado=request.form.get('ESTADO', ""),
-                ciudad=request.form.get('CIUDAD', ""),
-                direccion=request.form.get('DIRECCION', "")
+                correo_apoderado=request.form.get('CORREO_APODERADO', "")
+               
             )
+            
             ModelEmpresas.update_empresa(db, empresa)
             ModelRegistroPatronal.delete_registro_patronales(db, empresa.id)
 
@@ -503,7 +525,7 @@ def altaclientes():
                     puesto=puestos_contacto[i],
                     telefono=telefonos_contacto[i],
                     correo=correos_contacto[i],
-                    usuario=1
+                    usuario=current_user.id
                 )
 
                 ModelContactosClientes.new_contacto_cliente(db,nuevo_contacto)
@@ -519,7 +541,7 @@ def altaclientes():
                     id_banco=bancos[b],
                     numero_cuenta=numeros_cuentas[b],
                     clabe=clabes[b],
-                    usuario=1,
+                    usuario=current_user.id,
                 )
 
                 ModelCuentasClientes.new_cuenta_cliente(db,nueva_cuenta)
@@ -704,7 +726,7 @@ def alta_proyecto():
             nuevo_proyecto = ProyectoObra(
                         id=0,
                         id_cliente=request.form['cliente_id'],
-                        id_empresa=1,
+                        id_empresa=current_user.id_empresa,
                         fecha_inicio=request.form['fecha_inicio'],
                         fecha_contrato="0000-00-00",
                         fecha_fin=request.form['fecha_fin'],
@@ -801,7 +823,7 @@ def edit_proyecto(id):
             session.pop('token', None)
             nuevo_proyecto = ProyectoObra(
                         id=id,
-                        id_empresa=1,
+                        id_empresa=current_user.id_empresa,
                         id_cliente=request.form['cliente_id'],
                         fecha_inicio=request.form['fecha_inicio'],
                         fecha_contrato="2024-08-22",
@@ -1068,9 +1090,9 @@ def altapuesto():
             puesto = Puesto(
                 id=0,
                 puesto=request.form['PUESTO'],
-                sueldo_base=request.form['SUELDO_BASE'],
-                sueldo_tarjeta=request.form['SUELDO_TARJETA'],
-                horas_extras=request.form['HORA_EXTRA'],
+                sueldo_base= convertir_a_float(request.form['SUELDO_BASE']),
+                sueldo_tarjeta=convertir_a_float(request.form['SUELDO_TARJETA']),
+                horas_extras=convertir_a_float(request.form['HORA_EXTRA']),
                 categoria=request.form['CATEGORIA']
             )
 
@@ -1084,9 +1106,9 @@ def edit_puesto(id):
     if request.method == 'POST':
         puesto = Puesto(id=id,
             puesto=request.form['PUESTO_EDIT'],
-            sueldo_base=request.form['SUELDO_BASE_EDIT'],
-            sueldo_tarjeta=request.form['SUELDO_TARJETA_EDIT'],
-            horas_extras=request.form['HORA_EXTRA_EDIT'],
+            sueldo_base=convertir_a_float(request.form['SUELDO_BASE_EDIT']),
+            sueldo_tarjeta=convertir_a_float(request.form['SUELDO_TARJETA_EDIT']),
+            horas_extras=convertir_a_float(request.form['HORA_EXTRA_EDIT']),
             categoria=request.form['CATEGORIA_EDIT']
         )
         
@@ -1142,7 +1164,7 @@ def altaproveedores():
         
             new_proveedor = Proveedores(
                 id=request.form['ID_PROVEEDOR'], 
-                id_empresa = 1,
+                id_empresa = current_user.id_empleado,
                 razon_social=request.form['RAZON_SOCIAL'],
                 regimen_fiscal_id=request.form['REGIMEN_FISCAL'],
                 tipo_id=request.form['TIPO'],
@@ -1154,7 +1176,8 @@ def altaproveedores():
                 colonia=request.form['COLONIA'],
                 calle=request.form['CALLE'],
                 numero_exterior=request.form['NO_EXTERIOR'],
-                numero_interior=request.form['NO_INTERIOR']
+                numero_interior=request.form['NO_INTERIOR'],
+                usuario=current_user.id
             )
 
             id_proveedor = ModelProveedores.crear_proveedor(db,new_proveedor)
@@ -1249,22 +1272,15 @@ def validar_rfc_proveedores():
 @app.route('/Proveedores', methods=['GET','POST'])
 def proveedores ():
     if request.method == 'POST':
-        # Verifica si el token en la sesión coincide con el del formulario
-        token = request.form.get('token')
-        if token and session.get('token') == token:
-            # Elimina el token de la sesión para evitar reenvíos duplicados
-            session.pop('token', None)
+        proveedor  = request.form.get('PROVEEDOR', '')
+        regimen_fiscal = request.form.get('REGIMEN_FISCAL', '')
+        rfc = request.form.get('RFC', '')
+        estatus = request.form.get('ESTATUS', '')
+
+        proveedores = ModelProveedores.filter_proveedores(db, proveedor, regimen_fiscal, rfc,estatus)
         
-            proveedor  = request.form.get('PROVEEDOR', '')
-            regimen_fiscal = request.form.get('REGIMEN_FISCAL', '')
-            rfc = request.form.get('RFC', '')
-            estatus = request.form.get('ESTATUS', '')
+        return render_template('proveedores.html', proveedores=proveedores)
 
-            proveedores = ModelProveedores.filter_proveedores(db, proveedor, regimen_fiscal, rfc,estatus)
-            return render_template('proveedores.html', proveedores=proveedores)
-
-        else:
-            return redirect(url_for('proveedores'))
     
     else:
         # Genera un token único y lo almacena en la sesión
@@ -1411,6 +1427,27 @@ def especialidades():
     especialidades = ModelEspecialidades.get_all_especialidades(db)
     return render_template('especialidades.html',especialidades=especialidades)
 
+## FILTRO ESPECIALIDADES   
+@app.route('/fitro_especialidad', methods=['POST'])
+@login_required
+def fitro_especialidad():
+    especialidad = request.form.get('especialidad', '')
+    estatus = request.form.get('estatus', '')
+
+    try:
+        especialidad = str(especialidad)
+        especialidades = ModelEspecialidades.filter_especialidad(db,especialidad, estatus)
+       
+        if especialidades:
+            return render_template('especialidades.html', especialidades=especialidades)
+        else:
+            return redirect(url_for('especialidades'))
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
 # EDITAR ESPECIALIDADES
 @app.route('/edit_especialidad/<int:id>', methods=['POST'])
 def editar_especialidad(id):
@@ -1435,7 +1472,7 @@ def block_especialidades(id):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-#DESBLOQUEA MATERIAL
+#DESBLOQUEA ESPECIALIDADES
 @app.route('/unblock_especialidades/<int:id>', methods=['POST'])
 def unblock_especialidades(id):
     if request.method == 'POST':
@@ -1464,7 +1501,8 @@ def buscar_proyecto():
                 # Calcular la diferencia entre las dos fechas
                 diferencia = fecha_fin - fecha_inicio
                 semanas = round(diferencia.days / 7)
-
+                
+                
                 proyectos_filtradas.append({
                     'id': p.id,
                     'id_cliente': p.id_cliente,
@@ -1484,7 +1522,21 @@ def buscar_proyecto():
         return jsonify({'error': str(e)}), 500
 
     
-
+@app.route('/api/get_project_details/<int:id>', methods=['GET'])
+def get_project_details(id):
+    try:
+        proyecto = ModelProyectoObra.get_proyecto_by_id(db, id)
+        if proyecto:
+            return jsonify({
+                'id': proyecto.id,
+                'nombre_proyecto': proyecto.nombre_proyecto,
+                'lider_proyecto': proyecto.lider_proyecto,
+                'director_proyecto': proyecto.director_proyecto
+            }), 200
+        else:
+            return jsonify({'error': 'Proyecto no encontrado'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # API LLENAR FAMILIA
 @app.route('/api/llenar_familia/', methods=['GET'])
@@ -1508,6 +1560,29 @@ def get_all_familia():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
+    
+# API OBTENER CATEGORIAS
+@app.route('/api/obtener_categorias/', methods=['GET'])
+def get_all_categorias():
+    try:
+        query = request.args.get('query', '')
+
+        # Obtener todas las familias desde el modelo
+        categorias = ModelCategoria.get_all_categorias(db)
+
+        # Filtrar las familias basadas en la query
+        categorias_filtradas = [
+            {'id': c.idCategoria, 
+            'categoria': c.categoria}
+            for c in categorias
+            if query.lower() in c.categoria.lower()
+        ]
+
+        # Devolver el resultado filtrado como JSON
+        return jsonify(categorias_filtradas), 200
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # API CONTRATISTA
 @app.route('/api/llenar_contratistas/', methods=['GET'])
@@ -1543,6 +1618,78 @@ def get_all_contratistas():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+# API LENAR PUESTOS
+@app.route('/api/llenar_puestos/', methods=['GET'])
+def get_puestos_by_category():
+    try:
+        id_categoria = request.args.get('id_categoria', None)
+  
+
+        if not id_categoria:
+            return jsonify({'error': 'El parámetro id_especialidad es requerido'}), 400
+
+        id_categoria = int(id_categoria)  # Asegúrate de que es un entero
+      
+
+        puestos = ModelPuesto.get_puestos_by_category(db, id_categoria)
+
+        listaPuestosFiltrados = []
+        for p in puestos:
+            listaPuestosFiltrados.append({ 
+                    'id': p.id,
+                    'puesto': p.puesto,
+                    'sueldo_base': p.sueldo_base,
+                    'sueldo_tarjeta': p.sueldo_tarjeta,
+                    'horas_extras' : p.horas_extras
+                })
+                 
+        if listaPuestosFiltrados:
+            return jsonify(listaPuestosFiltrados), 200
+        else:
+            return jsonify([]), 200
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# API OPNTER PUESTO POR ID
+@app.route('/api/obtener_puesto/', methods=['GET'])
+def get_puesto_by_id():
+    try:
+        # Obtener el parámetro id_puesto de la URL
+        id_puesto = request.args.get('id_puesto', None)
+
+        if not id_puesto:
+            return jsonify({'error': 'El parámetro id_puesto es requerido'}), 400
+
+        # Convertir a entero (manejar errores si no es válido)
+        try:
+            id_puesto = int(id_puesto)
+        except ValueError:
+            return jsonify({'error': 'El parámetro id_puesto debe ser un número entero'}), 400
+
+        # Llamar al modelo para obtener el puesto
+        puestos = ModelPuesto.get_puestos_by_id(db, id_puesto)
+
+        if not puestos:  # Verificar si no se encontraron resultados
+            return jsonify({'error': f'No se encontró un puesto con id {id_puesto}'}), 404
+
+        # Construir el diccionario de respuesta
+        puesto = {
+            'id': puestos.id,
+            'puesto': puestos.puesto,
+            'sueldo_base': puestos.sueldo_base,
+            'sueldo_tarjeta': puestos.sueldo_tarjeta,
+            'horas_extras': puestos.horas_extras
+        }
+
+        # Respuesta exitosa
+        return jsonify(puesto), 200
+
+    except Exception as e:
+        # Manejo de excepciones generales
+        return jsonify({'error': f'Error interno del servidor: {str(e)}'}), 500
 
 # API CLIENTE
 @app.route('/api/buscar_cliente/', methods=['GET'])
@@ -1684,6 +1831,33 @@ def obtener_especialidades():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+@app.route('/api/obtener_puestos/', methods=['GET'])
+def obtener_puestos():
+    try:
+        query = request.args.get('query', '')
+
+        puestos =ModelPuesto.get_all_puestos_no_block(db)
+        lista_puestos_filtrados = []
+
+        for p in puestos:
+            if query.lower() in e.puesto.lower():
+                lista_puestos_filtrados.append({
+                    'id':p.id,
+                    'puesto':p.puesto,
+                    'sueldo_base':p.sueldo_base,
+                    'sueldo_tarjeta': p.sueldo_tarjeta,
+                    'horas_extra':p.horas_extra,
+                    'categoria': p.categoria
+                })
+
+        if lista_puestos_filtrados:
+            return jsonify(lista_puestos_filtrados), 200
+        else:
+            return jsonify([]), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/obtener_materiales/', methods=['GET'])
 def obtener_materiales():
@@ -1874,21 +2048,154 @@ def obtener_cfd():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-#PRESUPUESTOS
-@app.route('/Presupuestos', methods=['GET', 'POST'])
-def presupuestos():
+
+def convertir_a_float(valor, valor_default=0.0):
+    """
+    Convierte un valor a float. Si no es posible, devuelve un valor predeterminado.
+    
+    :param valor: Valor a convertir
+    :param valor_default: Valor por defecto si la conversión falla
+    :return: Valor convertido a float o el valor por defecto
+    """
+    try:
+        # Elimina el símbolo '$' y las comas, luego convierte a float
+        return float(valor.replace("$", "").replace(",", ""))
+    except (ValueError, AttributeError):
+        return valor_default
+
+
+
+
+@app.route('/Presupuestos', methods=['GET', 'POST'] )
+def prespuestos():
+    
     if request.method == 'POST':
         pass
     
     else:
-        return render_template('presupuestos.html')
+        presupuestos = ModelPresupuesto.obtener_presupuestos(db)
+        
+        return render_template('presupuestos.html',presupuestos=presupuestos)
 
+@app.route('/altaPresupuestos', methods=['GET', 'POST'])
+def altaPresupuestos():
+    if request.method == 'POST':
+        # Verifica si el token en la sesión coincide con el del formulario
+        token = request.form.get('token')
+        if token and session.get('token') == token:
+            # Elimina el token de la sesión para evitar reenvíos duplicados
+            session.pop('token', None)
+            print(request.form['PROYECTO'])
+            print(request.form['PROYECTO_ID'])
 
+            # CABECERA DE PRESUPUESTO
+            nuevo_presupuesto = Presupuesto(
+                id=0,
+                proyecto=request.form['PROYECTO'],
+                id_proyecto = request.form['PROYECTO_ID'],
+                id_cliente=request.form['CLIENTE_ID'],
+                id_empresa=current_user.id_empresa,
+                id_director=request.form['DIRECTOR'],
+                presupuesto_cliente=convertir_a_float(request.form['PRESUPUESTO_CLIENTE']),
+                estatus_proyecto=request.form['ESTATUS_OBRA'],
+                pagado_cliente=convertir_a_float(request.form['PAGADO_CLIENTE']),
+                porcentaje_pagado=convertir_a_float(request.form['PORCENTAJE_PAGADO_CLIENTE']),
+                gastado_real=convertir_a_float(request.form['GASTADO_REAL']),  # Atributo agregado
+                porcentaje_gastado=convertir_a_float(request.form['PORCENTAJE_GASTADO']),  # Atributo agregado
+                falta_por_cobrar=convertir_a_float(request.form['FALTA_COBRAR']),
+                falta_por_gastar=convertir_a_float(request.form['FALTA_GASTAR']),
+                porcentaje_por_gastar=convertir_a_float(request.form['PORCENTAJE_POR_GASTAR']),  # Atributo agregado
+                sub_client_iva=convertir_a_float(request.form['subtotalCliente']),
+                indirecto_client_iva=convertir_a_float(request.form['totalIndirectoCliente']),
+                total_cliente_iva=convertir_a_float(request.form['totalCliente']),
+                sub_proveedor=convertir_a_float(request.form['subtotalContratista']),
+                sub_diferencia=convertir_a_float(request.form['subtotalDiferencia']),
+                usuario_id=current_user.id,
+                estatus=1
+            )
+                        
+            
 
+            # Guarda el presupuesto en la base de datos
+            presupuesto_id = ModelPresupuesto.crear_presupuesto(db, nuevo_presupuesto)
+            nuevo_presupuesto.id = presupuesto_id
 
+            # PARTIDAS PRESUPUESTALES
+            id_partida = request.form.getlist('ID_PARTIDAS[]')
+            conceptos_partidas = request.form.getlist('ESPECIALIDADES[]')
+            id_concepto_partidas = request.form.getlist('ID_ESPECIALIDADES[]')
+            proveedor_partidas = request.form.getlist('PROVEEDOR[]')
+            presupuesto_cliente_partidas = request.form.getlist('PRESUPUESTO_CLIENTE[]')
+            presupuesto_proveedor_partidas = request.form.getlist('PRESUPUESTO_PROVEEDOR[]')
+            diferencia_presupuestos_partidas = request.form.getlist('DIFERENCIA[]')
+            contrato_firmado_partidas = request.form.getlist('CONTRATO_FIRMADO[]')
 
+            for i in range(len(id_partida)):
+                detalle = DetallePresupuesto(id=0,
+                    id_presupuesto=nuevo_presupuesto.id,
+                    id_concepto=id_concepto_partidas[i],
+                    concepto=conceptos_partidas[i],
+                    id_proveedor=proveedor_partidas[i],
+                    presupuesto_cliente=convertir_a_float(presupuesto_cliente_partidas[i]),
+                    presupuesto_contratista=convertir_a_float(presupuesto_proveedor_partidas[i]),
+                    diferencia=convertir_a_float(diferencia_presupuestos_partidas[i]),
+                    contrato_firmado=contrato_firmado_partidas[i] == '1'
+                )
 
+                # Guarda el detalle del presupuesto
+                detalle_id = ModelPresupuesto.agregar_detalle_presupuesto(db, detalle)
+                detalle.id = detalle_id
 
+                # Si el proveedor es "Bauart", se genera un presupuesto Bauart
+                if detalle.id_proveedor == '0':
+                    nombre_sub_presupuesto = request.form[f'NOMBRE_SUB-{id_partida[i]}']
+                    total_cliente_bauart = request.form[f'INPUT_PRESUPUESTO_CLIENTE_BAUART-{id_partida[i]}']
+                    total_proveedor_bauart = request.form[f'INPUT_PRESUPUESTO_CONTRATISTA_BAUART-{id_partida[i]}']
+                    diferencia_bauart = request.form[f'INPUT_DIFERENCIA_PRESUPUESTOS-{id_partida[i]}']
+
+                    presupuesto_bauart = PresupuestoBauart(
+                        id=0,
+                        concepto=detalle.concepto,
+                        id_detalle=detalle.id,
+                        nombre_presupuesto=nombre_sub_presupuesto,
+                        total_presupuesto_cliente=convertir_a_float(total_cliente_bauart),
+                        total_presupuesto_proveedor=convertir_a_float(total_proveedor_bauart),
+                        diferencia_presupuesto=convertir_a_float(diferencia_bauart)
+                    )
+
+                    # Guarda el presupuesto Bauart
+                    presupuesto_bauart_id = ModelPresupuesto.agregar_presupuesto_bauart(db, presupuesto_bauart)
+                    presupuesto_bauart.id = presupuesto_bauart_id
+
+                    # Detalles del presupuesto Bauart
+                    id_concepto_sub = request.form.getlist(f'INPUT_ID_ESPECIALIDADES_SUB_{id_partida[i]}[]')
+                    is_nomina_sub = request.form.getlist(f'IS_NOMINA_{id_partida[i]}[]')
+                    conceptos_sub = request.form.getlist(f'ESPECIALIDADES_SUB-{id_partida[i]}[]')
+                    proveedores_sub = request.form.getlist(f'PROVEEDOR_SUB-{id_partida[i]}[]')
+                    sub_presupuesto_cliente = request.form.getlist(f'SUB_PRESUPUESTO_CLIENTE-{id_partida[i]}[]')
+                    sub_presupuesto_proveedor = request.form.getlist(f'SUB_PRESUPUESTO_PROVEEDOR-{id_partida[i]}[]')
+                    sub_diferencia = request.form.getlist(f'SUB_DIFERENCIA-{id_partida[i]}[]')
+
+                    for j in range(len(conceptos_sub)):
+                        detalle_bauart = DetalleBauart(id=0,
+                            id_presupuesto_bauart=presupuesto_bauart.id,
+                            id_concepto=id_concepto_sub[j],
+                            concepto=conceptos_sub[j],
+                            id_proveedor=proveedores_sub[j],
+                            presupuesto_cliente=convertir_a_float(sub_presupuesto_cliente[j]),
+                            presupuesto_contratista=convertir_a_float(sub_presupuesto_proveedor[j]),
+                            diferencia=convertir_a_float(sub_diferencia[j]),
+                            is_nomina=is_nomina_sub[j]
+                        )
+
+                        # Guarda el detalle Bauart
+                        ModelPresupuesto.agregar_detalle_bauart(db, detalle_bauart)
+
+            return jsonify({"message": "Presupuesto creado exitosamente", "id_presupuesto": nuevo_presupuesto.id})
+
+    else:
+        session['token'] = str(uuid.uuid4())
+        return render_template('altaPresupuestos.html', token=session['token'])
 
 # MATERIALES
 @app.route('/materiales', methods=['GET', 'POST'])
@@ -1926,13 +2233,34 @@ def materiales():
 
     materiales = ModelMaterialesFamilia.get_all_materiales_familia(db)
 
-    # Imprimir los valores de is_blocked para depuración
-    for material in materiales:
-        print(f"Familia: {material.material}, is_blocked: {material.is_blocked}")
-
+ 
     return render_template('materiales.html', materiales=materiales)
 
+# EDITAR ESPECIALIDADES
+@app.route('/edit_materiales/<int:id>', methods=['POST'])
+def edit_materiales(id):
+       
+    familia_id = request.form.get('FamiliaID')
+    descripcion_material = request.form.get('descripcionMaterial')
+    medidaMaterial = request.form.get('medidaMaterial')
+        
+    if not familia_id or not descripcion_material:
+        # Puedes manejar el error de una manera apropiada
+        flash("Por favor, complete todos los campos requeridos.", "error")
+        return redirect(url_for('materiales'))
 
+    material = MaterialesFamilia(
+        # No es necesario establecer el id si es auto-incremental
+        id=id,
+        id_familia=familia_id,
+        material=descripcion_material,
+        unidad_medida=medidaMaterial
+    )
+        
+    ModelMateriales.update_material(db,material)
+        
+    return redirect(url_for('materiales'))
+        
 # FAMILIAS
 @app.route('/familias', methods=['GET', 'POST'])
 def familias():
@@ -1999,9 +2327,356 @@ def unblock_material(id):
             return jsonify({'error': str(e)}), 500                
 
 
+#Orden de compra
+@app.route('/api/buscar_proveedor', methods=['GET'])
+def buscar_proveedor():
+    query = request.args.get('query', '').strip()
+    if not query:
+        return jsonify([])
+
+    try:
+        connection = db_sql_server.get_connection()
+        cursor = connection.cursor()
+
+        sql_query = """
+            SELECT TOP 10 ID, RAZON_SOCIAL, RFC
+            FROM PROVEEDORES
+            WHERE RAZON_SOCIAL LIKE ? OR RFC LIKE ?
+            ORDER BY RAZON_SOCIAL
+        """
+        cursor.execute(sql_query, (f'%{query}%', f'%{query}%'))
+
+        proveedores = [
+            {'id': row.ID, 'razon_social': row.RAZON_SOCIAL, 'rfc': row.RFC}
+            for row in cursor.fetchall()
+        ]
+
+        cursor.close()
+        connection.close()
+
+        return jsonify(proveedores)
+
+    except Exception as e:
+        print(f"Error al buscar proveedores: {e}")
+        return jsonify({'error': 'Error al buscar proveedores'}), 500
+
+ordenes = {}
+
+@app.route('/api/ordenes_requisicion', methods=['GET'])
+def get_ordenes_requisicion():
+    id_requisicion = request.args.get('id_requisicion', type=int)
+
+    if not id_requisicion:
+        return jsonify({"error": "El parámetro 'id_requisicion' es obligatorio."}), 400
+
+    db = db = db_sql_server.get_connection()
+    try:
+        # Consulta para obtener las órdenes relacionadas con la requisición y el nombre del proveedor
+        cursor = db.cursor()
+        query = """
+            SELECT 
+                o.ID AS id_orden,
+                o.ID_REQUISICION AS id_requisicion,
+                o.ID_PROVEEDOR AS id_proveedor,
+                p.RAZON_SOCIAL AS proveedor_nombre  -- Nombre del proveedor
+            FROM ORDENES o
+            JOIN PROVEEDORES p ON o.ID_PROVEEDOR = p.ID
+            WHERE o.ID_REQUISICION = ?
+        """
+        cursor.execute(query, (id_requisicion,))
+        results = cursor.fetchall()
+
+        # Estructurar el resultado en JSON
+        ordenes = []
+        for row in results:
+            orden = {
+                "id": row.id_orden,
+                "id_requisicion": row.id_requisicion,
+                "id_proveedor": row.id_proveedor,
+                "proveedor_nombre": row.proveedor_nombre  # Incluir el nombre del proveedor
+            }
+            ordenes.append(orden)
+
+        return jsonify(ordenes), 200
+    except Exception as e:
+        print(f"Error al obtener órdenes: {e}")
+        return jsonify({"error": "Error al obtener las órdenes."}), 500
+    finally:
+        db.close()
+
+@app.route('/guardar_orden', methods=['POST'])
+def guardar_orden():
+    try:
+        data = request.json
+        
+        # Extraer datos del JSON
+        id_requisicion = data['id_requisicion']
+        id_proveedor = data['id_proveedor']
+        fecha_hora_entrega = data.get('fecha_hora_entrega')  # Fecha y hora de entrega
+        direccion_entrega = data.get('direccion_entrega')  # Dirección de entrega
+        contacto = data.get('contacto')  # Contacto de la entrega
+        telefono = data.get('telefono')  # Teléfono del contacto
+        porcentaje_descuento = data.get('porcentaje_descuento', 0)  # Descuento, default 0 si no está presente
+
+        # Validar que los datos necesarios estén presentes
+        if not id_requisicion or not id_proveedor:
+            return jsonify({"success": False, "message": "Datos obligatorios faltantes"}), 400
+
+        # Validar y formatear la fecha/hora de entrega
+        if fecha_hora_entrega:
+            try:
+                fecha_hora_entrega = datetime.strptime(fecha_hora_entrega, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+            except Exception:
+                return jsonify({"success": False, "message": "Formato de fecha/hora inválido"}), 400
+
+        # Obtener conexión a la base de datos
+        conn = db_sql_server.get_connection()
+
+        # Usar el modelo para guardar la orden
+        id_orden = MyOrdendeCompra.guardar_orden(
+            conn,
+            id_requisicion=id_requisicion,
+            id_proveedor=id_proveedor,
+            fecha_hora_entrega=fecha_hora_entrega,
+            direccion_entrega=direccion_entrega,
+            contacto=contacto,
+            telefono=telefono,
+            porcentaje_descuento=porcentaje_descuento
+        )
+
+        return jsonify({"success": True, "id_orden": id_orden})
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+@app.route('/generar_pdf/<int:id>', methods=['GET'])
+def generar_pdf(id):
+    try:
+        proveedor_id = request.args.get('proveedor_id', default=None, type=int)
+        pdf = ModelPDF.generar_pdf(db, id, proveedor_id)
+        
+        response = make_response(pdf)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'inline; filename=orden_compra_{id}.pdf'
+        return response
+
+    except Exception as e:
+        return jsonify({"error": "No se pudo generar el PDF", "details": str(e)}), 500
+
+@app.route('/api/get_bauart_presupuestos/<int:proyecto_id>', methods=['GET'])
+def get_bauart_presupuestos(proyecto_id):
+    """
+    Endpoint para obtener presupuestos Bauart asociados a un proyecto.
+    """
+    try:
+        print(f"Procesando proyecto_id: {proyecto_id}")
+        presupuestos = ModelPresupuesto.obtener_presupuestos_bauart(db, proyecto_id)
+        print(f"Presupuestos obtenidos: {presupuestos}")
+        return jsonify(presupuestos), 200
+    except Exception as e:
+        print(f"Error al obtener presupuestos Bauart: {e}")
+        return jsonify({"error": f"Error al obtener presupuestos Bauart: {e}"}), 500
+
+@app.route('/api/get_bauart_conceptos/<int:proyecto_id>/<int:presupuesto_id>/<int:detalle_id>', methods=['GET'])
+def get_bauart_conceptos(proyecto_id, presupuesto_id, detalle_id):
+    try:
+
+        # Paso 1: Verificar si el presupuesto Bauart existe utilizando el detalle_id recibido
+        presupuesto_bauart = ModelPresupuesto.get_bauart_by_detalle(db, detalle_id)
+        if not presupuesto_bauart:
+            print(f"No hay presupuesto Bauart asociado con ID de detalle {detalle_id}")
+            return jsonify({"error": f"No hay presupuesto Bauart asociado con ID de detalle {detalle_id}"}), 404
+
+        # Mantener el ID del detalle para referencia
+        id_detalle = presupuesto_bauart.id_detalle
+        print(f"Presupuesto Bauart encontrado: {presupuesto_bauart}")
+        print(f"ID Detalle asociado: {id_detalle}")
+
+        # Paso 2: Obtener los detalles específicos del presupuesto Bauart seleccionado
+        detalles_bauart = ModelPresupuesto.get_detalles_bauart_by_presupuesto(db, presupuesto_id)
+        if not detalles_bauart:
+            print(f"No se encontraron detalles para el presupuesto Bauart con ID {presupuesto_id}")
+            return jsonify({"error": f"No se encontraron detalles para el presupuesto Bauart con ID {presupuesto_id}"}), 404
+
+        # Paso 3: Extraer los conceptos
+        conceptos_bauart = [detalle["concepto"] for detalle in detalles_bauart]
+        print(f"Conceptos encontrados: {conceptos_bauart}")
+
+        return jsonify({"conceptos_bauart": conceptos_bauart}), 200
+
+    except Exception as e:
+        print(f"Error en get_bauart_conceptos: {e}")
+        return jsonify({"error": "Error interno del servidor"}), 500
+@app.route('/api/get_material_by_name/<string:material_name>', methods=['GET'])
+def get_material_by_name(material_name):
+    try:
+        db = db_sql_server.get_connection()
+        material_name = material_name.strip()  # Limpia posibles espacios en blanco
+        # Usamos el método simplificado para buscar el material
+        material = ModelMateriales.get_material_by_name(db, material_name)
+        if not material:
+            print(f"Material '{material_name}' no encontrado o bloqueado.")
+            return jsonify({"error": f"Material '{material_name}' no encontrado o bloqueado."}), 404
+        return jsonify(material), 200
+    except Exception as e:
+        print(f"Error en get_material_by_name: {e}")
+        return jsonify({"error": "Error interno del servidor"}), 500
+
+
+
+
+@app.route('/generar-orden/<int:id>', methods=['GET'])
+def generar_orden_view(id):
+    try:
+        db = db_sql_server.get_connection()
+        if not db:
+            return jsonify({"error": "Error al conectar con la base de datos"}), 500
+
+        # Obtén la requisición
+        requisicion = MyOrdendeCompra.get_requisicion_by_id(db, id)
+        if not requisicion:
+            return jsonify({"error": "Requisición no encontrada"}), 404
+
+        # Obtén las partidas de la requisición
+        partidas = MyOrdendeCompra.get_partidas_by_requisicion_id(db, id)
+        print(f"Requisición: {requisicion}")
+        print(f"Partidas: {partidas}")
+
+        # Renderiza la vista con los datos
+        return render_template('orden_compra.html', requisicion=requisicion, partidas=partidas)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Error al generar la orden de compra"}), 500
+
+    finally:
+        db.close()
+
+@app.route('/generar_orden/<int:id_requisicion>', methods=['GET'])
+def generar_orden(id_requisicion):
+    db = db_sql_server.get_connection()
+
+    # Verificar si la requisición existe
+    requisicion = MyOrdendeCompra.get_requisicion_by_id(db, id_requisicion)
+    if not requisicion:
+        return "Requisición no encontrada", 404
+
+    # Verificar si ya existe una orden vinculada
+    query = "SELECT ID FROM ORDENES WHERE ID_REQUISICION = ?"
+    cursor = db.cursor()
+    cursor.execute(query, (id_requisicion,))
+    orden_existente = cursor.fetchone()
+
+    if orden_existente:
+        id_orden = orden_existente[0]
+    else:
+        # Crear una nueva orden automáticamente
+        id_orden = MyOrdendeCompra.create_orden(db, id_requisicion)
+
+    # Obtener partidas asociadas a la requisición
+    partidas = MyOrdendeCompra.get_partidas_by_requisicion_id(db, id_requisicion)
+
+    # Renderizar la página con los datos
+    return render_template(
+        'orden.html', 
+        requisicion=requisicion, 
+        partidas=partidas, 
+        orden_id=id_orden
+    )
+
+
+
+
+def get_partidas_for_order(order_id):
+    db = db_sql_server.get_connection()
+    cursor = db.cursor()
+    query = """
+        SELECT id, descripcion, unidad, cantidad, precio
+        FROM PARTIDAS_ORDEN
+        WHERE id_orden = ?
+    """
+    cursor.execute(query, (order_id,))
+    partidas = cursor.fetchall()
+    db.close()
+    return [{"id": p[0], "descripcion": p[1], "unidad": p[2], "cantidad": p[3], "precio": p[4]} for p in partidas]
+
+
+def get_requisicion_details(order_id):
+    db = db_sql_server.get_connection()
+    cursor = db.cursor()
+    query = """
+        SELECT r.id AS id_requisicion, r.nombre_proyecto, r.concepto
+        FROM REQUISICIONES r
+        JOIN ORDENES o ON r.id = o.ID_REQUISICION
+        WHERE o.ID = ?
+    """
+    cursor.execute(query, (order_id,))
+    requisicion = cursor.fetchone()
+    db.close()
+    if requisicion:
+        return {"id_requisicion": requisicion[0], "nombre_proyecto": requisicion[1], "concepto": requisicion[2]}
+    return None
+
+
+def generar_pdf_orden_compra(requisicion, partidas):
+    filename = f"Orden_Compra_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
+    c = canvas.Canvas(filename, pagesize=A4)
+    width, height = A4
+
+    # Título
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(1 * inch, height - 1 * inch, "Orden de Compra - Detalles")
+
+    # Detalles de la requisición
+    y = height - 1.5 * inch
+    c.setFont("Helvetica", 10)
+    c.drawString(1 * inch, y, f"ID Requisición: {requisicion['id_requisicion']}")
+    c.drawString(1 * inch, y - 0.2 * inch, f"Proyecto: {requisicion['nombre_proyecto']}")
+    c.drawString(1 * inch, y - 0.4 * inch, f"Concepto: {requisicion['concepto']}")
+
+    # Detalles de las partidas
+    y -= 0.8 * inch
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(1 * inch, y, "Descripción")
+    c.drawString(3.5 * inch, y, "Unidad")
+    c.drawString(4.5 * inch, y, "Cantidad")
+    c.drawString(5.5 * inch, y, "Precio Unitario")
+    c.drawString(6.5 * inch, y, "Subtotal")
+    y -= 0.3 * inch
+
+    c.setFont("Helvetica", 10)
+    total = 0
+    for partida in partidas:
+        descripcion = partida["descripcion"]
+        unidad = partida["unidad"]
+        cantidad = float(partida["cantidad"])
+        precio = float(partida.get("precio", 0))
+        subtotal = cantidad * precio
+        total += subtotal
+
+        c.drawString(1 * inch, y, descripcion)
+        c.drawString(3.5 * inch, y, unidad)
+        c.drawString(4.5 * inch, y, str(cantidad))
+        c.drawString(5.5 * inch, y, f"${precio:.2f}")
+        c.drawString(6.5 * inch, y, f"${subtotal:.2f}")
+        y -= 0.3 * inch
+
+        if y < inch:
+            c.showPage()
+            y = height - 1 * inch
+
+    # Total
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(5.5 * inch, y - 0.3 * inch, f"Total: ${total:.2f}")
+
+    c.save()
+    return filename
+
 #FlujoRequisiones Y Partida Requisiciones
-
-
 @app.route('/api/nueva_requisicion', methods=['POST'])
 def nueva_requisicion():
     # Obtener datos desde el JSON usando `request.json`
@@ -2094,35 +2769,6 @@ def update_requisicion_status(id):
     
     return redirect(url_for('ConsultarRequisicionesPartidas_view'))
 
-@app.route('/get_partidas/<int:requisicion_id>', methods=['GET'])
-def get_partidas(requisicion_id):
-    db = db_sql_server.get_connection()
-    if db is None:
-        return jsonify({"error": "Database connection failed"}), 500
-
-    try:
-        with db.cursor() as cursor:
-            query = "SELECT ID, DESCRIPCION, UNIDAD, CANTIDAD, FECHA_CREACION, DETALLES FROM PARTIDAS_REQUISICION WHERE ID_REQUISICION = ?"
-            cursor.execute(query, (requisicion_id,))
-            rows = cursor.fetchall()
-            partidas = []
-            for row in rows:
-                # Format the date as "DD-MM-YYYY HH:MM"
-                fecha_creacion = row[4].strftime("%d-%m-%Y %H:%M") if row[4] else "N/A"
-                partidas.append({
-                    "id": row[0],
-                    "descripcion": row[1],
-                    "unidad": row[2],
-                    "cantidad": row[3],
-                    "fecha_creacion": fecha_creacion,
-                    "detalles": row[5]
-                })
-            return jsonify({"partidas": partidas})
-    except Exception as e:
-        print(f"Error fetching partition data: {e}")
-        return jsonify({"error": "Error fetching partition data"}), 500
-    finally:
-        db.close()
 
 @app.route('/delete_requisicion/<int:requisicion_id>', methods=['DELETE'])
 def delete_requisicion(requisicion_id):
@@ -2155,6 +2801,191 @@ def requisiciones():
         proyectos = []
     return render_template('requisiciones.html', proyectos=proyectos)
 
+
+# Portal de asistencia
+asistencia_model = AsistenciaModel(db)
+
+@app.route('/asistencia', methods=['GET'])
+def asistencia():
+    return render_template('asistencia.html')
+
+# API PARA AUTOCOMPLETAR EMPLEADOS
+@app.route('/api/buscar_empleado/', methods=['GET'])
+def buscar_empleado():
+    try:
+        # Obtener el parámetro de búsqueda desde la URL
+        query = request.args.get('query', '').strip()
+        
+        # Reutilizar el método filter_empleados del modelo
+        empleados = ModelEmpleado.filter_empleados(
+            db=db,
+            nombre=query,
+            apellido=None,  # No buscamos por apellido directamente
+            tipo_empleado=None,
+            estado='0'  # Buscar solo empleados no bloqueados
+        )
+        
+        # Formatear los datos para la respuesta JSON
+        empleados_filtrados = [
+            {
+                'id': e.id,
+                'nombre': e.nombre,
+                'apellido': e.apellido,
+                'puesto': e.puesto
+            }
+            for e in empleados
+        ]
+        
+        # Retornar los datos filtrados
+        return jsonify(empleados_filtrados), 200
+    
+    except Exception as e:
+        # Manejar errores y devolver un mensaje de error
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/registrar_asistencia_empleado', methods=['POST'])
+def registrar_asistencia_empleado():
+    """
+    Ruta para registrar la asistencia de un empleado.
+    """
+    try:
+        data = request.get_json()
+
+        # Validaciones básicas
+        if not data:
+            return jsonify({"error": "El cuerpo de la solicitud está vacío o no es JSON válido."}), 400
+
+        campos_requeridos = ['id_empleado', 'id_proyecto', 'dia', 'hora_entrada', 'latitud', 'longitud', 'foto_base64']
+        for campo in campos_requeridos:
+            if campo not in data:
+                return jsonify({"error": f"El campo '{campo}' es obligatorio."}), 400
+
+        # Validar formato de fecha y hora
+        try:
+            data['dia'] = datetime.strptime(data['dia'], '%Y-%m-%d').date()
+            data['hora_entrada'] = datetime.strptime(data['hora_entrada'], '%H:%M:%S').time()
+        except ValueError:
+            return jsonify({"error": "El formato de 'dia' debe ser 'YYYY-MM-DD' y el de 'hora_entrada' debe ser 'HH:MM:SS'."}), 400
+
+        # Registrar asistencia utilizando el modelo
+        resultado = asistencia_model.registrar_asistencia(data)
+
+        if "error" in resultado:
+            return jsonify(resultado), 500
+        return jsonify(resultado), 200
+    except Exception as e:
+        print(f"Error interno: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
+
+@app.route('/registrar_hora_salida', methods=['POST'])
+def registrar_hora_salida():
+    """
+    Ruta para registrar la hora de salida de un empleado.
+    """
+    try:
+        data = request.get_json()
+
+        if not data or 'id_empleado' not in data:
+            return jsonify({"error": "El campo 'id_empleado' es obligatorio."}), 400
+
+        # Actualizar hora de salida utilizando el modelo
+        resultado = asistencia_model.actualizar_hora_salida(data['id_empleado'])
+
+        if "error" in resultado:
+            return jsonify(resultado), 404 if "No se encontró" in resultado["error"] else 500
+        return jsonify(resultado), 200
+    except Exception as e:
+        print(f"Error interno: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
+
+@app.route('/verificar_asistencia', methods=['GET'])
+def verificar_asistencia():
+    """
+    Ruta para verificar si un empleado ya registró asistencia hoy.
+    """
+    try:
+        id_empleado = request.args.get('id_empleado')
+
+        if not id_empleado:
+            return jsonify({"error": "El campo 'id_empleado' es obligatorio."}), 400
+
+        # Verificar asistencia utilizando el modelo
+        resultado = asistencia_model.verificar_asistencia(id_empleado)
+
+        if "error" in resultado:
+            return jsonify(resultado), 500
+        return jsonify(resultado), 200
+    except Exception as e:
+        print(f"Error interno: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
+
+@app.route('/obtener_asistencias', methods=['GET'])
+def obtener_asistencias():
+    """
+    Ruta para obtener todas las asistencias registradas.
+    """
+    try:
+        # Obtener asistencias utilizando el modelo
+        resultado = asistencia_model.obtener_asistencias()
+
+        if "error" in resultado:
+            return jsonify(resultado), 500
+        return jsonify(resultado), 200
+    except Exception as e:
+        print(f"Error interno: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+    
+    
+@app.route('/api/asistencias_general', methods=['GET'])
+def obtener_asistencias_general():
+    try:
+        # Obtener parámetros de la solicitud
+        fecha_inicio_str = request.args.get('fecha_inicio')
+        fecha_fin_str = request.args.get('fecha_fin')
+        id_proyecto = request.args.get('id_proyecto')  # Filtro opcional por proyecto
+
+        # Manejar fechas
+        if fecha_inicio_str and fecha_fin_str:
+            fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
+            fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
+        else:
+            hoy = datetime.now()
+            fecha_inicio = hoy - timedelta(days=hoy.weekday())
+            fecha_fin = fecha_inicio + timedelta(days=4)
+
+        # Convertir id_proyecto a entero si está presente
+        if id_proyecto:
+            try:
+                id_proyecto = int(id_proyecto)
+            except ValueError:
+                return jsonify({"error": "El parámetro id_proyecto debe ser un número entero."}), 400
+
+        # Obtener las asistencias
+        asistencias = asistencia_model.obtener_asistencias_por_rango(fecha_inicio, fecha_fin, id_proyecto)
+
+        # Manejar errores del modelo
+        if isinstance(asistencias, dict) and "error" in asistencias:
+            print(f"Error en modelo: {asistencias['error']}")
+            return jsonify({"error": asistencias['error']}), 500
+
+        # Revisar si las asistencias incluyen nombre del proyecto
+        for asistencia in asistencias:
+            if not asistencia.get("nombre_proyecto"):
+                asistencia["nombre_proyecto"] = "No asignado"  # Opcional: manejar valores nulos
+
+        # Respuesta correcta
+        return jsonify(asistencias), 200
+
+    except Exception as e:
+        print(f"Error en la ruta: {e}")
+        return jsonify({"error": "Error interno del servidor"}), 500
+
+@app.route('/sabanaasistencias', methods=['GET'])
+def sabanaasistencias():
+    return render_template('sabanaasistencias.html')
 
 ## MANEJO DE ERRORES
 def status_401(error):

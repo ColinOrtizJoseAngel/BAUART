@@ -18,7 +18,7 @@ class ModelProveedores():
                 """
                 # Ejecutar la consulta de inserción
                 cursor.execute(query_insert, (
-                    1, 
+                    proveedores.id_empresa, 
                     proveedores.razon_social, 
                     proveedores.regimen_fiscal_id, 
                     proveedores.tipo_id, 

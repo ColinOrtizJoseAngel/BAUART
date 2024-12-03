@@ -3,7 +3,7 @@ class Empresas:
                  nombre_representante1, apellido_representante1, telefono_representante1, correo_representante1,
                  nombre_representante2="", apellido_representante2="", telefono_representante2="", correo_representante2="",
                  nombre_apoderado="", apellido_apoderado="", telefono_apoderado="", correo_apoderado="",
-                 cp="", estado="", ciudad="", direccion="", usuario=None,
+                 cp="", estado="", ciudad="",municipio="", pais="", calle = "", direccion="",no_exterior="",no_interior="", usuario=None,
                  fecha_registro=None, is_blocked=False) -> None:
         
         self.id = id
@@ -26,6 +26,11 @@ class Empresas:
         self.cp = cp
         self.estado = estado
         self.ciudad = ciudad
+        self.municipio = municipio
+        self.pais = pais
+        self.calle = calle
+        self.no_exterior = no_exterior
+        self.no_interior = no_interior
         self.direccion = direccion
         self.fecha_registro = fecha_registro
         self.usuario = usuario

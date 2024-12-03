@@ -38,13 +38,13 @@ GO
 
 
 
-CREATE TABLE [PUESTO] (
+ CREATE TABLE [PUESTOS] (
   [ID] INT PRIMARY KEY IDENTITY(1, 1),
   [PUESTO] VARCHAR(250),
-  [SUELDO_BASE] VARCHAR(50),
-  [SUELDDO_TARJETA] VARCHAR(50),
-  [HORA_EXTRA] VARCHAR(50),
-  [FECHA_REGISTRO] DATE,
+  [SUELDO_BASE] DECIMAL(10, 2),
+  [SUELDO_TARJETA] DECIMAL(10, 2),
+  [HORA_EXTRA] DECIMAL(10, 2),
+  [FECHA_REGISTRO] DATE DEFAULT GETDATE(),
   [CATEGORIA] INT,
   [IS_BLOCKED] BIT DEFAULT (0)
 )
@@ -270,51 +270,81 @@ CREATE TABLE [PROYECTOS] (
 )
 GO
 
-CREATE TABLE [PRESUPUESTOS] (
-  [ID] INT PRIMARY KEY IDENTITY(1, 1),
-  [ID_PROYECTO] INT,
-  [ID_CLIENTE] INT,
-  [ID_EMPRESA] INT,
-  [ID_DIRECTOR] int,
-  [PRESUPUESTO_CLIENTE] float,
-  [ESTATUS_PROYECTO] float,
-  [PAGADADO_CLIENTE] float,
-  [PORCENTAJE_PAGADO] float,
-  [GASTADO_REAL] float,
-  [PORCENTAJE_GASTADO] float,
-  [FALTA_POR_COBRAR] float,
-  [PORCENTAJE_POR_COBRAR] float,
-  [FALTA_POR_GASTAR] float,
-  [PORCENTAJE_POR_GASTAR] float,
-  [SUBTOTAL_PRESUPUESTO_CLIENTE_IVA] float,
-  [INDIRECTO_PRESUPUESTO_CLIENTE_IVA] float,
-  [TOTAL_RESUPUESTO_CLIENTE_IVA] float,
-  [SUBTOTAL_PRESUPUESTO_PROVEEDOR] float,
-  [TOTAL_PRESUPUESTO_PROVEEDOR] float,
-  [SUBTOTAL_DIFERENCIA] float,
-  [TOTAL_DIFERENCIA] float,
-  [FECHA_REGISTRO] DATE,
-  [USUARIO_ID] INT,
-  [IS_BLOCKED] BIT DEFAULT (0)
-)
+-- Tabla: PRESUPUESTOS
+CREATE TABLE Presupuestos (
+    id_presupuesto INT IDENTITY(1,1) PRIMARY KEY,
+    id_cliente INT,
+    id_director VARCHAR(100) NOT NULL,
+    id_empresa INT,
+    id_proyecto VARCHAR(100) NOT NULL,
+    usuario INT,
+    estatus_proyecto VARCHAR(50) NULL,
+    presupuesto_cliente DECIMAL(10, 2) NOT NULL,
+    sub_proveedor DECIMAL(10, 2) NOT NULL,
+    subtotal_cliente_iva DECIMAL(10, 2) NOT NULL,
+    total_cliente_iva DECIMAL(10, 2) NOT NULL,
+    indirecto_cliente_iva DECIMAL(10, 2) NOT NULL,
+    sub_diferencia DECIMAL(10, 2) NOT NULL,
+    pagado_cliente DECIMAL(10, 2) NOT NULL,
+    porcentaje_pagado DECIMAL(5, 2) NOT NULL,
+    falta_por_cobrar DECIMAL(10, 2) NOT NULL,
+    falta_por_gastar DECIMAL(10, 2) NOT NULL
+);
 GO
 
-CREATE TABLE [DETALLE_PRESUPUESTO] (
-  [ID] INT PRIMARY KEY IDENTITY(1, 1),
-  [ID_PRESUPUESTO] int,
-  [CONCEPTO] int,
-  [PROVEDOR] int,
-  [PRESUPUESTO_CLIENTE_IVA] float,
-  [PRESUPUESTO_PROVEEDOR_IVA] float,
-  [DIFERENCIA] float,
-  [CONTRATO_FIRMADO] INT,
-  [STATUS] int
-  [FECHA_REGISTRO] DATE,
-  [USUARIO_ID] INT,
-  [IS_BLOCKED] BIT DEFAULT (0)
-)
+-- Tabla: DETALLES_PRESUPUESTO
+CREATE TABLE DetallesPresupuesto (
+    id_detalle INT IDENTITY(1,1) PRIMARY KEY,
+    id_presupuesto INT NOT NULL FOREIGN KEY REFERENCES Presupuestos(id_presupuesto),
+    id_concepto VARCHAR(50) NOT NULL,
+    id_proveedor INT,
+    concepto VARCHAR(100) NOT NULL,
+    contrato_firmado BIT NOT NULL DEFAULT 0,
+    presupuesto_cliente DECIMAL(10, 2) NOT NULL,
+    presupuesto_contratista DECIMAL(10, 2) NOT NULL,
+    diferencia DECIMAL(10, 2) NOT NULL,
+    is_blocked BIT NOT NULL DEFAULT 0
+);
 GO
 
+-- Tabla: PRESUPUESTOS_BAUART
+CREATE TABLE PresupuestosBauart (
+    id_presupuesto_bauart INT IDENTITY(1,1) PRIMARY KEY,
+    id_detalle INT,
+    nombre_presupuesto VARCHAR(100) NOT NULL,
+    total_presupuesto_cliente DECIMAL(10, 2) NOT NULL,
+    total_presupuesto_proveedor DECIMAL(10, 2) NOT NULL,
+    diferencia_presupuesto DECIMAL(10, 2) NOT NULL,
+    is_blocked BIT NOT NULL DEFAULT 0
+);
+GO
+
+-- Tabla: DETALLES_BAUART
+CREATE TABLE DetallesBauart (
+    id_detalle_bauart INT IDENTITY(1,1) PRIMARY KEY,
+    id_presupuesto_bauart INT,
+    id_concepto INT,
+    concepto VARCHAR(100) NOT NULL,
+    presupuesto_cliente DECIMAL(10, 2) NOT NULL,
+    presupuesto_contratista DECIMAL(10, 2) NOT NULL,
+    diferencia DECIMAL(10, 2) NOT NULL,
+    id_proveedor INT,
+    is_non  omina INT NOT NULL DEFAULT, 
+    is_blocked BIT NOT NULL DEFAULT 0
+);
+GO
+
+
+ALTER TABLE DetallesBauart
+ADD is_nomina BIT NOT NULL DEFAULT 0,
+    id_concepto INT
+    
+
+
+ALTER TABLE Presupuestos
+ADD is_blocked BIT NOT NULL DEFAULT 0
+    porcentaje_gastado DECIMAL(5, 2) NOT NULL DEFAULT 0.0,
+    porcentaje_por_gastar DECIMAL(5, 2) NOT NULL DEFAULT 0.0;
 -- Relaciones entre tablas
 
 ALTER TABLE [USUARIOS] ADD FOREIGN KEY ([ID_EMPRESA]) REFERENCES [EMPRESAS] ([ID])
