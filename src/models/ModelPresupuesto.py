@@ -168,76 +168,74 @@ class ModelPresupuesto:
         try:
             with db.cursor() as cursor:
                 query = """
-                    SELECT p.id_presupuesto,
-                    p.proyecto,
-                    p.id_proyecto,
-                    p.id_cliente, 
-                    C.RAZON_SOCIAL,
-                    p.id_empresa,
-                    E.RAZON_SOCIAL,
-                    p.id_director,
-                    p.presupuesto_cliente,
-                    p.estatus_proyecto,
-                    p.pagado_cliente,
-                    p.porcentaje_pagado,
-                    p.gastado_real,
-                    p.porcentaje_gastado,
-                    p.falta_por_cobrar,
-                    p.falta_por_gastar,
-                    p.falta_por_gastar,
-                    p.subtotal_cliente_iva,
-                    p.indirecto_cliente_iva,
-                    p.total_cliente_iva,
-                    p.sub_proveedor,
-                    p.sub_diferencia,
-                    p.usuario,
-                    u.NOMBRE_USUARIO,
-                    p.estatus
-                    FROM Presupuestos AS P
-                    INNER JOIN 
-                    CLIENTES AS C ON C.ID = P.id_cliente 
-                    INNER JOIN
-                    EMPRESAS AS E ON E.ID = P.id_empresa
-                    INNER JOIN
-                    USUARIOS AS U ON U.ID = P.usuario;
+                    SELECT 
+                        p.id_presupuesto,
+                        p.proyecto,
+                        p.id_proyecto,
+                        p.id_cliente, 
+                        c.RAZON_SOCIAL AS cliente,
+                        p.id_empresa,
+                        e.RAZON_SOCIAL AS empresa,
+                        p.id_director,
+                        p.presupuesto_cliente,
+                        p.estatus_proyecto,
+                        p.pagado_cliente,
+                        p.porcentaje_pagado,
+                        p.gastado_real,
+                        p.porcentaje_gastado,
+                        p.falta_por_cobrar,
+                        p.falta_por_gastar,
+                        p.subtotal_cliente_iva,
+                        p.indirecto_cliente_iva,
+                        p.total_cliente_iva,
+                        p.sub_proveedor,
+                        p.sub_diferencia,
+                        p.usuario,
+                        u.NOMBRE_USUARIO AS nombre_usuario,
+                        p.estatus
+                    FROM Presupuestos AS p
+                    INNER JOIN CLIENTES AS c ON c.ID = p.id_cliente
+                    INNER JOIN EMPRESAS AS e ON e.ID = p.id_empresa
+                    INNER JOIN USUARIOS AS u ON u.ID = p.usuario;
                 """
                 cursor.execute(query)
                 rows = cursor.fetchall()
-                
-                # Mapear resultados a objetos Presupuesto
+
+                # Mapear resultados a objetos o diccionarios
                 presupuestos = [
                     {
-                        "id": row[0],
-                        "proyecto":row[1],
-                        "id_proyecto":row[2],
-                        "id_cliente":row[3],
-                        "cliente":row[4],
-                        "id_empresa":row[5],
+                        "id_presupuesto": row[0],
+                        "proyecto": row[1],
+                        "id_proyecto": row[2],
+                        "id_cliente": row[3],
+                        "cliente": row[4],
+                        "id_empresa": row[5],
                         "empresa": row[6],
-                        "id_director" :row[7],
-                        "presupuesto_cliente":row[8],
-                        "estatus_cliente" :row[9],
-                        "pagado_cliente":row[10],
-                        "gastado_real":row[11],
-                        "porcentaje_gastado":row[12],
-                        "falta_por_cobrar":row[13],
-                        "falta_por_gastar":row[14],
-                        "subtotal_cliente_iva":row[15],
-                        "indirecto_cliente_iva":row[16],
-                        "total_cliente_iva":row[17],
-                        "sub_proveedor":row[18],
-                        "sub_diferencia":row[19],
-                        "usuario":row[20],
-                        "nombre_usuario":row[21],
-                        "estatus":row[22]
-                    }                
+                        "id_director": row[7],
+                        "presupuesto_cliente": row[8],
+                        "estatus_proyecto": row[9],
+                        "pagado_cliente": row[10],
+                        "porcentaje_pagado": row[11],
+                        "gastado_real": row[12],
+                        "porcentaje_gastado": row[13],
+                        "falta_por_cobrar": row[14],
+                        "falta_por_gastar": row[15],
+                        "subtotal_cliente_iva": row[16],
+                        "indirecto_cliente_iva": row[17],
+                        "total_cliente_iva": row[18],
+                        "sub_proveedor": row[19],
+                        "sub_diferencia": row[20],
+                        "usuario": row[21],
+                        "nombre_usuario": row[22],
+                        "estatus": row[23]
+                    }
                     for row in rows
                 ]
-                
+
                 return presupuestos
         except Exception as ex:
-            raise Exception(f"Error al actualizar el presupuesto: {ex}")
-        
+            raise Exception(f"Error al obtener los presupuestos: {ex}")
+
     # Métodos para la tabla Presupuestos
     @classmethod
     def get_presupuesto_by_id(cls, db, id_presupuesto):

@@ -175,7 +175,7 @@
             <div class="container-fluid info_user">
                 {% if current_user.is_authenticated %}
                 <p>USUARIO: {{ current_user.usuario }}</p> 
-                <p>EMPRESA: 0{{ current_user.id_empresa}}</p>
+                <p>EMPRESA: {{ current_user.id_empresa}}</p>
                 <p>CORREO: {{ current_user.email}}</p>
                 
                 {% endif %}

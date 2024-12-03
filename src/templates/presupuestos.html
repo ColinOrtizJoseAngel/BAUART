@@ -60,7 +60,7 @@
 <br>
 <div class="container-fluid">
     <div class="d-grid gap-2 d-md-flex justify-content-start">
-        <a class="btn botones" href="/Altaempresas">
+        <a class="btn botones" href="/altaPresupuestos">
             <i class="bi bi-building-fill-add"></i> NUEVO PRESUPUESTO
         </a>
         <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
@@ -91,19 +91,22 @@
                     <th scope="col">CLIENTE</th>
                     <th scope="col">PROYECTO</th>
                     <th scope="col">EMPRESA</th>
-                    <th scope="col">TOTLA PRESUPUSTO CLIENTE</th>
-                    <th scope="col">TOTAL PRESUPUESTO PROVEEDOR</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTLA PRESUPUSTO CLIENTE</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTAL PRESUPUESTO PROVEEDOR</th>
                     <th scope="col">DIREFENCIA</th>
+                    <th scope="col">ESTATUS</th>
                 </tr>
             </thead>
             <tbody>
                 {% for p in presupuestos %}
                 <tr>
-                    <td>{{ p.id }}</td>
-                    <td>{{ p.proyecto }}</td>
+                    <td>{{ p.id_presupuesto }}</td>
                     <td>{{ p.cliente }}</td>
+                    <td>{{ p.proyecto }}</td>
+                    <td>{{ p.empresa }}</td>
                     <td>{{ p.total_cliente_iva }}</td>
-                    <td>{{ p.cp }}</td>
+                    <td>{{ p.sub_proveedor}}</td>
+                    <td>{{ p.sub_diferencia}}</td>
                     <td>
                         {% if p.estatus == 0 %}
                             PRESUPUESTO CARGADO

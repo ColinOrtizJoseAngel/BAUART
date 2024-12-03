@@ -2191,7 +2191,7 @@ def altaPresupuestos():
                         # Guarda el detalle Bauart
                         ModelPresupuesto.agregar_detalle_bauart(db, detalle_bauart)
 
-            return jsonify({"message": "Presupuesto creado exitosamente", "id_presupuesto": nuevo_presupuesto.id})
+            return redirect(url_for('prespuestos'))
 
     else:
         session['token'] = str(uuid.uuid4())
