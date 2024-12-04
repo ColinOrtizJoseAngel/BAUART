@@ -22,10 +22,10 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="token" value="{{ token }}">
 
-        <div class="container">
+        <div class="container-fluid">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <div class="text-center">
-                    <button class="btn botones" id="EditarEmpresa" type="submit">EDITAR</button>
+                    <button class="btn botones" id="EditarEmpresa" type="submit">COMFIRMAR</button>
                 </div>
             </div>
         </div>
@@ -106,7 +106,7 @@
                                                 <option value="" style="text-align: center;">------Selecciona------</option>
                                         
                                                 <optgroup label="Personas morales">
-                                                    <option value="601" {{ 'selected' if empresa.regimen_fiscal_id == 601 else '' }}>601 General de Ley Personas Morales</option>
+                                                    <option value="601" {{ 'selected' if empresa.regimen_fiscal_id == 601 else '' }}>601 GENERAL DE LEY PERSONAS General de Ley Personas Morales</option>
                                                     <option value="603" {{ 'selected' if empresa.regimen_fiscal_id == 603 else '' }}>603 Personas Morales con Fines no Lucrativos</option>
                                                     <option value="607" {{ 'selected' if empresa.regimen_fiscal_id == 607 else '' }}>607 Régimen de Enajenación o Adquisición de Bienes</option>
                                                     <option value="610" {{ 'selected' if empresa.regimen_fiscal_id == 610 else '' }}>610 Residentes en el Extranjero sin Establecimiento Permanente en México</option>
@@ -133,7 +133,7 @@
                                                 </optgroup>
                                             </select>
                                             <div class="invalid-feedback">
-                                                Selecciona un Régimen Fiscal
+                                                SELECIONA UN REGIMEN FISCAL
                                             </div>
                                         </div>
 
@@ -142,7 +142,7 @@
                                             <input type="text" class="form-control" id="RFC" name="RFC"
                                                 value="{{ empresa.rfc }}" maxlength="13" required>
                                             <div class="invalid-feedback">
-                                                Completa RFC
+                                                COMPLETA RFC
                                             </div>
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -150,7 +150,7 @@
                                             <input type="text" class="form-control" id="REPSE" name="REPSE"
                                                 placeholder="REPSE" required value="{{ empresa.repse }}">
                                             <div class="invalid-feedback">
-                                                Completa REPSE
+                                                COMPLETA REPSE
                                             </div>
                                         </div>
                                     </div>

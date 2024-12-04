@@ -343,3 +343,13 @@ a.link {
 
 }
 
+.info_user{
+  font-size: 9px;
+  font-family: arial;
+  background-color: #f8f9fa;
+}
+
+.btn-cerrar-session{
+  font-size: 9px;
+
+}

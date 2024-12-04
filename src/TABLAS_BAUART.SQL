@@ -288,7 +288,8 @@ CREATE TABLE Presupuestos (
     pagado_cliente DECIMAL(10, 2) NOT NULL,
     porcentaje_pagado DECIMAL(5, 2) NOT NULL,
     falta_por_cobrar DECIMAL(10, 2) NOT NULL,
-    falta_por_gastar DECIMAL(10, 2) NOT NULL
+    falta_por_gastar DECIMAL(10, 2) NOT NULL,
+    estado INT NOT NULL DEFAULT 0
 );
 GO
 
@@ -303,7 +304,8 @@ CREATE TABLE DetallesPresupuesto (
     presupuesto_cliente DECIMAL(10, 2) NOT NULL,
     presupuesto_contratista DECIMAL(10, 2) NOT NULL,
     diferencia DECIMAL(10, 2) NOT NULL,
-    is_blocked BIT NOT NULL DEFAULT 0
+    is_blocked BIT NOT NULL DEFAULT 0,
+    estado INT  NOT NULL DEFAULT 0
 );
 GO
 
@@ -315,7 +317,8 @@ CREATE TABLE PresupuestosBauart (
     total_presupuesto_cliente DECIMAL(10, 2) NOT NULL,
     total_presupuesto_proveedor DECIMAL(10, 2) NOT NULL,
     diferencia_presupuesto DECIMAL(10, 2) NOT NULL,
-    is_blocked BIT NOT NULL DEFAULT 0
+    is_blocked BIT NOT NULL DEFAULT 0,
+    estado INT  NOT NULL DEFAULT 0
 );
 GO
 
@@ -329,8 +332,9 @@ CREATE TABLE DetallesBauart (
     presupuesto_contratista DECIMAL(10, 2) NOT NULL,
     diferencia DECIMAL(10, 2) NOT NULL,
     id_proveedor INT,
-    is_non  omina INT NOT NULL DEFAULT, 
-    is_blocked BIT NOT NULL DEFAULT 0
+    is_nonomina INT NOT NULL DEFAULT, 
+    is_blocked BIT NOT NULL DEFAULT 0,
+    estado INT  NOT NULL DEFAULT 0
 );
 GO
 

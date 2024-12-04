@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for,redirect, flash, jsonify,session
+from flask import Flask, render_template, request, url_for,redirect, flash, jsonify,session,send_from_directory
 from database import db_sql_server
 from flask_login import LoginManager,login_user, logout_user, login_required,current_user
 from flask_wtf.csrf import CSRFProtect
@@ -105,6 +105,9 @@ def index():
     return redirect(url_for('login'))
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory('static', 'Buart.ico', mimetype='image/vnd.microsoft.icon')
         
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -2512,6 +2515,7 @@ def get_bauart_conceptos(proyecto_id, presupuesto_id, detalle_id):
     except Exception as e:
         print(f"Error en get_bauart_conceptos: {e}")
         return jsonify({"error": "Error interno del servidor"}), 500
+    
 @app.route('/api/get_material_by_name/<string:material_name>', methods=['GET'])
 def get_material_by_name(material_name):
     try:

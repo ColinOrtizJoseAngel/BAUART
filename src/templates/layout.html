@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!--IMPORTACION DE CSS EXTERNA-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styleLayout.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Buart.ico') }}">
+
     <!--IMPORTACION CSS-->
     {% block customCSS %}
     {% endblock %}
@@ -173,6 +175,7 @@
         </div>
         <div class="offcanvas-end">
             <div class="container-fluid info_user">
+                <br>
                 {% if current_user.is_authenticated %}
                 <p>USUARIO: {{ current_user.usuario }}</p> 
                 <p>EMPRESA: {{ current_user.id_empresa}}</p>
@@ -180,7 +183,7 @@
                 
                 {% endif %}
                 <div class="text-center">
-                    <a href="{{ url_for('logout') }}" class="btn"><i class="bi bi-person-walking"></i> CERRAR SESIÓN</a>
+                    <a href="{{ url_for('logout') }}" class=" btn btn-cerrar-session"><i class="bi bi-person-walking"></i> CERRAR SESIÓN</a>
                 </div>
                 <br>
             </div>
