@@ -1,13 +1,13 @@
 <!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Nuevo Proyecto{% endblock %}
+{% block title %}MODIFICAR CLIENTE{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styele_alta_empresas.css') }}">
 
 {% endblock %}
 
-{% block titutlo %}EDITAR CLIENTE{% endblock %}
+{% block titutlo %}MODIFICAR CLIENTE{% endblock %}
 
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
@@ -17,7 +17,7 @@
     <input type="hidden" name="token" value="{{ token }}">
     
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <div class="text-center">
                 <button class="btn botones" type="submit">CONFIRMA</button>
@@ -276,33 +276,33 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="REGIMEN_FISCAL" class="form-label">Régimen Fiscal</label>
                                     <select class="form-control" name="REGIMEN_FISCAL" id="REGIMEN_FISCAL" required>
-                                        <option value="" style="text-align: center;">------Selecciona------</option>
+                                        <option value="" style="text-align: center;">SELECIONA</option>
                                 
                                         <optgroup label="Personas morales">
-                                            <option value="601" {{ 'selected' if cliente.regimen_fiscal_id == 601 else '' }}>601 General de Ley Personas Morales</option>
-                                            <option value="603" {{ 'selected' if cliente.regimen_fiscal_id == 603 else '' }}>603 Personas Morales con Fines no Lucrativos</option>
-                                            <option value="607" {{ 'selected' if cliente.regimen_fiscal_id == 607 else '' }}>607 Régimen de Enajenación o Adquisición de Bienes</option>
-                                            <option value="610" {{ 'selected' if cliente.regimen_fiscal_id == 610 else '' }}>610 Residentes en el Extranjero sin Establecimiento Permanente en México</option>
-                                            <option value="620" {{ 'selected' if cliente.regimen_fiscal_id == 620 else '' }}>620 Sociedades Cooperativas de Producción que optan por diferir sus ingresos</option>
-                                            <option value="622" {{ 'selected' if cliente.regimen_fiscal_id == 622 else '' }}>622 Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
-                                            <option value="623" {{ 'selected' if cliente.regimen_fiscal_id == 623 else '' }}>623 Opcional para Grupos de Sociedades</option>
-                                            <option value="624" {{ 'selected' if cliente.regimen_fiscal_id == 624 else '' }}>624 Coordinados</option>
-                                            <option value="626" {{ 'selected' if cliente.regimen_fiscal_id == 626 else '' }}>626 Régimen Simplificado de Confianza</option>
-                                            <option value="628" {{ 'selected' if cliente.regimen_fiscal_id == 628 else '' }}>628 Hidrocarburos</option>
+                                            <option value="601" {{ 'selected' if cliente.regimen_fiscal_id == 601 else '' }}>601 GENERAL DE LA LEY PERSONAS MORALES</option>
+                                            <option value="603" {{ 'selected' if cliente.regimen_fiscal_id == 603 else '' }}>603 PERSONAS MORALES CON FINES NO LUCRATIVOS</option>
+                                            <option value="607" {{ 'selected' if cliente.regimen_fiscal_id == 607 else '' }}>607 RÉGIMEN DE ENAJENACIÓN O ADQUISICIÓN DE BIENES</option>
+                                            <option value="610" {{ 'selected' if cliente.regimen_fiscal_id == 610 else '' }}>610 RESIDENTES EN EL EXTRANJERO SIN ESTABLECIMIENTO PERMANENTE EN MÉXICO</option>
+                                            <option value="620" {{ 'selected' if cliente.regimen_fiscal_id == 620 else '' }}>620 SOCIEDADES COOPERATIVAS DE PRODUCCIÓN QUE OPTAN POR DIFERIR SUS INGRESOS</option>
+                                            <option value="622" {{ 'selected' if cliente.regimen_fiscal_id == 622 else '' }}>622 ACTIVIDADES AGRÍCOLAS, GANADERAS, SILVÍCOLAS Y PESQUERAS</option>
+                                            <option value="623" {{ 'selected' if cliente.regimen_fiscal_id == 623 else '' }}>623 OPCIONAL PARA GRUPOS DE SOCIEDADES</option>
+                                            <option value="624" {{ 'selected' if cliente.regimen_fiscal_id == 624 else '' }}>624 COORDINADOS</option>
+                                            <option value="626" {{ 'selected' if cliente.regimen_fiscal_id == 626 else '' }}>626 RÉGIMEN SIMPLIFICADO DE CONFIANZA</option>
+                                            <option value="628" {{ 'selected' if cliente.regimen_fiscal_id == 628 else '' }}>628 HIDROCARBUROS</option>
                                         </optgroup>
                                         <optgroup label="Personas físicas">
-                                            <option value="605" {{ 'selected' if cliente.regimen_fiscal_id == 605 else '' }}>605 Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
-                                            <option value="606" {{ 'selected' if cliente.regimen_fiscal_id == 606 else '' }}>606 Arrendamiento</option>
-                                            <option value="608" {{ 'selected' if cliente.regimen_fiscal_id == 608 else '' }}>608 Demás ingresos</option>
-                                            <option value="611" {{ 'selected' if cliente.regimen_fiscal_id == 611 else '' }}>611 Ingresos por Dividendos (socios y accionistas)</option>
-                                            <option value="612" {{ 'selected' if cliente.regimen_fiscal_id == 612 else '' }}>612 Personas Físicas con Actividades Empresariales y Profesionales</option>
-                                            <option value="614" {{ 'selected' if cliente.regimen_fiscal_id == 614 else '' }}>614 Ingresos por intereses</option>
-                                            <option value="615" {{ 'selected' if cliente.regimen_fiscal_id == 615 else '' }}>615 Régimen de los ingresos por obtención de premios</option>
-                                            <option value="616" {{ 'selected' if cliente.regimen_fiscal_id == 616 else '' }}>616 Sin obligaciones fiscales</option>
-                                            <option value="621" {{ 'selected' if cliente.regimen_fiscal_id == 621 else '' }}>621 Incorporación Fiscal</option>
-                                            <option value="625" {{ 'selected' if cliente.regimen_fiscal_id == 625 else '' }}>625 Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
-                                            <option value="629" {{ 'selected' if cliente.regimen_fiscal_id == 629 else '' }}>629 De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales</option>
-                                            <option value="630" {{ 'selected' if cliente.regimen_fiscal_id == 630 else '' }}>630 Enajenación de acciones en bolsa de valores</option>
+                                            <option value="605" {{ 'selected' if cliente.regimen_fiscal_id == 605 else '' }}>605 SUELDOS Y SALARIOS E INGRESOS ASIMILADOS A SALARIOS</option>
+                                            <option value="606" {{ 'selected' if cliente.regimen_fiscal_id == 606 else '' }}>606 ARRENDAMIENTO</option>
+                                            <option value="608" {{ 'selected' if cliente.regimen_fiscal_id == 608 else '' }}>608 DEMÁS INGRESOS</option>
+                                            <option value="611" {{ 'selected' if cliente.regimen_fiscal_id == 611 else '' }}>611 INGRESOS POR DIVIDENDOS (SOCIOS Y ACCIONISTAS)</option>
+                                            <option value="612" {{ 'selected' if cliente.regimen_fiscal_id == 612 else '' }}>612 PERSONAS FÍSICAS CON ACTIVIDADES EMPRESARIALES Y PROFESIONALES</option>
+                                            <option value="614" {{ 'selected' if cliente.regimen_fiscal_id == 614 else '' }}>614 INGRESOS POR INTERESES</option>
+                                            <option value="615" {{ 'selected' if cliente.regimen_fiscal_id == 615 else '' }}>615 RÉGIMEN DE LOS INGRESOS POR OBTENCIÓN DE PREMIOS</option>
+                                            <option value="616" {{ 'selected' if cliente.regimen_fiscal_id == 616 else '' }}>616 SIN OBLIGACIONES FISCALES</option>
+                                            <option value="621" {{ 'selected' if cliente.regimen_fiscal_id == 621 else '' }}>621 INCORPORACIÓN FISCAL</option>
+                                            <option value="625" {{ 'selected' if cliente.regimen_fiscal_id == 625 else '' }}>625 RÉGIMEN DE LAS ACTIVIDADES EMPRESARIALES CON INGRESOS A TRAVÉS DE PLATAFORMAS TECNOLÓGICAS</option>
+                                            <option value="629" {{ 'selected' if cliente.regimen_fiscal_id == 629 else '' }}>629 DE LOS REGÍMENES FISCALES PREFERENTES Y DE LAS EMPRESAS MULTINACIONALES</option>
+                                            <option value="630" {{ 'selected' if cliente.regimen_fiscal_id == 630 else '' }}>630 ENAJENACIÓN DE ACCIONES EN BOLSA DE VALORES</option>
                                         </optgroup>
                                     </select>
                                     <div class="invalid-feedback">
@@ -332,9 +332,9 @@
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="CONDICION_PAGO" class="form-label">Condición de pago</label>
                                     <select class="form-control" name="CONDICION_PAGO" id="CONDICION_PAGO" required>
-                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>Inmediato</option>
-                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>Trimestral</option>
-                                        <option value="3" {{ 'selected' if cliente.condicion_pago_id == 3 else '' }}>Semestral</option>
+                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>INMEDIATO</option>
+                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>TRIMESTRAL</option>
+                                        <option value="3" {{ 'selected' if cliente.condicion_pago_id == 3 else '' }}>SEMESTRAL</option>
                                     </select>
                                     <div class="invalid-feedback">
                                         Selecciona una condición de pago
@@ -344,9 +344,9 @@
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="FORMA_PAGO" class="form-label">Forma de pago:</label>
                                     <select class="form-control" name="FORMA_PAGO" id="FORMA_PAGO" required>
-                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>Credíto</option>
-                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>Debíto</option>
-                                        <option value="3" {{ 'selected' if cliente.condicion_pago_id == 3 else '' }}>Efectivo</option>
+                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>CREDÍTO</option>
+                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>DEBÍTO</option>
+                                        <option value="3" {{ 'selected' if cliente.condicion_pago_id == 3 else '' }}>EFECTIVO</option>
                                     </select>
                                     <div class="invalid-feedback">
                                         Selecciona una Forma de pago

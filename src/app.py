@@ -590,8 +590,9 @@ def validar_rfc_clientes():
         return jsonify({'error': str(e)}), 500
 
 # EDIT CLIENTE
-@app.route('/edit_cliente/<int:id>', methods=['GET', 'POST'])
-def edit_cliente(id):
+@app.route('/edit_cliente/', methods=['GET', 'POST'])
+def edit_cliente():
+    id = request.args.get('id')
     if request.method == 'POST':
          # Verifica si el token en la sesión coincide con el del formulario
         token = request.form.get('token')

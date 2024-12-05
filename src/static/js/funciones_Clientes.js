@@ -111,31 +111,31 @@ function añadirContacto() {
   var cell6 = newRow.insertCell(5); // Celda para el botón de eliminar
 
   cell1.innerHTML = `
-      <input type="text"  class="form-control" name="NOMBRE_CONTACTO[]" required>
+      <input type="text"  class="form-control" placeholder="NOMBRE" name="NOMBRE_CONTACTO[]" required>
       <div class="invalid-feedback">
         COMPLETA NOMBRE
       </div>`;
 
   cell2.innerHTML = `
-      <input type="text"  class="form-control" name="APELLIDO_CONTACTO[]" required>
+      <input type="text"  class="form-control" placeholder="APELLIDO" name="APELLIDO_CONTACTO[]" required>
       <div class="invalid-feedback">
         COMPLETA APELLIDO 
       </div>`;
 
   cell3.innerHTML = `
-      <input type="tel"  class="form-control" name="TELEFONO_CONTACTO[]" required>
+      <input type="tel"  class="form-control"  placeholder="TELEFONO" name="TELEFONO_CONTACTO[]" required>
       <div class="invalid-feedback">
         COMPLETA TELEFONO
       </div>`;
 
   cell4.innerHTML = `
-      <input type="text"  class="form-control" name="CORREO_CONTACTO[]" required>
+      <input type="text"  class="form-control" placeholder="CORREO DE CONTACTO" name="CORREO_CONTACTO[]" required>
       <div class="invalid-feedback">
         COMPLETA CORREO 
       </div>`;
 
   cell5.innerHTML = `
-      <input type="text"  class="form-control" name="PUESTO_CONTACTO[]" required>
+      <input type="text"  class="form-control" placeholder="PESTO DE CONTACTO" name="PUESTO_CONTACTO[]" required>
       <div class="invalid-feedback">
         COMPLETA PUESTO
       </div>`;
@@ -172,13 +172,13 @@ function añadirCuenta() {
       </div>`;
 
   cell2.innerHTML = `
-      <input type="text" class="form-control" name="NUM_CUENTA[]" maxlength="19" required oninput="formatearCuenta(this)">
+      <input type="text" class="form-control" placeholder="NUMERO DE CUENTA" name="NUM_CUENTA[]" maxlength="19" required oninput="formatearCuenta(this)">
       <div class="invalid-feedback">
         COMPLETA NO CUENTA
       </div>`;
 
   cell3.innerHTML = `
-      <input type="text" class="form-control" name="CLABE[]" maxlength="23" required oninput="formatearCLABE(this)">
+      <input type="text" class="form-control" placeholder="CLABE" name="CLABE[]" maxlength="23" required oninput="formatearCLABE(this)">
       <div class="invalid-feedback">
         COMPLETA CLABE
       </div>`;

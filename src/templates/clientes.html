@@ -40,13 +40,13 @@
                         <select class="form-select" id="ESTATUS" name="ESTATUS" style="text-align: center;">
                             <option value="">SELECIONA</option>
                             <option value="activo">ACTIVO</option>
-                            <option value="bloqueado">BLOQUEDO</option>
+                            <option value="bloqueado">BLOQUEADO</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn botones">Filtrar</button>
+                    <button type="button" class="btn" data-bs-dismiss="modal">CERRAR</button>
+                    <button type="submit" class="btn botones">APLICAR</button>
                 </div>
             </form>
         </div>
@@ -161,7 +161,7 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ cliente.id }}">
                                 <li><a class="dropdown-item"
-                                        href="{{ url_for('edit_cliente', id=cliente.id) }}">EDITAR</a></li>
+                                    href="/edit_cliente/?id={{ cliente.id }}">MODIFICAR</a></li>
                                 <li>
                                     <form action="{{ url_for('block_cliente', id=cliente.id) }}" method="post"
                                         style="display:inline;">
