@@ -1167,7 +1167,7 @@ def altaproveedores():
         
             new_proveedor = Proveedores(
                 id=request.form['ID_PROVEEDOR'], 
-                id_empresa = current_user.id_empleado,
+                id_empresa = current_user.id_empresa,
                 razon_social=request.form['RAZON_SOCIAL'],
                 regimen_fiscal_id=request.form['REGIMEN_FISCAL'],
                 tipo_id=request.form['TIPO'],
@@ -1304,7 +1304,7 @@ def edit_proveedor(id):
             
             new_proveedor = Proveedores(
                 id=id, 
-                id_empresa = 1,
+                id_empresa = current_user.id_empresa,
                 razon_social=request.form['RAZON_SOCIAL'],
                 regimen_fiscal_id=request.form['REGIMEN_FISCAL'],
                 tipo_id=request.form['TIPO'],
@@ -2991,6 +2991,7 @@ def obtener_asistencias_general():
 @app.route('/sabanaasistencias', methods=['GET'])
 def sabanaasistencias():
     return render_template('sabanaasistencias.html')
+
 
 ## MANEJO DE ERRORES
 def status_401(error):

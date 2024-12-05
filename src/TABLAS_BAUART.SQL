@@ -339,6 +339,7 @@ CREATE TABLE DetallesBauart (
 GO
 
 
+
 ALTER TABLE DetallesBauart
 ADD is_nomina BIT NOT NULL DEFAULT 0,
     id_concepto INT
