@@ -78,7 +78,7 @@ class ModelMateriales:
             cursor = db.cursor()
             query = """
                 UPDATE CATALOGO_MATERIALES
-                SET CLAVE_ID = ?, UNIDAD_MEDIDA = ?, DESCRIPCION = ?, FECHA_REGISTRO = ?, USUARIO = ?, IS_BLOCKED = ?
+                SET CLAVE_ID = ?, UNIDAD_MEDIDA = ?, DESCRIPCION = ?, FECHA_REGISTRO = ?, USUARIO_ID = ?, IS_BLOCKED = ?
                 WHERE ID = ?;
             """
             cursor.execute(query, (

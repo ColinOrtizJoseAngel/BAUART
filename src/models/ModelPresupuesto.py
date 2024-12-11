@@ -1,8 +1,42 @@
 from .entities.Presupuestos import Presupuesto,DetallePresupuesto,PresupuestoBauart,DetalleBauart
 from models.ModelProyectoObra import ModelProyectoObra
 
-class ModelPresupuesto:
+      
 
+
+class ModelPresupuesto:
+    
+    @staticmethod
+    def formatear_a_pesos(valor):
+        """
+        Da formato de pesos mexicanos a un número.
+
+        :param valor: float o int, Valor numérico a formatear
+        :return: str, Valor formateado como moneda en pesos (e.g., "$1,234.56")
+        """
+        try:
+            return f"${valor:,.2f}"
+        except (ValueError, TypeError):
+            return "$0.00"
+    
+    @staticmethod
+    def vierificar_diferecnia(valor):
+        """
+        Verifica si la diferencia del presupuesto es positiva o negativa
+
+        :param valor: valor float
+        :return: True o Flase
+        """
+        try:
+            if valor < 0:
+                return True
+            else:
+                False
+        except (ValueError, TypeError):
+            return None
+    
+    
+    
     @classmethod
     def crear_presupuesto(cls, db, presupuesto):
         try:
@@ -125,44 +159,229 @@ class ModelPresupuesto:
             db.rollback()
             raise Exception(f"Error al agregar el detalle Bauart: {ex}")
 
+
+
+    @classmethod
+    def obtener_presupuesto_completo(cls, db, id_presupuesto):
+        """
+        Obtener un presupuesto completo por su ID, incluyendo detalles y presupuestos Bauart.
+        """
+        try:
+            # Obtener la información general del presupuesto
+            presupuesto_general = cls.obtener_presupuesto_por_id(db, id_presupuesto)
+
+            # Obtener los detalles del presupuesto
+            detalles_presupuesto = cls.obtener_detalle_presupuesto_por_id(db, id_presupuesto)
+
+            # Obtener presupuestos Bauart asociados a los detalles del presupuesto
+            presupuestos_bauart = cls.obtener_presupuesto_bauart_por_detalle(db, detalles_presupuesto)
+
+            # Obtener los detalles de los presupuestos Bauart
+            detalles_bauart = cls.obtener_detalle_de_presupuesto_bauart(db, presupuestos_bauart)
+
+         
+            for d in  detalles_presupuesto:
+                pass
+                
+                
+    
+           
+
+            return presupuesto_general
+        except Exception as ex:
+            raise Exception(f"Error al obtener el presupuesto completo: {ex}")
+
+
+
     @classmethod
     def obtener_presupuesto_por_id(cls, db, id_presupuesto):
+        """
+            Obtener un presupuesto por su ID.
+        """
         try:
             with db.cursor() as cursor:
-                query = "SELECT * FROM Presupuestos WHERE id_presupuesto = ?;"
+                query = """
+                     
+                    SELECT 
+                        p.id_presupuesto,
+                        p.proyecto,
+                        p.id_proyecto,
+                        p.id_cliente, 
+                        c.RAZON_SOCIAL AS cliente,
+                        p.id_empresa,
+                        e.RAZON_SOCIAL AS empresa,
+                        p.id_director,
+                        p.presupuesto_cliente,
+                        p.estatus_proyecto,
+                        p.pagado_cliente,
+                        p.porcentaje_pagado,
+                        p.gastado_real,
+                        p.porcentaje_gastado,
+                        p.falta_por_cobrar,
+                        p.falta_por_gastar,
+                        p.subtotal_cliente_iva,
+                        p.indirecto_cliente_iva,
+                        p.total_cliente_iva,
+                        p.sub_proveedor,
+                        p.sub_diferencia,
+                        p.usuario,
+                        u.NOMBRE_USUARIO AS nombre_usuario,
+                        p.estatus
+                    FROM Presupuestos AS p
+                    INNER JOIN CLIENTES AS c ON c.ID = p.id_cliente
+                    INNER JOIN EMPRESAS AS e ON e.ID = p.id_empresa
+                    INNER JOIN USUARIOS AS u ON u.ID = p.usuario
+                    WHERE  p.id_presupuesto = ?
+                    ;
+                """
+
                 cursor.execute(query, (id_presupuesto,))
                 row = cursor.fetchone()
-                if row:
-                    return Presupuesto(*row)
-                return None
+                
+                presupuesto = {
+                        "id_presupuesto": row[0],
+                        "proyecto": row[1],
+                        "id_proyecto": row[2],
+                        "id_cliente": row[3],
+                        "cliente": row[4],
+                        "id_empresa": row[5],
+                        "empresa": row[6],
+                        "id_director": row[7],
+                        "presupuesto_cliente": cls.formatear_a_pesos(row[8]),
+                        "estatus_proyecto":cls.formatear_a_pesos(row[9]),
+                        "pagado_cliente":cls.formatear_a_pesos(row[10]),
+                        "porcentaje_pagado":cls.formatear_a_pesos(row[11]),
+                        "gastado_real": cls.formatear_a_pesos(row[12]),
+                        "porcentaje_gastado": cls.formatear_a_pesos(row[13]),
+                        "falta_por_cobrar": cls.formatear_a_pesos(row[14]),
+                        "falta_por_gastar": cls.formatear_a_pesos(row[15]),
+                        "subtotal_cliente_iva": cls.formatear_a_pesos(row[16]),
+                        "indirecto_cliente_iva": cls.formatear_a_pesos(row[17]),
+                        "total_cliente_iva": cls.formatear_a_pesos(row[18]),
+                        "sub_proveedor": cls.formatear_a_pesos(row[19]),
+                        "sub_diferencia": cls.formatear_a_pesos(row[20]),
+                        "diferencia_es_negativa" : cls.vierificar_diferecnia(row[20]),
+                        "usuario": row[21],
+                        "nombre_usuario": row[22],
+                        "estatus": row[23],
+                        "detalle_presupuesto" : []
+                    }
+                return presupuesto
         except Exception as ex:
             raise Exception(f"Error al obtener el presupuesto: {ex}")
 
     @classmethod
-    def actualizar_presupuesto(cls, db, presupuesto):
+    def obtener_detalle_presupuesto_por_id(cls,db, id):
+        """
+            Obtener el detalle de presupuesto por id
+        """
         try:
             with db.cursor() as cursor:
                 query = """
-                    UPDATE Presupuestos
-                    SET id_cliente = ?, id_director = ?, id_empresa = ?, id_proyecto = ?, usuario = ?, 
-                        estatus_proyecto = ?, presupuesto_cliente = ?, sub_proveedor = ?, subtotal_cliente_iva = ?, 
-                        total_cliente_iva = ?, indirecto_cliente_iva = ?, sub_diferencia = ?, pagado_cliente = ?, 
-                        porcentaje_pagado = ?, falta_por_cobrar = ?, falta_por_gastar = ?
-                    WHERE id_presupuesto = ?;
+                     
+                     SELECT * FROM DetallesPresupuesto WHERE id_presupuesto = ?
+                    ;
                 """
-                cursor.execute(query, (
-                    presupuesto.id_cliente, presupuesto.id_director, presupuesto.id_empresa, presupuesto.id_proyecto,
-                    presupuesto.usuario, presupuesto.estatus_proyecto, presupuesto.presupuesto_cliente,
-                    presupuesto.sub_proveedor, presupuesto.subtotal_cliente_iva, presupuesto.total_cliente_iva,
-                    presupuesto.indirecto_cliente_iva, presupuesto.sub_diferencia, presupuesto.pagado_cliente,
-                    presupuesto.porcentaje_pagado, presupuesto.falta_por_cobrar, presupuesto.falta_por_gastar,
-                    presupuesto.id_presupuesto
-                ))
-                db.commit()
-        except Exception as ex:
-            db.rollback()
-            raise Exception(f"Error al actualizar el presupuesto: {ex}")
 
+                cursor.execute(query, (id,))
+                rows = cursor.fetchall()
+                
+                presupuesto = [DetallePresupuesto(id=row[0],
+                                                  id_presupuesto=row[1],
+                                                  id_concepto=row[2],
+                                                  id_proveedor=row[3],
+                                                  concepto=row[4],
+                                                  contrato_firmado=row[5],
+                                                  presupuesto_cliente=cls.formatear_a_pesos(row[6]),
+                                                  presupuesto_contratista=cls.formatear_a_pesos(row[7]),
+                                                  diferencia=cls.formatear_a_pesos(row[8]),
+                                                  is_blocked=row[9],
+                                                  estatus=row[10]
+                )
+                               for row in rows
+                ]
+                return presupuesto
+        except Exception as ex:
+            raise Exception(f"Error al obtener el presupuesto: {ex}")
+
+
+    @classmethod
+    def obtener_presupuesto_bauart_por_detalle(cls, db, detallePresupuesto):
+        """
+        Obtener los presupuestos Bauart asociados a un conjunto de detalles.
+        """
+        try:
+            presupuestos = []  # Lista para almacenar todos los presupuestos encontrados
+
+            for d in detallePresupuesto:
+                id = d.id
+                with db.cursor() as cursor:
+                    query = """
+                        SELECT * FROM PresupuestosBauart WHERE id_detalle = ?;
+                    """
+                    cursor.execute(query, (id,))
+                    rows = cursor.fetchall()
+
+                    if rows:  # Verificar si hay resultados
+                        presupuestos.extend([
+                            PresupuestoBauart(
+                                id=row[0],
+                                id_detalle=row[1],
+                                nombre_presupuesto=row[2],
+                                total_presupuesto_cliente=cls.formatear_a_pesos(row[3]),
+                                total_presupuesto_proveedor=cls.formatear_a_pesos(row[4]),
+                                diferencia_presupuesto=cls.formatear_a_pesos(row[5]),
+                                is_blocked=row[6],
+                                estatus=row[7]
+                            )
+                            for row in rows
+                        ])
+
+            return presupuestos  # Devolver la lista completa de presupuestos
+        except Exception as ex:
+            raise Exception(f"Error al obtener el presupuesto: {ex}")
+
+    @classmethod
+    def obtener_detalle_de_presupuesto_bauart(cls, db, presupuestosBuart):
+        """
+        Obtener los presupuestos Bauart asociados a un conjunto de detalles.
+        """
+        try:
+            presupuestos = []  # Lista para almacenar todos los presupuestos encontrados
+
+            for p in presupuestosBuart:
+                id = p.id
+                with db.cursor() as cursor:
+                    query = """
+                        SELECT * FROM DetallesBauart WHERE id_presupuesto_bauart = ?;
+                    """
+                    cursor.execute(query, (id,))
+                    rows = cursor.fetchall()
+
+                    if rows:  # Verificar si hay resultados
+                        presupuestos.extend([
+                            DetalleBauart(
+                                id=row[0],
+                                id_presupuesto_bauart=row[1],
+                                concepto=row[2],
+                                presupuesto_cliente=cls.formatear_a_pesos(row[3]),
+                                presupuesto_contratista=cls.formatear_a_pesos(row[4]),
+                                diferencia=cls.formatear_a_pesos(row[5]), 
+                                id_proveedor=row[6],   
+                                is_blocked=row[7],
+                                is_nomina=row[8],
+                                id_concepto=row[9],
+                                estatus=row[10]
+                            )
+                            for row in rows
+                        ])
+
+            return presupuestos  # Devolver la lista completa de presupuestos
+        except Exception as ex:
+            raise Exception(f"Error al obtener el presupuesto: {ex}")
+
+ 
+    
     @classmethod
     def obtener_presupuestos(cls, db):
         try:
@@ -212,19 +431,20 @@ class ModelPresupuesto:
                         "id_empresa": row[5],
                         "empresa": row[6],
                         "id_director": row[7],
-                        "presupuesto_cliente": row[8],
-                        "estatus_proyecto": row[9],
-                        "pagado_cliente": row[10],
-                        "porcentaje_pagado": row[11],
-                        "gastado_real": row[12],
-                        "porcentaje_gastado": row[13],
-                        "falta_por_cobrar": row[14],
-                        "falta_por_gastar": row[15],
-                        "subtotal_cliente_iva": row[16],
-                        "indirecto_cliente_iva": row[17],
-                        "total_cliente_iva": row[18],
-                        "sub_proveedor": row[19],
-                        "sub_diferencia": row[20],
+                        "presupuesto_cliente": cls.formatear_a_pesos(row[8]),
+                        "estatus_proyecto":cls.formatear_a_pesos(row[9]),
+                        "pagado_cliente":cls.formatear_a_pesos(row[10]),
+                        "porcentaje_pagado":cls.formatear_a_pesos(row[11]),
+                        "gastado_real": cls.formatear_a_pesos(row[12]),
+                        "porcentaje_gastado": cls.formatear_a_pesos(row[13]),
+                        "falta_por_cobrar": cls.formatear_a_pesos(row[14]),
+                        "falta_por_gastar": cls.formatear_a_pesos(row[15]),
+                        "subtotal_cliente_iva": cls.formatear_a_pesos(row[16]),
+                        "indirecto_cliente_iva": cls.formatear_a_pesos(row[17]),
+                        "total_cliente_iva": cls.formatear_a_pesos(row[18]),
+                        "sub_proveedor": cls.formatear_a_pesos(row[19]),
+                        "sub_diferencia": cls.formatear_a_pesos(row[20]),
+                        "diferencia_es_negativa" : cls.vierificar_diferecnia(row[20]),
                         "usuario": row[21],
                         "nombre_usuario": row[22],
                         "estatus": row[23]
@@ -236,48 +456,35 @@ class ModelPresupuesto:
         except Exception as ex:
             raise Exception(f"Error al obtener los presupuestos: {ex}")
 
-    # Métodos para la tabla Presupuestos
+
     @classmethod
-    def get_presupuesto_by_id(cls, db, id_presupuesto):
-        """
-        Obtener un presupuesto por su ID.
-        """
+    def actualizar_presupuesto(cls, db, presupuesto):
         try:
             with db.cursor() as cursor:
                 query = """
-                    SELECT id_presupuesto, id_cliente, id_director, id_empresa, id_proyecto, usuario, estatus_proyecto,
-                           presupuesto_cliente, sub_proveedor, subtotal_cliente_iva, total_cliente_iva, indirecto_cliente_iva,
-                           sub_diferencia, pagado_cliente, porcentaje_pagado, falta_por_cobrar, falta_por_gastar, is_blocked,
-                           porcentaje_gastado, porcentaje_por_gastar
-                    FROM Presupuestos
-                    WHERE id_presupuesto = ?
+                    UPDATE Presupuestos
+                    SET id_cliente = ?, id_director = ?, id_empresa = ?, id_proyecto = ?, usuario = ?, 
+                        estatus_proyecto = ?, presupuesto_cliente = ?, sub_proveedor = ?, subtotal_cliente_iva = ?, 
+                        total_cliente_iva = ?, indirecto_cliente_iva = ?, sub_diferencia = ?, pagado_cliente = ?, 
+                        porcentaje_pagado = ?, falta_por_cobrar = ?, falta_por_gastar = ?
+                    WHERE id_presupuesto = ?;
                 """
-                cursor.execute(query, (id_presupuesto,))
-                row = cursor.fetchone()
-                return Presupuesto(*row) if row else None
+                cursor.execute(query, (
+                    presupuesto.id_cliente, presupuesto.id_director, presupuesto.id_empresa, presupuesto.id_proyecto,
+                    presupuesto.usuario, presupuesto.estatus_proyecto, presupuesto.presupuesto_cliente,
+                    presupuesto.sub_proveedor, presupuesto.subtotal_cliente_iva, presupuesto.total_cliente_iva,
+                    presupuesto.indirecto_cliente_iva, presupuesto.sub_diferencia, presupuesto.pagado_cliente,
+                    presupuesto.porcentaje_pagado, presupuesto.falta_por_cobrar, presupuesto.falta_por_gastar,
+                    presupuesto.id_presupuesto
+                ))
+                db.commit()
         except Exception as ex:
-            raise Exception(f"Error al obtener el presupuesto: {ex}")
+            db.rollback()
+            raise Exception(f"Error al actualizar el presupuesto: {ex}")
 
-    @classmethod
-    def get_all_presupuestos(cls, db):
-        """
-        Obtener todos los presupuestos.
-        """
-        try:
-            with db.cursor() as cursor:
-                query = """
-                    SELECT id_presupuesto, id_cliente, id_director, id_empresa, id_proyecto, usuario, estatus_proyecto,
-                           presupuesto_cliente, sub_proveedor, subtotal_cliente_iva, total_cliente_iva, indirecto_cliente_iva,
-                           sub_diferencia, pagado_cliente, porcentaje_pagado, falta_por_cobrar, falta_por_gastar, is_blocked,
-                           porcentaje_gastado, porcentaje_por_gastar
-                    FROM Presupuestos
-                """
-                cursor.execute(query)
-                rows = cursor.fetchall()
-                return [Presupuesto(*row) for row in rows] if rows else []
-        except Exception as ex:
-            raise Exception(f"Error al obtener todos los presupuestos: {ex}")
+  
 
+ 
     @classmethod
     def get_detalles_by_presupuesto(cls, db, id_presupuesto):
         """
@@ -286,13 +493,12 @@ class ModelPresupuesto:
         try:
             with db.cursor() as cursor:
                 query = """
-                    SELECT id_detalle, id_presupuesto, id_concepto, id_proveedor, concepto, contrato_firmado,
-                           presupuesto_cliente, presupuesto_contratista, diferencia, is_blocked
-                    FROM DetallesPresupuesto
-                    WHERE id_presupuesto = ?
+                      SELECT * FROM DetallesPresupuesto WHERE id_presupuesto = ?
                 """
                 cursor.execute(query, (id_presupuesto,))
                 rows = cursor.fetchall()
+                
+                
                 return [DetallePresupuesto(*row) for row in rows] if rows else []
         except Exception as ex:
             raise Exception(f"Error al obtener detalles del presupuesto: {ex}")
@@ -577,3 +783,4 @@ class ModelPresupuesto:
         except Exception as ex:
             raise Exception(f"Error al obtener presupuestos Bauart: {ex}")
         
+  

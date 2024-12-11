@@ -8,7 +8,211 @@
 <!-- TITULO DE PAGINA -->
 {% block titutlo %}GESTIÓN PRESUPUESTOS{% endblock %}
 <!-- FIN DE TITULO -->
+<style>
+    
+.table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  position: relative;
+  /* Para colocar los resizers */
+}
 
+
+
+th,
+td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+
+
+.currency-input {
+  text-align: right;
+  width: 110px;
+  /* Alinea el texto a la derecha para valores monetarios */
+}
+
+.borderless {
+  border: none;
+  /* Elimina los bordes de los inputs */
+}
+
+tfoot tr {
+  background-color: #f8f9fa;
+  /* Color de fondo para el pie de tabla */
+}
+
+tfoot td {
+  padding: 10px;
+  /* Espaciado interno en las celdas del pie de tabla */
+}
+
+th,
+td {
+  padding: 10px;
+  /* Espaciado interno para mejorar la legibilidad */
+  text-align: center;
+  /* Centra el texto de las celdas */
+  border: 1px solid #ddd;
+  /* Añade bordes a las celdas */
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #0f2d3a;
+  color: #ffff;
+  font-size: 12px;
+  font-family: arial;
+  margin: 0px;
+  z-index: 2;
+}
+
+#DETALLE_PRESUPUESTO tfoot {
+  position: sticky;
+  bottom: 0;
+  background-color: white;
+  z-index: 2;
+
+}
+
+.form-label {
+  font-family: arial;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+
+}
+
+.presupuesto {
+  background-color: #0f2d3a;
+  color: #ffff;
+  font-family: arial;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+
+.table-presupuesto  {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.table-presupuesto_sub  {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  white-space: nowrap;
+  font-family: arial;
+
+}
+
+#heder-presupuestos th,
+#heder-presupuestos td {
+  text-align: left;
+
+}
+
+
+.borderless {
+  border: none;
+  box-shadow: none;
+  outline: none;
+
+}
+
+
+
+
+.table-borderless {
+border-collapse: collapse;
+}
+
+.table-borderless th,
+.table-borderless td,
+.table-borderless thead th,
+.table-borderless tbody td,
+.table-borderless tfoot th {
+border: none;
+}
+
+.table-borderless colgroup col {
+border: none;
+}
+
+.modal-header{
+  background-color: #0f2d3a; 
+  color: #fff;
+}
+
+.modal-title {
+  background-color: #0f2d3a; 
+  color: #fff;
+  font-size: 14px;
+  font-family: arial;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+
+}
+
+
+a.link {
+  color: #0f2d3a;
+  font-size: 12px;
+  font-family: arial;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+
+.oculto {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+.modal-xl {
+  --bs-modal-width: 1600px;
+}
+
+
+}
+
+#suggestions {
+position: absolute;
+z-index: 1000; /* Asegurar que esté encima de otros elementos */
+background: white;
+border: 1px solid #ccc;
+max-height: 50px; /* Limitar la altura si hay muchas sugerencias */
+overflow-y: auto; /* Habilitar el scroll */
+
+}
+
+#suggestions .list-group-item {
+cursor: pointer;
+}
+
+#suggestions .list-group-item:hover {
+background-color: #f0f0f0;
+}
+</style>
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 <!-- Modal para Filtrar Empresa -->
@@ -80,7 +284,9 @@
                 <col style="width: 150px;"> <!-- Primera columna de 150px -->
                 <col style="width: 100px;"> <!-- Segunda columna de 200px -->
                 <col style="width: 100px;"> <!-- Tercera columna de 100px -->
-                <col style="width: 100px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 100px;"> <!-- Tercera columna de 100px --> 
+                <col style="width: 100px;"> <!-- Tercera columna de 100px --> 
+                
 
                 <col style="width: 125px;"> <!-- Primera columna de 150px -->
 
@@ -95,6 +301,7 @@
                     <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTAL PRESUPUESTO PROVEEDOR</th>
                     <th scope="col">DIREFENCIA</th>
                     <th scope="col">ESTATUS</th>
+                    <th scope="col">ACCIONES</th>
                 </tr>
             </thead>
             <tbody>
@@ -106,7 +313,11 @@
                     <td>{{ p.empresa }}</td>
                     <td>{{ p.total_cliente_iva }}</td>
                     <td>{{ p.sub_proveedor}}</td>
-                    <td>{{ p.sub_diferencia}}</td>
+                    {% if p.diferencia_es_negativa %}
+                        <td style="background-color: red; color: white;">{{ p.sub_diferencia}}</td>
+                    {% else %}
+                        <td>{{ p.sub_diferencia}}</td>
+                    {% endif %}
                     <td>
                         {% if p.estatus == 0 %}
                             PRESUPUESTO CARGADO
@@ -118,8 +329,23 @@
                             ESTATUS DESCONOCIDO
                         {% endif %}
                     </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ p.id_presupuesto }}"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ p.id_presupuesto }}">
+                                <li><a class="dropdown-item"
+                                        href="/edit_presupuesto/?id={{  p.id_presupuesto }}">EDITAR</a></li>
+                                <li>
+                                    
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
                 {% endfor %}
-
+               
             </tbody>
         </table>
     </div>

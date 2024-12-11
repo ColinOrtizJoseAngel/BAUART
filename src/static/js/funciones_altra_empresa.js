@@ -187,14 +187,14 @@ function añadirCuentasBancarias() {
     `;
 
   cell2.innerHTML = `
-      <input type="text" class="form-control" name="NO_CUENTA[]" maxlength="19" oninput="formatearCLABE(this)" required>
+      <input type="text" class="form-control" placeholder="NUMERO DE CUENTA" name="NO_CUENTA[]" maxlength="19" oninput="formatearCLABE(this)" required>
       <div class="invalid-feedback">
       "COMPLETA NO CUENTA"
       </div>
     `;
 
   cell3.innerHTML = `
-      <input type="text" class="form-control" name="CLABE[]" maxlength="23" oninput="formatearCLABE(this)" required>
+      <input type="text" class="form-control" placeholder="CLABE" name="CLABE[]" maxlength="23" oninput="formatearCLABE(this)" required>
       <div class="invalid-feedback">
       "COMPLETA CLABE"
       </div>

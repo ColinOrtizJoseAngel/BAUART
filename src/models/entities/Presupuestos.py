@@ -4,7 +4,7 @@ class Presupuesto:
                  porcentaje_pagado=0.0, gastado_real=0.0, porcentaje_gastado=0.0, falta_por_cobrar=0.0, 
                  falta_por_gastar=0.0, porcentaje_por_gastar=0.0, sub_client_iva=0.0, 
                  indirecto_client_iva=0.0, total_cliente_iva=0.0, sub_proveedor=0.0, 
-                 sub_diferencia=0.0, usuario_id=None, estatus=1):
+                 sub_diferencia=0.0, usuario_id=None, estatus=0):
         """
         Clase para representar un Presupuesto.
 
@@ -55,11 +55,43 @@ class Presupuesto:
         self.usuario_id = usuario_id
         self.estatus = estatus
 
+    def to_dict(self):
+        """
+        Serializa los atributos de la instancia en un diccionario.
+
+        Returns:
+            dict: Diccionario con los atributos de la instancia.
+        """
+        return {
+            "id": self.id,
+            "proyecto": self.proyecto,
+            "id_proyecto": self.id_proyecto,
+            "id_cliente": self.id_cliente,
+            "id_empresa": self.id_empresa,
+            "id_director": self.id_director,
+            "presupuesto_cliente": self.presupuesto_cliente,
+            "estatus_proyecto": self.estatus_proyecto,
+            "pagado_cliente": self.pagado_cliente,
+            "porcentaje_pagado": self.porcentaje_pagado,
+            "gastado_real": self.gastado_real,
+            "porcentaje_gastado": self.porcentaje_gastado,
+            "falta_por_cobrar": self.falta_por_cobrar,
+            "falta_por_gastar": self.falta_por_gastar,
+            "porcentaje_por_gastar": self.porcentaje_por_gastar,
+            "sub_client_iva": self.sub_client_iva,
+            "indirecto_client_iva": self.indirecto_client_iva,
+            "total_cliente_iva": self.total_cliente_iva,
+            "sub_proveedor": self.sub_proveedor,
+            "sub_diferencia": self.sub_diferencia,
+            "usuario_id": self.usuario_id,
+            "estatus": self.estatus
+        }
+
 
 class DetallePresupuesto:
     def __init__(self, id=0, id_presupuesto=None, id_concepto=None, concepto="", 
                  id_proveedor=None, presupuesto_cliente=0.0, presupuesto_contratista=0.0, 
-                 diferencia=0.0, contrato_firmado=False,is_blocked=False):
+                 diferencia=0.0, contrato_firmado=False,estatus=0,is_blocked=False,presupuesto_bauart=None):
         """
         Clase para representar un Detalle de Presupuesto.
 
@@ -84,13 +116,36 @@ class DetallePresupuesto:
         self.diferencia = diferencia
         self.contrato_firmado = contrato_firmado
         self.is_blocked = is_blocked
+        self.estatus = estatus
+        self.presupuesto_baurt = presupuesto_bauart  
 
+    def to_dict(self):
+        """
+        Serializa los atributos de la instancia en un diccionario.
+
+        Returns:
+            dict: Diccionario con los atributos de la instancia.
+        """
+        return {
+            "id": self.id,
+            "id_presupuesto": self.id_presupuesto,
+            "id_concepto": self.id_concepto,
+            "concepto": self.concepto,
+            "id_proveedor": self.id_proveedor,
+            "presupuesto_cliente": self.presupuesto_cliente,
+            "presupuesto_contratista": self.presupuesto_contratista,
+            "diferencia": self.diferencia,
+            "contrato_firmado": self.contrato_firmado,
+            "is_blocked": self.is_blocked,
+            "estatus": self.estatus,
+            "presupuesto_bauart": self.presupuesto_bauart.to_dict() if self.presupuesto_bauart else None
+        }
 
 
 class PresupuestoBauart:
     def __init__(self, id=0, concepto="", id_detalle=None, nombre_presupuesto="", 
                  total_presupuesto_cliente=0.0, total_presupuesto_proveedor=0.0, 
-                 diferencia_presupuesto=0.0,is_blocked = False):
+                 diferencia_presupuesto=0.0,is_blocked = False, estatus=0):
         """
         Clase para representar un Presupuesto Bauart.
 
@@ -111,11 +166,46 @@ class PresupuestoBauart:
         self.total_presupuesto_proveedor = total_presupuesto_proveedor
         self.diferencia_presupuesto = diferencia_presupuesto
         self.is_blocked = is_blocked
+        self.estatus = estatus
+        self.detalles = [] 
+
+    def agregar_detalle(self, detalle):
+        """
+        Agrega un detalle al presupuesto.
+
+        Args:
+            detalle (DetalleBauart): Instancia de la clase DetalleBauart a añadir.
+        """
+        if isinstance(detalle, DetalleBauart):
+            self.detalles.append(detalle)
+            detalle.id_presupuesto_bauart = self.id  # Actualizar la referencia en el detalle
+        else:
+            raise TypeError("El detalle debe ser una instancia de DetalleBauart.")
+    
+    def to_dict(self):
+        """
+        Serializa los atributos de la instancia en un diccionario.
+
+        Returns:
+            dict: Diccionario con los atributos de la instancia.
+        """
+        return {
+            "id": self.id,
+            "concepto": self.concepto,
+            "id_detalle": self.id_detalle,
+            "nombre_presupuesto": self.nombre_presupuesto,
+            "total_presupuesto_cliente": self.total_presupuesto_cliente,
+            "total_presupuesto_proveedor": self.total_presupuesto_proveedor,
+            "diferencia_presupuesto": self.diferencia_presupuesto,
+            "is_blocked": self.is_blocked,
+            "estatus": self.estatus,
+            "detalles": [detalle.to_dict() for detalle in self.detalles]
+        }
 
 class DetalleBauart:
     def __init__(self, id=0, id_presupuesto_bauart=None, id_concepto=None, concepto="", 
                  id_proveedor=None, presupuesto_cliente=0.0, presupuesto_contratista=0.0, 
-                 diferencia=0.0, is_nomina=False,is_blocked =False):
+                 diferencia=0.0, is_nomina=False,is_blocked =False,estatus=0):
         """
         Clase para representar un Detalle de Presupuesto Bauart.
 
@@ -140,5 +230,25 @@ class DetalleBauart:
         self.diferencia = diferencia
         self.is_nomina = is_nomina
         self.is_blocked = is_blocked
-        
-        
+        self.estatus = estatus
+    
+    def to_dict(self):
+        """
+        Serializa los atributos de la instancia en un diccionario.
+
+        Returns:
+            dict: Diccionario con los atributos de la instancia.
+        """
+        return {
+            "id": self.id,
+            "id_presupuesto_bauart": self.id_presupuesto_bauart,
+            "id_concepto": self.id_concepto,
+            "concepto": self.concepto,
+            "id_proveedor": self.id_proveedor,
+            "presupuesto_cliente": self.presupuesto_cliente,
+            "presupuesto_contratista": self.presupuesto_contratista,
+            "diferencia": self.diferencia,
+            "is_nomina": self.is_nomina,
+            "is_blocked": self.is_blocked,
+            "estatus": self.estatus
+        }

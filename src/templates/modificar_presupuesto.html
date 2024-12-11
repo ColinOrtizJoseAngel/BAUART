@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
-{% block title %}Presupuesto{% endblock %}
+{% block title %}MODIFICAR PRESUPUESTO{% endblock %}
 
 {% block customCSS %}
 
 {% endblock %}
 
-{% block titutlo %}PRESUPUESTO{% endblock %}
+{% block titutlo %}MODIFICAR PRESUPUESTO{% endblock %}
 
 {% block content %}
 
@@ -45,23 +45,19 @@
                         <tr>
                             <th scope="row" style="text-align: left;">NOMBRE PROYECTO:</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" id="PROYECTO" name="PROYECTO" autocomplete="off">
-                                <div id="suggestions" style="width: auto; position: absolute;" class="list-group"></div>
-                                <input type="text" style="display: none;" class="form-control form-control-sm" id="CLIENTE_ID" name="CLIENTE_ID">
-                                <input type="text" style="display: none;" class="form-control form-control-sm" id="PROYECTO_ID" name="PROYECTO_ID">
-
+                                <input type="text" class="form-control form-control-sm"   value="{{ presupuesto['presupuesto_general']['proyecto'] }}" disabled id="PROYECTO" name="PROYECTO" autocomplete="off">
                             </td>
                             <th scope="row" style="text-align: left;">PRESUPUESTO CLIENTE:</th>
                             <td>
-                                <input type="text" class="form-control currency-input borderless" name="PRESUPUESTO_CLIENTE" id="PRESUPUESTO_CLIENTE" placeholder="$0.00" readonly>
+                                <input type="text"  value="{{ presupuesto['presupuesto_general']['presupuesto_cliente'] }}" class="form-control currency-input borderless" name="PRESUPUESTO_CLIENTE" id="PRESUPUESTO_CLIENTE" placeholder="$0.00" readonly>
                             </td>
                             <td>
                                 <th scope="row">FALTA POR COBRAR:</th>
                             <td>
-                                <input type="text" class="form-control currency-input borderless" name="FALTA_COBRAR" id="FALTA_COBRAR" placeholder="$0.00">
+                                <input type="text"  value="{{ presupuesto['presupuesto_general']['falta_por_cobrar'] }}" class="form-control currency-input borderless" name="FALTA_COBRAR" id="FALTA_COBRAR" placeholder="$0.00">
                             </td>
                             <td>
-                                <input type="text" class="form-control currency-input borderless" id="PORCENTAJE_POR_COBRAR" placeholder="%0" name="PORCENTAJE_POR_COBRAR" style="width: 50px;">
+                                <input type="text" value="%0" class="form-control currency-input borderless" id="PORCENTAJE_POR_COBRAR" placeholder="%0" name="PORCENTAJE_POR_COBRAR" style="width: 50px;">
                             </td>
                             <th scope="row">FECHA INICIO:</th>
                             <td>
@@ -71,18 +67,18 @@
                         <tr>
                             <th scope="row">DIRECCIÓN:</th>
                             <td>
-                                <input type="text" class="form-control borderless" id="DIRECCION" name="DIRECCION" value="Perisur, CDMX" readonly>
+                                <input type="text" class="form-control borderless" id="DIRECCION" name="DIRECCION" value="{{ presupuesto['presupuesto_general']['id_director'] }}" readonly>
                             </td>
                             <th scope="row">PAGADO CLIENTE:</th>
                             <td>
-                                <input type="text" class="form-control currency-input borderless" name="PAGADO_CLIENTE" id="PAGADO_CLIENTE" placeholder="$0.00" readonly>
+                                <input type="text" class="form-control currency-input borderless" name="PAGADO_CLIENTE" id="PAGADO_CLIENTE" value="{{ presupuesto['presupuesto_general']['pagado_cliente'] }}" readonly>
                             </td>
                             <td>
                                 <input type="text" class="form-control currency-input borderless" id="PORCENTAJE_PAGADO_CLIENTE" placeholder="%0" name="PORCENTAJE_PAGADO_CLIENTE" style="width: 50px;">
                             </td>
                             <th scope="row">FALTA POR GASTAR:</th>
                             <td>
-                                <input type="text" class="form-control currency-input borderless" name="FALTA_GASTAR"  id="FALTA_GASTAR" placeholder="$0.00">
+                                <input type="text" class="form-control currency-input borderless" name="FALTA_GASTAR"  id="FALTA_GASTAR"  value="{{ presupuesto['presupuesto_general']['pagado_cliente'] }}">
                             </td>
                             <td>
                                 <input type="text" class="form-control currency-input borderless" id="PORCENTAJE_POR_GASTAR" placeholder="%0" name="PORCENTAJE_POR_GASTAR" style="width: 50px;">
@@ -95,18 +91,18 @@
                         <tr>
                             <th scope="row">DIRECTOR:</th>
                             <td>
-                                <input type="text" class="form-control borderless" id="DIRECTOR" name="DIRECTOR" value="Jose Miguel Gomez" readonly>
+                                <input type="text" class="form-control borderless" id="DIRECTOR" name="DIRECTOR" value="{{ presupuesto['presupuesto_general']['id_director'] }}" readonly>
                             </td>
                             <th scope="row">GASTADO REAL:</th>
                             <td>
-                                <input type="text" class="form-control currency-input borderless" name="GASTADO_REAL" id="GASTADO_REAL" placeholder="$0.00">
+                                <input type="text" class="form-control currency-input borderless" name="GASTADO_REAL" id="GASTADO_REAL" value="{{ presupuesto['presupuesto_general']['gastado_real'] }}">
                             </td>
                             <td>
-                                <input type="text" class="form-control currency-input borderless" name="PORCENTAJE_GASTADO" id="PORCENTAJE_GASTADO" placeholder="%0" name="PORCENTAJE_GASTADO" style="width: 50px;">
+                                <input type="text" class="form-control currency-input borderless" name="PORCENTAJE_GASTADO" id="PORCENTAJE_GASTADO" value="{{ presupuesto['presupuesto_general']['porcentaje_gastado'] }}" name="PORCENTAJE_GASTADO" style="width: 50px;">
                             </td>
                             <th scope="row">STATUS OBRA:</th>
                             <td>
-                                <input type="text" class="form-control currency-input borderless" id="ESTATUS_OBRA" name="ESTATUS_OBRA" placeholder="$0.00">
+                                <input type="text" class="form-control currency-input borderless" id="ESTATUS_OBRA" name="ESTATUS_OBRA" value="{{ presupuesto['presupuesto_general']['estatus_proyecto'] }}">
                             </td>
                             <td>
                                 <input type="text" class="form-control currency-input borderless" id="PORCENTAJE_ESTADO" placeholder="%0" name="PORCENTAJE_ESTADO" style="width: 50px;">
@@ -211,6 +207,17 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for detalle in presupuesto['detalles_presupuesto'] %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ detalle['concepto'] }}</td>
+                                    <td>{{ detalle['presupuesto_cliente'] }}</td>
+                                    <td>{{ detalle['presupuesto_contratista'] }}</td>
+                                    <td>{{ detalle['diferencia'] }}</td>
+                                    <td>{{ 'Sí' if detalle['contrato_firmado'] else 'No' }}</td>
+                                    <td>{{ detalle['estatus'] }}</td>
+                                </tr>
+                                {% endfor %}
     
                             </tbody>
                             <tfoot>

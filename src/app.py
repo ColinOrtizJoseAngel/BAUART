@@ -70,6 +70,7 @@ from models.entities.MaterialesFamilia import MaterialesFamilia
 from models.entities.Empleados import Empleados
 from models.entities.Usuarios import User
 from models.entities.Presupuestos import Presupuesto,DetallePresupuesto,PresupuestoBauart,DetalleBauart
+from models.entities.Materiales import Materiales
 
 
 
@@ -2069,7 +2070,29 @@ def convertir_a_float(valor, valor_default=0.0):
 
 
 
+# EDIT PRESUPUESTO
+@app.route('/edit_presupuesto/', methods=['GET', 'POST'] )
+def edit_presupuesto():
+    
+    id = request.args.get('id')
+    if request.method == 'POST':
+         # Verifica si el token en la sesión coincide con el del formulario
+        token = request.form.get('token')
+        if token and session.get('token') == token:
+            # Elimina el token de la sesión para evitar reenvíos duplicados
+            session.pop('token', None)
+            
+            
+            
+        pass
+    else:
+        presupuesto = ModelPresupuesto.obtener_presupuesto_completo(db,id)
+        return render_template('modificar_presupuesto.html',presupuesto=presupuesto)
 
+
+
+
+# PRESUPUESTO
 @app.route('/Presupuestos', methods=['GET', 'POST'] )
 def prespuestos():
     
@@ -2081,6 +2104,8 @@ def prespuestos():
         
         return render_template('presupuestos.html',presupuestos=presupuestos)
 
+
+# ALTA PRESUPUESTOS
 @app.route('/altaPresupuestos', methods=['GET', 'POST'])
 def altaPresupuestos():
     if request.method == 'POST':
@@ -2089,8 +2114,7 @@ def altaPresupuestos():
         if token and session.get('token') == token:
             # Elimina el token de la sesión para evitar reenvíos duplicados
             session.pop('token', None)
-            print(request.form['PROYECTO'])
-            print(request.form['PROYECTO_ID'])
+        
 
             # CABECERA DE PRESUPUESTO
             nuevo_presupuesto = Presupuesto(
@@ -2115,7 +2139,7 @@ def altaPresupuestos():
                 sub_proveedor=convertir_a_float(request.form['subtotalContratista']),
                 sub_diferencia=convertir_a_float(request.form['subtotalDiferencia']),
                 usuario_id=current_user.id,
-                estatus=1
+                estatus=0
             )
                         
             
@@ -2201,6 +2225,8 @@ def altaPresupuestos():
         session['token'] = str(uuid.uuid4())
         return render_template('altaPresupuestos.html', token=session['token'])
 
+
+
 # MATERIALES
 @app.route('/materiales', methods=['GET', 'POST'])
 def materiales():
@@ -2235,18 +2261,41 @@ def materiales():
         # Redireccionar después de procesar el formulario
         return redirect(url_for('materiales'))
 
+
     materiales = ModelMaterialesFamilia.get_all_materiales_familia(db)
+    familias = ModelFamilias.get_all_familias_not_block(db)
+    return render_template('materiales.html', materiales=materiales, familias=familias)
 
- 
-    return render_template('materiales.html', materiales=materiales)
 
-# EDITAR ESPECIALIDADES
+# FILTRAR MATERIALES
+@app.route('/filtro_materiales', methods=['POST'])
+@login_required
+def filtro_materiales():
+    especialidad = request.form.get('especialidad', '')
+    estatus = request.form.get('estatus', '')
+
+    try:
+        especialidad = str(especialidad)
+        especialidades = ModelEspecialidades.filter_especialidad(db,especialidad, estatus)
+       
+        if especialidades:
+            return render_template('especialidades.html', especialidades=especialidades)
+        else:
+            return redirect(url_for('especialidades'))
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+# EDITAR MATERIALES
 @app.route('/edit_materiales/<int:id>', methods=['POST'])
 def edit_materiales(id):
        
-    familia_id = request.form.get('FamiliaID')
-    descripcion_material = request.form.get('descripcionMaterial')
-    medidaMaterial = request.form.get('medidaMaterial')
+    familia_id = request.form.get('inputIdFamiliaEdit')
+    familia = request.form.get('inputFamiliaEdit')
+    descripcion_material = request.form.get('inputDecripcion')
+    medidaMaterial = request.form.get('inputUOMEdit')
         
     if not familia_id or not descripcion_material:
         # Puedes manejar el error de una manera apropiada
@@ -2258,10 +2307,12 @@ def edit_materiales(id):
         id=id,
         id_familia=familia_id,
         material=descripcion_material,
-        unidad_medida=medidaMaterial
+        familia=familia,
+        unidad_medida=medidaMaterial,
+        usuario=current_user.id
     )
         
-    ModelMateriales.update_material(db,material)
+    ModelMaterialesFamilia.update_material_familia(db,material)
         
     return redirect(url_for('materiales'))
         

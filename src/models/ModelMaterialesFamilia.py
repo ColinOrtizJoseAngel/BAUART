@@ -79,7 +79,7 @@ class ModelMaterialesFamilia:
             cursor = db.cursor()
             query = """
                 UPDATE CATALOGO_MATERIALES_FAMILIAS
-                SET ID_FAMILIA = ?, MATERIAL = ?, FECHA_REGISTRO = ?, USUARIO = ?, IS_BLOCKED = ?
+                SET ID_FAMILIA = ?, MATERIAL = ?, FECHA_REGISTRO = ?, USUARIO_ID = ?, IS_BLOCKED = ?
                 WHERE ID = ?;
             """
             cursor.execute(query, (

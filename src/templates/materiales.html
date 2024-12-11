@@ -11,104 +11,72 @@
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 
-<!-- Modal para Filtrar MATERIAL -->
+<!-- Modal para Filtrar Especialidad -->
 <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="miModalLabel">FILTRAR MATERIALES</h4>
+                <h4 class="modal-title" id="miModalLabel">FILTAR</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <!-- <form action="" method="post"> -->
-            <form action="" method="post">
+            <form action="{{ url_for('fitro_especialidad') }}" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
-                        <label for="grupo" class="form-label">FAMILIA</label>
-                        <input type="text" class="form-control" id="grupo" name="grupo">
+                        <label for="especialidad" class="form-label">DESCRIPCION</label>
+                        <input type="text" class="form-control" id="inputDescripcionFiltro" name="inputDescripcionFiltro">
                     </div>
                     <div class="mb-3">
-                        <label for="material" class="form-label">MATERIAL</label>
-                        <input type="text" class="form-control" id="material" name="material">
-                    </div>  
+                        <label for="especialidad" class="form-label">FAMILIA</label>
+                        <select class="form-control" id="selectFamiliaFiltro" name="selectEstatusFiltro">
+                            <option value="" disabled selected style="text-align: center;">SELECCIONA</option>
+                            {% for f in familias %}
+                            <option value="{{f.id}}">{{f.familia}}</option>
+                            {% endfor %}
+                            
+                        </select>
+                    </div>
                     <div class="mb-3">
-                        <label for="medida" class="form-label">UNIDAD DE MEDIDA</label>
-                        <input type="text" class="form-control" id="medida" name="medida">
-                    </div>                      
+                        <label>UNIDAD DE MEDIDA</label>
+                        <select class="form-control" id="selectUOMFiltro" name="selectUOMFiltro" required>
+                            <option value="" disabled selected style="text-align: center;">SELECCIONA</option>
+                            <option value="KG">KILOGRAMO (kg)</option>
+                            <option value="M">METRO (m)</option>
+                            <option value="M2">METRO (m²)</option>
+                            <option value="M3">METRO CÚBICO (m³)</option>
+                            <option value="T">TONELADA (t)</option>
+                            <option value="L">LITRO (L)</option>
+                            <option value="GAL">GALÓN (GAL)</option>
+                            <option value="PZA">PIEZA (PZA)</option>
+                            <option value="ROLL">ROLLO (ROLL)</option>
+                            <option value="CAJA">CAJA (CAJA)</option>
+                            <option value="BOB">BOBINA (BOBINA)</option>
+                            <option value="FT3">PIE (Ft³)</option>
+                        </select>
+                    </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ESTATUS" class="form-label">ESTADO</label>
+                        <select class="form-control" selected style="text-align: center;" id="selectEstatusFiltro" name="selectEstatusFiltro">
+                            <option value="">SELECCIONA</option>
+                            <option value="activo">ACTIVO</option>
+                            <option value="bloqueado">BLOQUEADO</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="d-grid gap-2 d-md-flex justify-content-start">
-                        <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
-                        <button type="submit" class="btn botones"> <i class="bi bi-search"></i> FILTRAR</button>
+                        <button type="button" class="btn botones" data-bs-dismiss="modal">CERRAR</button>
+                        <button type="submit" class="btn botones">FILTRAR</button>
                     </div>
                 </div>
             </form>
+            
         </div>
     </div>
 </div>
 
-<!-- Modal para editar materiales -->
-<div class="modal fade" id="editMaterialesModal" tabindex="-1" aria-labelledby="editMaterialModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editMaterialModalLabel">EDITAR MATERIAL</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editMaterialesForm" action="" method="post">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" id="editMaterialId" name="material_id">
-                    
-                    <!--Debe cambiarse por un select concetado al catalogo de FAMILIA/GRUPO-->
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <label for="grupo" class="form-label">FAMILIA</label>
-                        <input type="text" class="form-control" id="inputEditFamilia" name="inputEditFamilia" placeholder="Introduzca la Familia" required>
-                        <input type="text" class="form-control" id="inputIdFamilia" name="inputIdFamilia" placeholder="Introduzca la Familia" style="display: none;" required>
-                        <div class="invalid-feedback">
-                            COMPLETA FAMILIA/GRUPO
-                        </div>
-                        <div id="suggestions-edit" class="list-group"></div>
-                    </div>   
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <label for="descripcion" class="form-label">DESCRIPCION</label>
-                        <input type="text" class="form-control" id="inputDecripcion" name="inputDecripcion" placeholder="Introduzca la Descripcion" required>
-                        <div class="invalid-feedback">
-                            COMPLETA DESCRIPCION
-                        </div>
-                    </div> 
 
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <label for="medida" class="form-label">UNIDAD DE MEDIDA</label>
-                        <select class="form-control" id="inputEditUOM" name="inputEditUOM" required>
-                            <option value="" disabled selected>Seleccione la Unidad de Medida</option>
-                            <option value="kg">Kilogramo (kg)</option>
-                            <option value="m">Metro (m)</option>
-                            <option value="m2">Metro cuadrado (m²)</option>
-                            <option value="m3">Metro cúbico (m³)</option>
-                            <option value="t">Tonelada (t)</option>
-                            <option value="L">Litro (L)</option>
-                            <option value="gal">Galón (gal)</option>
-                            <option value="pza">Pieza (pza)</option>
-                            <option value="roll">Rollo (roll)</option>
-                            <option value="caja">Caja (caja)</option>
-                            <option value="bob">Bobina (bob)</option>
-                            <option value="ft3">Pie Tablar (ft³)</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            SELECCIONA UNIDAD DE MEDIDA
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <!-- INICIA MODAL ALTA MATERIAL -->
 <div class="modal fade" id="altaMaterialModal" tabindex="-1" aria-labelledby="altaMaterialModalLabel"
     aria-hidden="true">
@@ -147,29 +115,26 @@
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <label for="medida" class="form-label">UNIDAD DE MEDIDA</label>
                                 <select class="form-control" id="medidaMaterial" name="medidaMaterial" required>
-                                    <option value="" disabled selected>Seleccione la Unidad de Medida</option>
-                                    <option value="kg">Kilogramo (kg)</option>
-                                    <option value="m">Metro (m)</option>
-                                    <option value="m2">Metro cuadrado (m²)</option>
-                                    <option value="m3">Metro cúbico (m³)</option>
-                                    <option value="t">Tonelada (t)</option>
-                                    <option value="L">Litro (L)</option>
-                                    <option value="gal">Galón (gal)</option>
-                                    <option value="pza">Pieza (pza)</option>
-                                    <option value="roll">Rollo (roll)</option>
-                                    <option value="caja">Caja (caja)</option>
-                                    <option value="bob">Bobina (bob)</option>
-                                    <option value="ft3">Pie Tablar (ft³)</option>
+                                        <option value="" disabled selected style="text-align: center;">SELECCIONA</option>
+                                        <option value="KG">KILOGRAMO (kg)</option>
+                                        <option value="M">METRO (m)</option>
+                                        <option value="M2">METRO (m²)</option>
+                                        <option value="M3">METRO CÚBICO (m³)</option>
+                                        <option value="T">TONELADA (t)</option>
+                                        <option value="L">LITRO (L)</option>
+                                        <option value="GAL">GALÓN (GAL)</option>
+                                        <option value="PZA">PIEZA (PZA)</option>
+                                        <option value="ROLL">ROLLO (ROLL)</option>
+                                        <option value="CAJA">CAJA (CAJA)</option>
+                                        <option value="BOB">BOBINA (BOBINA)</option>
+                                        <option value="FT3">PIE (Ft³)</option>
+                                    </select>
                                 </select>
                                 <div class="invalid-feedback">
                                     SELECCIONA UNIDAD DE MEDIDA
                                 </div>
                             </div>
-                            
-                                                   
-                            
-                        </div>                        
-                        
+                        </div>                       
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -185,8 +150,7 @@
 </div>
 <!-- FIN ALTA MATERAIL -->
  <!-- MODAL EDIT -->
- <div class="modal fade" id="editMaterialModal" tabindex="-1" aria-labelledby="editMaterialModalLabel"
- aria-hidden="true">
+ <div class="modal fade" id="modalEditarMaterial" tabindex="-1" aria-labelledby="editMaterialModalLabel" aria-hidden="true">
  <div class="modal-dialog modal-dialog-centered">
      <div class="modal-content">
          <div class="modal-header">
@@ -204,55 +168,55 @@
                         <!--Debe cambiarse por un select concetado al catalogo de FAMILIA/GRUPO-->
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <label for="grupo" class="form-label">FAMILIA</label>
-                            <input type="text" class="form-control" id="Familia" name="Familia" placeholder="Introduzca la Familia/Grupo" required>
+                            <input type="text" class="form-control" id="inputIdFamiliaEdit" name="inputIdFamiliaEdit" style="display: none;" required>
+                            <input type="text" class="form-control" id="inputFamiliaEdit" name="inputFamiliaEdit" placeholder="Introduzca la Familia/Grupo" required>
                             <div class="invalid-feedback">
                                 COMPLETA FAMILIA
                             </div>
+                            <div id="suggestions-editar" class="list-group"></div>
                             
                         </div>    
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <label for="material" class="form-label">MATERIAL</label>
-                            <input type="text" class="form-control" id="material" name="material" placeholder="Introduzca el Material" required>
+                            <input type="text" class="form-control" id="inputDecripcion" name="inputDecripcion" placeholder="Introduzca el Material" required>
                             <div class="invalid-feedback">
                                 COMPLETA MATERIAL
                             </div>
                         </div> 
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <label for="medida" class="form-label">UNIDAD DE MEDIDA</label>
-                            <select class="form-control" id="medida" name="medida" required>
+                            <select class="form-control" id="inputUOMEdit" name="inputUOMEdit" required>
                                 <option value="" disabled selected>Seleccione la Unidad de Medida</option>
-                                <option value="kg">Kilogramo (kg)</option>
-                                <option value="m">Metro (m)</option>
-                                <option value="m2">Metro cuadrado (m²)</option>
-                                <option value="m3">Metro cúbico (m³)</option>
-                                <option value="t">Tonelada (t)</option>
-                                <option value="L">Litro (L)</option>
-                                <option value="gal">Galón (gal)</option>
-                                <option value="pza">Pieza (pza)</option>
-                                <option value="roll">Rollo (roll)</option>
-                                <option value="caja">Caja (caja)</option>
-                                <option value="bob">Bobina (bob)</option>
-                                <option value="ft3">Pie Tablar (ft³)</option>
+                                <option value="KG">KILOGRAMO (kg)</option>
+                                <option value="M">METRO (m)</option>
+                                <option value="M2">METRO (m²)</option>
+                                <option value="M3">METRO CÚBICO (m³)</option>
+                                <option value="T">TONELADA (t)</option>
+                                <option value="L">LITRO (L)</option>
+                                <option value="GAL">GALÓN (GAL)</option>
+                                <option value="PZA">PIEZA (PZA)</option>
+                                <option value="ROLL">ROLLO (ROLL)</option>
+                                <option value="CAJA">CAJA (CAJA)</option>
+                                <option value="BOB">BOBINA (BOBINA)</option>
+                                <option value="FT3">PIE (Ft³)</option>
                             </select>
                             <div class="invalid-feedback">
                                 SELECCIONA UNIDAD DE MEDIDA
                             </div>
                         </div>
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <label for="descripcion" class="form-label">DESCRIPCION</label>
-                            <input type="text" class="form-control" id="descripcion" name="descripcion" placeholder="Introduzca la Descripcion" required>
-                            <div class="invalid-feedback">
-                                COMPLETA DESCRIPCION
-                            </div>
-                        </div>                                                               
-                        
                     </div>            
 
                 </div>
             </div>
              <div class="modal-footer">
-                 <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
-                 <button type="submit" class="btn botones"><i class="bi bi-floppy"> </i>GUARDAR</button>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2 d-md-flex justify-content-start">
+                        <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
+                        <button type="submit" class="btn botones"><i class="bi bi-floppy"> </i>GUARDAR</button>
+                    </div>
+
+                </div>
+                
              </div>
          </form>
      </div>
@@ -303,14 +267,14 @@
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ m.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{  m.id }}">
                                 <li>
                                     <form action="{{ url_for('unblock_material', id= m.id) }}" method="post"
                                         style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Desbloquear</button>
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>
@@ -334,19 +298,19 @@
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ m.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ m.id }}">
                                 <li>
-                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editMaterialModal" data-material="{{ m.material }}" data-material-id="{{ m.id }}" data-material-familia="{{ m.familia }}" data-material-uom="{{ m.unidad_medida }}">
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEditarMaterial" data-material="{{ m.material }}" data-material-id="{{ m.id }}" data-material-familia="{{ m.familia }}" data-material-uom="{{ m.unidad_medida }}">
                                         EDITAR
                                     </button>
-                                    <a class="dropdown-item">Editar</a></li>
+                                 
                                 <li>
                                     <form action="{{ url_for('block_material', id=m.id) }}" method="post"
                                         style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Bloquear</button>
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>
