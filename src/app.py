@@ -3,10 +3,9 @@ from database import db_sql_server
 from flask_login import LoginManager,login_user, logout_user, login_required,current_user
 from flask_wtf.csrf import CSRFProtect
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
-from datetime import datetime
 from reportlab.lib.pagesizes import A4
 import pdfkit
 from flask import make_response
@@ -2315,6 +2314,31 @@ def edit_materiales(id):
     ModelMaterialesFamilia.update_material_familia(db,material)
         
     return redirect(url_for('materiales'))
+
+
+# EDITAR FAMILIA
+@app.route('/edit_familia/<int:id>', methods=['POST'])
+def edit_familia(id):
+       
+
+    familia = request.form.get('inputFamiliaEdit')
+ 
+
+    if not familia:
+        # Puedes manejar el error de una manera apropiada
+        flash("Por favor, complete todos los campos requeridos.", "error")
+        return redirect(url_for('familias'))
+
+    material = Familias(
+        id=id,
+        familia=familia,
+        fecha_registro= datetime.today(),
+        usuario=current_user.id
+    )
+        
+    ModelFamilias.update_familia(db,material)
+        
+    return redirect(url_for('familias'))
         
 # FAMILIAS
 @app.route('/familias', methods=['GET', 'POST'])
@@ -2336,6 +2360,8 @@ def familias():
         print(f"Familia: {familia.familia}, is_blocked: {familia.is_blocked}")
 
     return render_template('familias.html', familias=familias)
+
+
 
 #BLOQUEAR FAMILIA
 @app.route('/block_familia/<int:id>', methods=['POST'])

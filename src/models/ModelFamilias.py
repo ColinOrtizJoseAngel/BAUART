@@ -76,7 +76,7 @@ class ModelFamilias:
             cursor = db.cursor()
             query = """
                 UPDATE CATALOGO_FAMILIAS
-                SET FAMILIA = ?, FECHA_REGISTRO = ?, USUARIO = ?, IS_BLOCKED = ?
+                SET FAMILIA = ?, FECHA_REGISTRO = ?, USUARIO_ID = ?, IS_BLOCKED = ?
                 WHERE ID = ?;
             """
             cursor.execute(query, (

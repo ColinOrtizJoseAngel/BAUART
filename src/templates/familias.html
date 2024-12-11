@@ -1,13 +1,13 @@
 <!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Familias{% endblock %}
+{% block title %}FAMILIAS{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 
 {% endblock %}
 
 <!-- TITULO DE PAGINA -->
-{% block titutlo %}Familias{% endblock %}
+{% block titutlo %}FAMILIAS{% endblock %}
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 
@@ -80,17 +80,17 @@
 </div>
 <!-- FIN ALTA FAMILIA -->
  <!-- MODAL EDIT -->
- <div class="modal fade" id="editFamiliaModal" tabindex="-1" aria-labelledby="editFamiliaModalLabel"
+ <div class="modal fade" id="ModalEditFamilia" tabindex="-1" aria-labelledby="editFamiliaModalLabel"
  aria-hidden="true">
  <div class="modal-dialog modal-dialog-centered">
      <div class="modal-content">
          <div class="modal-header">
              <div class="container text-center">
-                 <h1 class="modal-title" id="editFamiliaModalLabel">EDITAR</h1>
+                 <h4 class="modal-title" id="editFamiliaModalLabel">EDITAR</h4  >
              </div>
              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
-         <form class="needs-validation" " action=" " method="post" novalidate>
+         <form class="needs-validation" action=" " method="post" novalidate>
              <div class="modal-body">
                  <div class="container">
                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -98,7 +98,7 @@
                      <div class="form-group row">
                          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                              <label for="grupo" class="form-label">FAMILIA</label>
-                             <input type="text" class="form-control" id="grupo" name="grupo" value="" required>
+                             <input type="text" class="form-control" id="inputFamiliaEdit" name="inputFamiliaEdit" value="" required>
                              <div class="invalid-feedback">
                                  COMPLETA FAMILIA
                              </div>
@@ -108,8 +108,12 @@
                  </div>
              </div>
              <div class="modal-footer">
-                 <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
+                <div class="d-grid gap-2 d-md-flex justify-content-start">
+                    <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
                  <button type="submit" class="btn botones"><i class="bi bi-floppy"> </i>GUARDAR</button>
+                </div>
+
+                 
              </div>
          </form>
      </div>
@@ -155,13 +159,13 @@
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ f.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{  f.id }}">
                                 <li>
                                     <form action="{{ url_for('unblock_familia', id=f.id) }}" method="post" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Desbloquear</button>
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
                                     </form>
                                     
                                 </li>
@@ -182,15 +186,19 @@
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ f.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Acciones
+                                ACCIONES
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ f.id }}">
-                                <li><a class="dropdown-item">Editar</a></li>
+                                <li>
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#ModalEditFamilia" data-id="{{ f.id }}" data-familia="{{ f.familia }}">
+                                        EDITAR  
+                                    </button>
+                                </li>
                                 <li>
                                     <form action="{{ url_for('block_familia', id=f.id) }}" method="post"
                                         style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button class="dropdown-item" type="submit">Bloquear</button>
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
                                     </form>
                                 </li>
                             </ul>
@@ -207,4 +215,6 @@
     </div>
     <!--FIN TABLA ESPECIALIDAD-->
 </div>
+<script src="{{ url_for('static', filename='JS/funciones_familias.js') }}"></script>
+
 {% endblock %}
