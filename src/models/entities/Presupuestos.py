@@ -117,7 +117,7 @@ class DetallePresupuesto:
         self.contrato_firmado = contrato_firmado
         self.is_blocked = is_blocked
         self.estatus = estatus
-        self.presupuesto_baurt = presupuesto_bauart  
+        self.presupuesto_bauart = presupuesto_bauart 
 
     def to_dict(self):
         """
@@ -138,7 +138,7 @@ class DetallePresupuesto:
             "contrato_firmado": self.contrato_firmado,
             "is_blocked": self.is_blocked,
             "estatus": self.estatus,
-            "presupuesto_bauart": self.presupuesto_bauart.to_dict() if self.presupuesto_bauart else None
+            "presupuesto_bauart": self.presupuesto_bauart.to_dict() if self.presupuesto_bauart else []
         }
 
 

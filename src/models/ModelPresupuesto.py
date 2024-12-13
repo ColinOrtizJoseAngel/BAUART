@@ -180,13 +180,19 @@ class ModelPresupuesto:
             detalles_bauart = cls.obtener_detalle_de_presupuesto_bauart(db, presupuestos_bauart)
 
          
-            for d in  detalles_presupuesto:
-                pass
-                
-                
-    
-           
-
+            for i in  detalles_presupuesto:
+                # Si es proveedor es 0 se trata de un proveedor Bauart
+                if i.id_proveedor == 0:
+                    for j in presupuestos_bauart:
+                        if j.id_detalle == i.id:
+                            for e in detalles_bauart:
+                                if e.id_presupuesto_bauart == j.id:
+                                    j.agregar_detalle(e)
+                    i.presupuesto_bauart = j
+                    print(i.presupuesto_bauart)      
+                  
+                presupuesto_general["detalle_presupuesto"].append(i.to_dict())
+                                
             return presupuesto_general
         except Exception as ex:
             raise Exception(f"Error al obtener el presupuesto completo: {ex}")

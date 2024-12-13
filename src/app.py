@@ -2085,6 +2085,7 @@ def edit_presupuesto():
             
         pass
     else:
+        proveedores = ModelProveedores.get_all_proveedores_not_blocked(db)
         presupuesto = ModelPresupuesto.obtener_presupuesto_completo(db,id)
         return render_template('modificar_presupuesto.html',presupuesto=presupuesto)
 
