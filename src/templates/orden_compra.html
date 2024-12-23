@@ -4,6 +4,30 @@
 
 {% block customCSS %}
 <style>
+        /* Aplica mayúsculas a todos los elementos de texto */
+        body, input, select, textarea, button, label, option, th, td, p, span {
+        text-transform: uppercase;
+    }
+
+    /* Ajuste adicional para evitar problemas de escritura en mayúsculas */
+    input::placeholder, textarea::placeholder {
+        text-transform: uppercase;
+    }
+
+    /* Botones en mayúsculas */
+    .btn {
+        text-transform: uppercase;
+    }
+
+    /* Encabezados en mayúsculas */
+    h1, h2, h3, h4, h5, h6 {
+        text-transform: uppercase;
+    }
+
+    /* Asegura que todas las opciones de selección también estén en mayúsculas */
+    select option {
+        text-transform: uppercase;
+    }
     .modal-header {
         background-color: #f8f9fa;
         border-bottom: 1px solid #dee2e6;
@@ -106,6 +130,12 @@
                     <label for="orderProveedor" class="form-label">Proveedor</label>
                     <input type="text" id="orderProveedor" class="form-control" placeholder="Ingrese el proveedor" list="proveedorList">
                     <datalist id="proveedorList"></datalist>
+                </div>
+
+                <!-- Campo para Número de Cotización -->
+                <div class="mb-3">
+                    <label for="numero_cotizacion" class="form-label">Número de Cotización</label>
+                    <input type="text" id="numero_cotizacion" class="form-control" placeholder="Ingrese el número de cotización">
                 </div>
                 <!-- Campo para porcentaje de descuento -->
 <div class="mb-3">
@@ -399,7 +429,7 @@
 
         // Crear orden
         const createOrderButton = document.getElementById("createOrderButton");
-createOrderButton.addEventListener("click", async () => {
+        createOrderButton.addEventListener("click", async () => {
     // Validar que el proveedor esté seleccionado
     const proveedorSeleccionado = proveedoresData.find(
         (proveedor) => proveedor.razon_social.trim().toLowerCase() === proveedorInput.value.trim().toLowerCase()
@@ -448,6 +478,7 @@ createOrderButton.addEventListener("click", async () => {
     }
 
     // Capturar valores de los nuevos campos
+    const numeroCotizacion = document.getElementById("numero_cotizacion").value; // Nuevo campo para cotización
     const fechaHoraEntregaInput = document.getElementById("fecha_entrega").value;
 
     // Convertir formato de fecha/hora para SQL Server
@@ -464,21 +495,10 @@ createOrderButton.addEventListener("click", async () => {
     const porcentajeDescuento = parseFloat(porcentajeDescuentoInput);
 
     // Validar que todos los datos de entrega sean válidos
-    if (!fechaHoraEntrega || !direccionEntrega || !contacto || !telefono) {
+    if (!fechaHoraEntrega || !direccionEntrega || !contacto || !telefono || !numeroCotizacion) {
         Swal.fire({
-            title: "Datos de entrega incompletos",
-            text: "Debe completar todos los datos de entrega antes de continuar.",
-            icon: "warning",
-            confirmButtonText: "Aceptar"
-        });
-        return;
-    }
-
-    // Validar porcentaje de descuento
-    if (isNaN(porcentajeDescuento) || porcentajeDescuento < 0 || porcentajeDescuento > 100) {
-        Swal.fire({
-            title: "Descuento inválido",
-            text: "El porcentaje de descuento debe ser un valor entre 0 y 100.",
+            title: "Datos incompletos",
+            text: "Debe completar todos los datos, incluido el número de cotización, antes de continuar.",
             icon: "warning",
             confirmButtonText: "Aceptar"
         });
@@ -497,7 +517,8 @@ createOrderButton.addEventListener("click", async () => {
         direccion_entrega: direccionEntrega,
         contacto: contacto,
         telefono: telefono,
-        porcentaje_descuento: porcentajeDescuento // Agregar el descuento al objeto
+        porcentaje_descuento: porcentajeDescuento,
+        numero_cotizacion: numeroCotizacion // Incluir el número de cotización
     };
 
     try {

@@ -16,7 +16,8 @@ class ModelPDF:
                     DireccionEntrega, 
                     Contacto, 
                     Telefono, 
-                    PorcentajeDescuento  -- Incluimos el campo del descuento
+                    PorcentajeDescuento,  -- Incluimos el campo del descuento
+                    NumeroCotizacion      -- Incluimos el número de cotización
                 FROM ORDENES
                 WHERE ID = ?
             """
@@ -34,6 +35,7 @@ class ModelPDF:
             contacto = result[3] or "No especificado"
             telefono = result[4] or "No especificado"
             porcentaje_descuento = float(result[5]) if result[5] is not None else 0  # Descuento en porcentaje
+            numero_cotizacion = result[6] or "No especificado"  # Número de cotización
 
             # Obtener datos de la empresa
             id_empresa = current_user.id_empresa
@@ -133,7 +135,8 @@ class ModelPDF:
                 contacto=contacto,
                 telefono=telefono,
                 empresa=empresa_datos,
-                porcentaje_descuento=porcentaje_descuento  # Agregar el porcentaje al render
+                porcentaje_descuento=porcentaje_descuento,  # Agregar el porcentaje al render
+                numero_cotizacion=numero_cotizacion  # Agregar el número de cotización al render
             )
 
             # Generar PDF

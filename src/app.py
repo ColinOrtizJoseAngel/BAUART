@@ -45,6 +45,8 @@ from models.ModelAsistencias import AsistenciaModel
 from models.ModelRequisiciones import ModelRequisiciones
 from models.ModelOrden import MyOrdendeCompra
 from models.ModelPDF import ModelPDF
+from models.ModelCompras import ModelCompras
+
 
 # Entities
 from models.entities.Empresas import Empresas
@@ -2499,10 +2501,11 @@ def guardar_orden():
         contacto = data.get('contacto')  # Contacto de la entrega
         telefono = data.get('telefono')  # Teléfono del contacto
         porcentaje_descuento = data.get('porcentaje_descuento', 0)  # Descuento, default 0 si no está presente
+        numero_cotizacion = data.get('numero_cotizacion')  # Nuevo campo: Número de cotización
 
         # Validar que los datos necesarios estén presentes
-        if not id_requisicion or not id_proveedor:
-            return jsonify({"success": False, "message": "Datos obligatorios faltantes"}), 400
+        if not id_requisicion or not id_proveedor or not numero_cotizacion:
+            return jsonify({"success": False, "message": "Datos obligatorios faltantes (requisición, proveedor o número de cotización)"}), 400
 
         # Validar y formatear la fecha/hora de entrega
         if fecha_hora_entrega:
@@ -2523,7 +2526,8 @@ def guardar_orden():
             direccion_entrega=direccion_entrega,
             contacto=contacto,
             telefono=telefono,
-            porcentaje_descuento=porcentaje_descuento
+            porcentaje_descuento=porcentaje_descuento,
+            numero_cotizacion=numero_cotizacion  # Pasar el nuevo campo
         )
 
         return jsonify({"success": True, "id_orden": id_orden})
@@ -2534,6 +2538,50 @@ def guardar_orden():
     finally:
         if 'conn' in locals():
             conn.close()
+
+
+@app.route('/actualizar_partidas', methods=['POST'])
+def actualizar_partidas():
+    try:
+        data = request.json
+        if not data:
+            print("Error: No se recibió ningún dato en el request.")
+            return jsonify({"success": False, "message": "No se recibió ningún dato"}), 400
+
+        id_orden = data.get('id_orden')
+        partidas = data.get('partidas')  # Lista de objetos con id y precio_unitario
+
+        # Validaciones básicas
+        if not isinstance(id_orden, int):
+            print(f"Error: ID de Orden inválido. Recibido: {id_orden}")
+            return jsonify({"success": False, "message": "ID de Orden inválido"}), 400
+        if not isinstance(partidas, list) or not all(isinstance(p, dict) for p in partidas):
+            print(f"Error: Formato de partidas inválido. Recibido: {partidas}")
+            return jsonify({"success": False, "message": "Formato de partidas inválido"}), 400
+
+        # Conexión a la base de datos
+        conn = db_sql_server.get_connection()
+        print(f"Conexión a la base de datos establecida. ID de Orden: {id_orden}")
+
+        # Llamar al modelo para actualizar las partidas
+        resultado = MyOrdendeCompra.actualizar_partidas(conn, id_orden, partidas)
+
+        if resultado:
+            print(f"Partidas actualizadas correctamente para la Orden: {id_orden}")
+            return jsonify({"success": True})
+        else:
+            print(f"Error desconocido al intentar actualizar las partidas para la Orden: {id_orden}")
+            return jsonify({"success": False, "message": "Error al actualizar partidas"}), 500
+
+    except Exception as e:
+        print(f"Error al actualizar partidas: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+    finally:
+        if 'conn' in locals():
+            conn.close()
+            print("Conexión a la base de datos cerrada.")
+
 
 @app.route('/generar_pdf/<int:id>', methods=['GET'])
 def generar_pdf(id):
@@ -2556,7 +2604,7 @@ def get_bauart_presupuestos(proyecto_id):
     """
     try:
         print(f"Procesando proyecto_id: {proyecto_id}")
-        presupuestos = ModelPresupuesto.obtener_presupuestos_bauart(db, proyecto_id)
+        presupuestos = ModelCompras.obtener_presupuestos_bauart(db, proyecto_id)
         print(f"Presupuestos obtenidos: {presupuestos}")
         return jsonify(presupuestos), 200
     except Exception as e:
@@ -2567,33 +2615,30 @@ def get_bauart_presupuestos(proyecto_id):
 @app.route('/api/get_bauart_conceptos/<int:proyecto_id>/<int:presupuesto_id>/<int:detalle_id>', methods=['GET'])
 def get_bauart_conceptos(proyecto_id, presupuesto_id, detalle_id):
     try:
-
         # Paso 1: Verificar si el presupuesto Bauart existe utilizando el detalle_id recibido
-        presupuesto_bauart = ModelPresupuesto.get_bauart_by_detalle(db, detalle_id)
+        presupuesto_bauart = ModelCompras.get_bauart_by_detalle(db, detalle_id)
         if not presupuesto_bauart:
-            print(f"No hay presupuesto Bauart asociado con ID de detalle {detalle_id}")
             return jsonify({"error": f"No hay presupuesto Bauart asociado con ID de detalle {detalle_id}"}), 404
 
-        # Mantener el ID del detalle para referencia
-        id_detalle = presupuesto_bauart.id_detalle
-        print(f"Presupuesto Bauart encontrado: {presupuesto_bauart}")
-        print(f"ID Detalle asociado: {id_detalle}")
-
         # Paso 2: Obtener los detalles específicos del presupuesto Bauart seleccionado
-        detalles_bauart = ModelPresupuesto.get_detalles_bauart_by_presupuesto(db, presupuesto_id)
+        detalles_bauart = ModelCompras.get_detalles_bauart_by_presupuesto(db, presupuesto_id)
         if not detalles_bauart:
-            print(f"No se encontraron detalles para el presupuesto Bauart con ID {presupuesto_id}")
             return jsonify({"error": f"No se encontraron detalles para el presupuesto Bauart con ID {presupuesto_id}"}), 404
 
-        # Paso 3: Extraer los conceptos
-        conceptos_bauart = [detalle["concepto"] for detalle in detalles_bauart]
-        print(f"Conceptos encontrados: {conceptos_bauart}")
+        # Paso 3: Extraer los conceptos con sus IDs, nombres y unidades
+        conceptos_bauart = [
+            {
+                "id_concepto": detalle["id_concepto"],
+                "nombre": detalle["nombre_concepto"],
+                "unidad_medida": detalle["unidad_medida"]
+            }
+            for detalle in detalles_bauart
+        ]
 
         return jsonify({"conceptos_bauart": conceptos_bauart}), 200
 
     except Exception as e:
-        print(f"Error en get_bauart_conceptos: {e}")
-        return jsonify({"error": "Error interno del servidor"}), 500
+        return jsonify({"error": f"Error interno del servidor: {e}"}), 500
     
 @app.route('/api/get_material_by_name/<string:material_name>', methods=['GET'])
 def get_material_by_name(material_name):
@@ -2787,10 +2832,7 @@ def nueva_requisicion():
         return jsonify({"id": id_requisicion, "message": "Requisición creada exitosamente"}), 201
     else:
         return jsonify({"error": "No se pudo crear la requisición"}), 500
-
-
-
-
+    
 @app.route('/api/agregar_partida_requisicion', methods=['POST'])
 def agregar_partida_requisicion():
     data = request.json
@@ -2804,15 +2846,22 @@ def agregar_partida_requisicion():
         if not partida.get("id_requisicion") or not partida.get("descripcion") or not partida.get("unidad") or not partida.get("cantidad"):
             return jsonify({"error": "Cada partida debe tener 'id_requisicion', 'descripcion', 'unidad' y 'cantidad'"}), 400
 
+        # Validar los nuevos campos (MONEDA y TIPO_CAMBIO)
+        moneda = partida.get("moneda")
+        tipo_cambio = partida.get("tipo_cambio")
+
+        if not moneda or moneda not in ["USD", "MXN"]:
+            return jsonify({"error": "Cada partida debe tener 'moneda' válida ('USD' o 'MXN')"}), 400
+
+        if tipo_cambio is None or not isinstance(tipo_cambio, (int, float)):
+            return jsonify({"error": "Cada partida debe tener un 'tipo_cambio' numérico válido"}), 400
+
         # Llamar a la función `add_partida` para agregar cada partida
         resultado = ModelRequisiciones.add_partida(db, partida)
         if not resultado:
             return jsonify({"error": "Ocurrió un error al agregar una o más partidas"}), 500
         
     return jsonify({"message": "Todas las partidas agregadas exitosamente"}), 201
-
-
-
 
 @app.route('/ConsultarRequisiciones', methods=['GET', 'POST'])
 def ConsultarRequisicionesPartidas_view():
@@ -3071,7 +3120,38 @@ def obtener_asistencias_general():
 def sabanaasistencias():
     return render_template('sabanaasistencias.html')
 
+#RUTAS PDF 
 
+@app.route('/get_partidas/<int:requisicion_id>', methods=['GET'])
+def get_partidas(requisicion_id):
+    db = db_sql_server.get_connection()
+    if db is None:
+        return jsonify({"error": "Database connection failed"}), 500
+
+    try:
+        with db.cursor() as cursor:
+            query = "SELECT ID, DESCRIPCION, UNIDAD, CANTIDAD, FECHA_CREACION, DETALLES FROM PARTIDAS_REQUISICION WHERE ID_REQUISICION = ?"
+            cursor.execute(query, (requisicion_id,))
+            rows = cursor.fetchall()
+            partidas = []
+            for row in rows:
+                # Format the date as "DD-MM-YYYY HH:MM"
+                fecha_creacion = row[4].strftime("%d-%m-%Y %H:%M") if row[4] else "N/A"
+                partidas.append({
+                    "id": row[0],
+                    "descripcion": row[1],
+                    "unidad": row[2],
+                    "cantidad": row[3],
+                    "fecha_creacion": fecha_creacion,
+                    "detalles": row[5]
+                })
+            return jsonify({"partidas": partidas})
+    except Exception as e:
+        print(f"Error fetching partition data: {e}")
+        return jsonify({"error": "Error fetching partition data"}), 500
+    finally:
+        db.close()
+        
 ## MANEJO DE ERRORES
 def status_401(error):
     return render_template('error401.html')

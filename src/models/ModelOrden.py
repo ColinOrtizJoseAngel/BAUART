@@ -155,39 +155,41 @@ class MyOrdendeCompra:
         return partidas
 
     @staticmethod
-    def guardar_orden(conn, id_requisicion, id_proveedor, fecha_hora_entrega, direccion_entrega, contacto, telefono, porcentaje_descuento):
-            """
-            Inserta una nueva orden en la tabla ORDENES.
+    def guardar_orden(conn, id_requisicion, id_proveedor, fecha_hora_entrega, direccion_entrega, contacto, telefono, porcentaje_descuento, numero_cotizacion):
+        """
+        Inserta una nueva orden en la tabla ORDENES con el nuevo campo Número de Cotización.
 
-            :param conn: Conexión a la base de datos.
-            :param id_requisicion: ID de la requisición asociada.
-            :param id_proveedor: ID del proveedor.
-            :param fecha_hora_entrega: Fecha y hora de entrega.
-            :param direccion_entrega: Dirección de entrega.
-            :param contacto: Nombre del contacto.
-            :param telefono: Teléfono del contacto.
-            :param porcentaje_descuento: Porcentaje de descuento aplicado a la orden.
-            :return: ID de la nueva orden creada.
-            """
-            cursor = conn.cursor()
-            try:
-                cursor.execute(
-                    """
-                    INSERT INTO ORDENES 
-                    (id_requisicion, id_proveedor, FechaHoraEntrega, DireccionEntrega, Contacto, Telefono, PorcentajeDescuento) 
-                    OUTPUT INSERTED.id 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (id_requisicion, id_proveedor, fecha_hora_entrega, direccion_entrega, contacto, telefono, porcentaje_descuento)
-                )
-                id_orden = cursor.fetchone()[0]
-                conn.commit()
-                return id_orden
-            except Exception as e:
-                conn.rollback()
-                raise e
-            finally:
-                cursor.close()
+        :param conn: Conexión a la base de datos.
+        :param id_requisicion: ID de la requisición asociada.
+        :param id_proveedor: ID del proveedor.
+        :param fecha_hora_entrega: Fecha y hora de entrega.
+        :param direccion_entrega: Dirección de entrega.
+        :param contacto: Nombre del contacto.
+        :param telefono: Teléfono del contacto.
+        :param porcentaje_descuento: Porcentaje de descuento aplicado a la orden.
+        :param numero_cotizacion: Número de cotización.
+        :return: ID de la nueva orden creada.
+        """
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                """
+                INSERT INTO ORDENES 
+                (id_requisicion, id_proveedor, FechaHoraEntrega, DireccionEntrega, Contacto, Telefono, PorcentajeDescuento, NumeroCotizacion) 
+                OUTPUT INSERTED.id 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (id_requisicion, id_proveedor, fecha_hora_entrega, direccion_entrega, contacto, telefono, porcentaje_descuento, numero_cotizacion)
+            )
+            id_orden = cursor.fetchone()[0]
+            conn.commit()
+            return id_orden
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+
 
     @staticmethod
     def actualizar_partidas(conn, id_orden, partidas):

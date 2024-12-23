@@ -1,289 +1,301 @@
-    {% extends "layout.html" %}
-    {% block title %}REQUISICIONES{% endblock %}
-    {% block customCSS %}
+{% extends "layout.html" %}
+{% block title %}REQUISICIONES{% endblock %}
+{% block customCSS %}
 
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <style>
-        /* General Styles */
-        body {
-            background-color: #d9e3eb;
-        }
+<style>
+    /* General Styles */
+    body {
+        background-color: #d9e3eb;
+    }
 
-        .form-container, .table-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
+    input, select, textarea {
+    text-transform: uppercase; /* Asegura que todo el texto se muestre en mayúsculas */
+    }
 
-        .page-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+    button, .btn {
+        text-transform: uppercase; /* Todo el texto de los botones estará en mayúsculas */
+    }
+    .form-container, .table-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+    }
 
-        /* Disabled Styling */
-        .table-container.disabled, .botones.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-            background-color: #f0f0f0;
-        }
+    .page-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
 
-        .botones.disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+    /* Disabled Styling */
+    .table-container.disabled, .botones.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+        background-color: #f0f0f0;
+    }
 
-        /* Modal Styling */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1050;
-            left: 0;
-            top: 0;
+    .botones.disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    /* Modal Styling */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h5 {
+        font-size: 20px;
+        color: #333;
+    }
+
+    .modal-content p {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .col-md-6 {
             width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
         }
+    }
+</style>
+{% endblock %}
 
-        .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+{% block titutlo %}REQUISICIONES{% endblock %}
 
-        .modal-content h5 {
-            font-size: 20px;
-            color: #333;
-        }
+{% block content %}
 
-        .modal-content p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
-        }
+<br>
 
-        @media (max-width: 768px) {
-            .col-md-6 {
-                width: 100%;
-            }
-        }
-    </style>
-    {% endblock %}
+<div class="container-fluid">
 
-    {% block titutlo %}REQUISICIONES{% endblock %}
+    <!-- Formulario de Requisiciones -->
+    <div class="form-container needs-validation" novalidate>
+        <form id="requisicionForm" onsubmit="crearRequisicion(event)">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-    {% block content %}
-
-    <br>
-
-    <div class="container-fluid">
-
-        <!-- Formulario de Requisiciones -->
-        <div class="form-container needs-validation" novalidate>
-            <form id="requisicionForm" onsubmit="crearRequisicion(event)">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="nombre_proyecto">NOMBRE PROYECTO:</label>
-                        <input type="text" id="nombre_proyecto" name="nombre_proyecto" class="form-control" placeholder="Buscar proyecto" required autocomplete="off">
-                        <div id="projectSuggestions" class="list-group"></div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="concepto">CONCEPTO:</label>
-                        <input type="text" id="concepto" name="concepto" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6 mt-3">
-                        <label for="projectLeader">LÍDER DE PROYECTO:</label>
-                        <input type="text" id="projectLeader" class="form-control" readonly required>
-                    </div>
-
-                    <div class="col-md-6 mt-3">
-                        <label for="director">DIRECTOR:</label>
-                        <input type="text" id="director" class="form-control" readonly required>
-                    </div>
-
-                    <div class="col-md-6 mt-3">
-                        <label for="requiredDate">FECHA REQUERIDA:</label>
-                        <input type="date" id="requiredDate" class="form-control" name="fecha_requerida" required>
-                    </div>
-
-                    <div class="col-md-6 mt-3">
-                        <label for="presupuestoBauart">SELECCIONA PRESUPUESTO BAUART:</label>
-                        <select id="presupuestoBauart" class="form-control" required>
-                            <option value="" disabled selected>Selecciona un presupuesto</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mt-3 text-center">
-                        <button id="submitRequisition" class="btn botones add-row-btn" onclick="crearRequisicion(event)">ENVIAR REQUISICIÓN</button>
-                    </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="nombre_proyecto">NOMBRE PROYECTO:</label>
+                    <input type="text" id="nombre_proyecto" name="nombre_proyecto" class="form-control" placeholder="Buscar proyecto" required autocomplete="off">
+                    <div id="projectSuggestions" class="list-group"></div>
                 </div>
-            </form>
-        </div>
 
-        <!-- Tabla de Partidas -->
-        <div class="table-container disabled">
-            <button id="addRow" class="btn botones add-row-btn">AGREGAR PARTIDA</button>
-            <br>
-            <table class="table table-hover">
-                <colgroup>
-                    <col style="width: 50px;">
-                    <col style="width: 200px;">
-                    <col style="width: 100px;">
-                    <col style="width: 100px;">
-                    <col style="width: 150px;">
-                    <col style="width: 100px;">
-                </colgroup>
-                <thead class="thead-dark">
-                    <tr>
-                        <th>NO</th>
-                        <th>DESCRIPCIÓN</th>
-                        <th>UNIDAD</th>
-                        <th>CANTIDAD</th>
-                        <th>DETALLES</th>
-                        <th>ACCIONES</th>
-                    </tr>
-                </thead>
-                <tbody id="requisitionTableBody"></tbody>
-            </table>
-        </div>
+                <div class="col-md-6">
+                    <label for="concepto">CONCEPTO:</label>
+                    <input type="text" id="concepto" name="concepto" class="form-control" required>
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label for="projectLeader">LÍDER DE PROYECTO:</label>
+                    <input type="text" id="projectLeader" class="form-control" readonly required>
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label for="director">DIRECTOR:</label>
+                    <input type="text" id="director" class="form-control" readonly required>
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label for="requiredDate">FECHA REQUERIDA:</label>
+                    <input type="date" id="requiredDate" class="form-control" name="fecha_requerida" required>
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label for="presupuestoBauart">SELECCIONA PRESUPUESTO BAUART:</label>
+                    <select id="presupuestoBauart" class="form-control text-uppercase" style="text-transform: uppercase;" required>
+                        <option value="" disabled selected>SELECCIONA UN PRESUPUESTO</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-6 mt-3 text-center">
+                    <button id="submitRequisition" class="btn botones add-row-btn" onclick="crearRequisicion(event)">ENVIAR REQUISICIÓN</button>
+                </div>
+            </div>
+        </form>
     </div>
 
-    <!-- Modal for Success or Failure -->
-    <div id="responseModal" class="modal">
-        <div class="modal-content">
-            <h5 id="modalTitle"></h5>
-            <p id="modalMessage"></p>
-            <button id="modalCloseBtn" class="modal-close-btn" onclick="closeModal()">Aceptar</button>
-        </div>
+    <!-- Tabla de Partidas -->
+<div class="table-container disabled">
+<button id="addRow" class="btn botones add-row-btn">AGREGAR PARTIDA</button>
+<br>
+<table class="table table-hover">
+    <colgroup>
+        <col style="width: 50px;">
+        <col style="width: 200px;">
+        <col style="width: 100px;">
+        <col style="width: 100px;">
+        <col style="width: 100px;">
+        <col style="width: 100px;">
+        <col style="width: 100px;">
+        <col style="width: 150px;">
+    </colgroup>
+    <thead class="thead-dark">
+        <tr>
+            <th>NO</th>
+            <th>DESCRIPCIÓN</th>
+            <th>UNIDAD</th>
+            <th>CANTIDAD</th>
+            <th>MONEDA</th>
+            <th>TIPO DE CAMBIO</th>
+            <th>DETALLES</th>
+            <th>ACCIONES</th>
+        </tr>
+    </thead>
+    <tbody id="requisitionTableBody"></tbody>
+</table>
+</div>
+
+
+<!-- Modal for Success or Failure -->
+<div id="responseModal" class="modal">
+    <div class="modal-content">
+        <h5 id="modalTitle"></h5>
+        <p id="modalMessage"></p>
+        <button id="modalCloseBtn" class="modal-close-btn" onclick="closeModal()">Aceptar</button>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        let isSubmitting = false;
-        let idDetalleSeleccionado = null;
-       (() => {
-    "use strict";
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    let isSubmitting = false;
+    let idDetalleSeleccionado = null;
+   (() => {
+"use strict";
 
-    // Variables globales
-    let rowCount = 1; // Contador para las filas de la tabla de partidas
-    let proyectoId = null; // ID del proyecto seleccionado
+// Variables globales
+let rowCount = 1; // Contador para las filas de la tabla de partidas
+let proyectoId = null; // ID del proyecto seleccionado
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const projectNameInput = document.getElementById("nombre_proyecto"); // Input de nombre del proyecto
-        const projectSuggestions = document.getElementById("projectSuggestions"); // Contenedor de sugerencias
-        const presupuestoSelect = document.getElementById("presupuestoBauart"); // Dropdown para seleccionar presupuesto
+document.addEventListener("DOMContentLoaded", function () {
+    const projectNameInput = document.getElementById("nombre_proyecto"); // Input de nombre del proyecto
+    const projectSuggestions = document.getElementById("projectSuggestions"); // Contenedor de sugerencias
+    const presupuestoSelect = document.getElementById("presupuestoBauart"); // Dropdown para seleccionar presupuesto
 
-        // Validación del formulario principal
-        const forms = document.querySelectorAll(".needs-validation");
-        Array.from(forms).forEach((form) => {
-            form.addEventListener("submit", (event) => {
-                event.preventDefault(); // Prevenir la recarga de la página
-                event.stopPropagation(); // Detener la propagación del evento
+    // Validación del formulario principal
+    const forms = document.querySelectorAll(".needs-validation");
+    Array.from(forms).forEach((form) => {
+        form.addEventListener("submit", (event) => {
+            event.preventDefault(); // Prevenir la recarga de la página
+            event.stopPropagation(); // Detener la propagación del evento
 
-                // Validar el formulario principal antes de enviar
-                if (!form.checkValidity()) {
-                    // Mostrar alerta si algún campo requerido está vacío
-                    Swal.fire({
-                        title: "Faltan campos",
-                        text: "Por favor, complete todos los campos requeridos del formulario principal.",
-                        icon: "warning",
-                    });
-                } else if (!validatePartidasPresence()) {
-                    // Mostrar alerta si no hay partidas en la tabla
-                    Swal.fire({
-                        title: "Falta Partida",
-                        text: "Por favor, añade al menos una partida antes de enviar.",
-                        icon: "warning",
-                    });
-                } else if (!validatePartidasFields()) {
-                    // Mostrar alerta si algún campo en las partidas está vacío
-                    Swal.fire({
-                        title: "Campos Faltantes en Partidas",
-                        text: "Por favor, completa todos los campos en cada partida antes de enviar la requisición.",
-                        icon: "warning",
-                    });
+            // Validar el formulario principal antes de enviar
+            if (!form.checkValidity()) {
+                // Mostrar alerta si algún campo requerido está vacío
+                Swal.fire({
+                    title: "Faltan campos".toUpperCase(),
+                    text: "Por favor, complete todos los campos requeridos del formulario principal.".toUpperCase(),
+                    icon: "warning",
+                });
+            } else if (!validatePartidasPresence()) {
+                // Mostrar alerta si no hay partidas en la tabla
+                Swal.fire({
+                    title: "Falta Partida".toUpperCase(),
+                    text: "Por favor, añade al menos una partida antes de enviar.".toUpperCase(),
+                    icon: "warning",
+                });
+            } else if (!validatePartidasFields()) {
+                // Mostrar alerta si algún campo en las partidas está vacío
+                Swal.fire({
+                    title: "Campos Faltantes en Partidas".toUpperCase(),
+                    text: "Por favor, completa todos los campos en cada partida antes de enviar la requisición.".toUpperCase(),
+                    icon: "warning",
+                });
+            } else {
+                // Aquí no enviamos los datos, simplemente mostramos un log de depuración
+                console.log("Formulario validado. Simulación de envío.");
+            }
+
+            form.classList.add("was-validated"); // Marcar el formulario como validado visualmente
+        }, false);
+    });
+
+    // Autocompletar proyectos
+    projectNameInput.addEventListener("input", async () => {
+        const query = projectNameInput.value.trim(); // Obtener el valor del input
+        if (query.length >= 2) {
+            try {
+                // Fetch para buscar proyectos según la consulta
+                const response = await fetch(`/api/buscar_proyecto/?query=${encodeURIComponent(query)}`);
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                const data = await response.json();
+
+                // Si hay resultados, mostrar las sugerencias
+                if (Array.isArray(data) && data.length > 0) {
+                    projectSuggestions.innerHTML = data.map((proyecto) => `
+                        <a class="list-group-item list-group-item-action" data-project-id="${proyecto.id}">
+                            ${proyecto.nombre_proyecto}
+                        </a>
+                    `).join("");
+                    projectSuggestions.style.display = "block"; // Mostrar las sugerencias
                 } else {
-                    // Aquí no enviamos los datos, simplemente mostramos un log de depuración
-                    console.log("Formulario validado. Simulación de envío.");
-                }
-
-                form.classList.add("was-validated"); // Marcar el formulario como validado visualmente
-            }, false);
-        });
-
-        // Autocompletar proyectos
-        projectNameInput.addEventListener("input", async () => {
-            const query = projectNameInput.value.trim(); // Obtener el valor del input
-            if (query.length >= 2) {
-                try {
-                    // Fetch para buscar proyectos según la consulta
-                    const response = await fetch(`/api/buscar_proyecto/?query=${encodeURIComponent(query)}`);
-                    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-                    const data = await response.json();
-
-                    // Si hay resultados, mostrar las sugerencias
-                    if (Array.isArray(data) && data.length > 0) {
-                        projectSuggestions.innerHTML = data.map((proyecto) => `
-                            <a class="list-group-item list-group-item-action" data-project-id="${proyecto.id}">
-                                ${proyecto.nombre_proyecto}
-                            </a>
-                        `).join("");
-                        projectSuggestions.style.display = "block"; // Mostrar las sugerencias
-                    } else {
-                        // Si no hay resultados, mostrar mensaje
-                        projectSuggestions.innerHTML = `<p class="list-group-item">No se encontraron proyectos</p>`;
-                        projectSuggestions.style.display = "block";
-                    }
-                } catch (error) {
-                    console.error("Error al buscar proyectos:", error);
-                    projectSuggestions.innerHTML = `<p class="list-group-item text-danger">Error al buscar proyectos</p>`;
+                    // Si no hay resultados, mostrar mensaje
+                    projectSuggestions.innerHTML = `<p class="list-group-item">No se encontraron proyectos</p>`;
                     projectSuggestions.style.display = "block";
                 }
-            } else {
-                // Si la consulta es muy corta, ocultar las sugerencias
-                projectSuggestions.innerHTML = "";
-                projectSuggestions.style.display = "none";
+            } catch (error) {
+                console.error("Error al buscar proyectos:", error);
+                projectSuggestions.innerHTML = `<p class="list-group-item text-danger">Error al buscar proyectos</p>`;
+                projectSuggestions.style.display = "block";
             }
-        });
+        } else {
+            // Si la consulta es muy corta, ocultar las sugerencias
+            projectSuggestions.innerHTML = "";
+            projectSuggestions.style.display = "none";
+        }
+    });
 
-        // Selección de proyecto
-        projectSuggestions.addEventListener("click", async (event) => {
-            const suggestion = event.target; // Elemento sugerido seleccionado
-            if (suggestion.matches(".list-group-item[data-project-id]")) {
-                proyectoId = suggestion.dataset.projectId; // Asignar el ID del proyecto globalmente
-                const projectName = suggestion.textContent.trim(); // Obtener el nombre del proyecto
-                projectNameInput.value = projectName; // Actualizar el input con el nombre del proyecto
-                projectSuggestions.style.display = "none"; // Ocultar las sugerencias
+    // Selección de proyecto
+    projectSuggestions.addEventListener("click", async (event) => {
+        const suggestion = event.target; // Elemento sugerido seleccionado
+        if (suggestion.matches(".list-group-item[data-project-id]")) {
+            proyectoId = suggestion.dataset.projectId; // Asignar el ID del proyecto globalmente
+            const projectName = suggestion.textContent.trim(); // Obtener el nombre del proyecto
+            projectNameInput.value = projectName; // Actualizar el input con el nombre del proyecto
+            projectSuggestions.style.display = "none"; // Ocultar las sugerencias
 
-                try {
-                    // Fetch para obtener los detalles del proyecto
-                    const responseDetalles = await fetch(`/api/get_project_details/${proyectoId}`);
-                    if (!responseDetalles.ok) throw new Error(`Error HTTP: ${responseDetalles.status}`);
+            try {
+                // Fetch para obtener los detalles del proyecto
+                const responseDetalles = await fetch(`/api/get_project_details/${proyectoId}`);
+                if (!responseDetalles.ok) throw new Error(`Error HTTP: ${responseDetalles.status}`);
 
-                    const projectDetails = await responseDetalles.json();
-                    
+                const projectDetails = await responseDetalles.json();
+                
 
-                    // Autocompletar los campos con los detalles del proyecto
-                    document.getElementById("projectLeader").value = projectDetails.lider_proyecto || "";
-                    document.getElementById("director").value = projectDetails.director_proyecto || "";
+                // Autocompletar los campos con los detalles del proyecto
+                document.getElementById("projectLeader").value = projectDetails.lider_proyecto || "";
+                document.getElementById("director").value = projectDetails.director_proyecto || "";
 
 // Fetch para obtener los presupuestos Bauart asociados al proyecto
 const responsePresupuestos = await fetch(`/api/get_bauart_presupuestos/${proyectoId}`);
@@ -294,13 +306,13 @@ console.log("Presupuestos Bauart recibidos:", presupuestosData);
 
 // Verificar si hay presupuestos disponibles
 if (presupuestosData.length === 0) {
-    console.warn("No se encontraron presupuestos Bauart.");
-    Swal.fire({
-        title: "Sin Presupuestos",
-        text: "No se encontraron presupuestos Bauart asociados a este proyecto. Por favor, verifica la información del proyecto o contacta al administrador.",
-        icon: "warning",
-    });
-    return; // Detener la ejecución si no hay presupuestos
+console.warn("No se encontraron presupuestos Bauart.");
+Swal.fire({
+    title: "Sin Presupuestos".toUpperCase(),
+    text: "No se encontraron presupuestos Bauart asociados a este proyecto. Por favor, verifica la información del proyecto o contacta al administrador.".toUpperCase(),
+    icon: "warning",
+});
+return; // Detener la ejecución si no hay presupuestos
 }
 
 // Guardar el id_detalle del primer registro (si existe)
@@ -312,312 +324,400 @@ localStorage.setItem("idDetallePrimero", idDetalleSeleccionado); // Guardarlo en
 
 // Llenar el dropdown con los presupuestos
 presupuestoSelect.innerHTML = `
-    <option value="" disabled selected>Selecciona un presupuesto</option>
-    ${presupuestosData.map(p => `
-        <option value="${p.id_presupuesto_bauart}">${p.nombre_presupuesto}</option>
-    `).join("")}
+<option value="" disabled selected>Selecciona un presupuesto</option>
+${presupuestosData.map(p => `
+    <option value="${p.id_presupuesto_bauart}">${p.nombre_presupuesto}</option>
+`).join("")}
 `;
 
-                    
-                    enableForm(); // Habilitar el formulario
-                } catch (error) {
-                    console.error("Error al obtener detalles del proyecto o presupuestos Bauart:", error);
-                    Swal.fire({
-                        title: "Error",
-                        text: "No se pudieron obtener los detalles del proyecto o los presupuestos Bauart.",
-                        icon: "error",
-                    });
-                }
+                
+                enableForm(); // Habilitar el formulario
+            } catch (error) {
+                console.error("Error al obtener detalles del proyecto o presupuestos Bauart:", error);
+                Swal.fire({
+                    title: "Error".toUpperCase(),
+                    text: "No se pudieron obtener los detalles del proyecto o los presupuestos Bauart.".toUpperCase(),
+                    icon: "error",
+                });
             }
-        });
-
-        // Agregar una nueva fila para la partida
-        document.getElementById("addRow").addEventListener("click", addRequisitionRow);
+        }
     });
 
-    function enableForm() {
-        document.querySelector(".table-container").classList.remove("disabled");
-        document.getElementById("submitRequisition").classList.remove("disabled");
-    }
+    // Agregar una nueva fila para la partida
+    document.getElementById("addRow").addEventListener("click", addRequisitionRow);
+});
 
-    function addRequisitionRow() {
-        const tableBody = document.getElementById("requisitionTableBody");
-        const row = document.createElement("tr");
+function enableForm() {
+    document.querySelector(".table-container").classList.remove("disabled");
+    document.getElementById("submitRequisition").classList.remove("disabled");
+}
 
-        // Crear una nueva fila con inputs para la partida
-        row.innerHTML = `
-            <td>${rowCount++}</td>
-            <td>
-                <input type="text" class="form-control descripcion" placeholder="Descripción" required>
-                <div class="list-group material-suggestions"></div>
-            </td>
-            <td>
-                <input type="text" class="form-control unidad" placeholder="Unidad" readonly>
-            </td>
-            <td><input type="number" class="form-control cantidad" placeholder="Cantidad" required></td>
-            <td><input type="text" class="form-control detalles" placeholder="Detalles"></td>
-            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+function addRequisitionRow() {
+const tableBody = document.getElementById("requisitionTableBody");
+const row = document.createElement("tr");
+
+// Crear una nueva fila con un select para las partidas
+row.innerHTML = `
+    <td>${rowCount++}</td>
+    <td>
+        <select class="form-control descripcion" required>
+            <option value="" disabled selected>Seleccione una opción</option>
+        </select>
+    </td>
+    <td>
+        <input type="text" class="form-control unidad" placeholder="Unidad" readonly>
+    </td>
+    <td><input type="number" class="form-control cantidad" placeholder="Cantidad" required></td>
+    <td>
+        <select class="form-control moneda" required>
+            <option value="" disabled selected>Selecciona</option>
+            <option value="USD">USD</option>
+            <option value="MXN">MXN</option>
+        </select>
+    </td>
+    <td><input type="number" class="form-control tipo-cambio" placeholder="Tipo de Cambio" step="0.01" required></td>
+    <td><input type="text" class="form-control detalles" placeholder="Detalles"></td>
+    <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+`;
+tableBody.appendChild(row);
+
+// Llenar el select con las opciones disponibles
+const descripcionSelect = row.querySelector('.descripcion');
+llenarDescripcionOptions(descripcionSelect);
+}
+
+async function llenarDescripcionOptions(selectElement) {
+const currentPresupuestoId = document.getElementById("presupuestoBauart").value; // ID del presupuesto seleccionado
+
+if (!proyectoId || !currentPresupuestoId) {
+    Swal.fire({
+        title: "Información Faltante".toUpperCase(),
+        text: "Por favor, selecciona un proyecto y un presupuesto antes de continuar.".toUpperCase(),
+        icon: "warning",
+    });
+    return;
+}
+
+try {
+    const response = await fetch(`/api/get_bauart_conceptos/${proyectoId}/${currentPresupuestoId}/${idDetalleSeleccionado}`);
+    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+    const data = await response.json();
+    console.log("Conceptos Bauart recibidos:", data);
+
+    // Rellenar el select con las opciones de los conceptos
+    if (Array.isArray(data.conceptos_bauart) && data.conceptos_bauart.length > 0) {
+        selectElement.innerHTML = `
+            <option value="" disabled selected>Seleccione una opción</option>
+            ${data.conceptos_bauart.map(concepto => `
+                <option value="${concepto.id_concepto}" data-unidad="${concepto.unidad_medida}">
+                    ${concepto.nombre}
+                </option>
+            `).join('')}
         `;
-        tableBody.appendChild(row);
 
-        // Agregar evento para autocompletar materiales
-        const descripcionInput = row.querySelector('.descripcion');
-        descripcionInput.addEventListener('input', function () {
-            buscarBauartDetalles(this);
+        // Evento para seleccionar una opción y actualizar el campo de unidad
+        selectElement.addEventListener('change', () => {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const unidad = selectedOption.getAttribute('data-unidad') || "";
+            const row = selectElement.closest('tr');
+            row.querySelector('.unidad').value = unidad; // Actualizar el campo de unidad
+        });
+    } else {
+        Swal.fire({
+            title: "Sin Conceptos".toUpperCase(),
+            text: "No se encontraron conceptos Bauart asociados a este proyecto y presupuesto.".toUpperCase(),
+            icon: "warning",
         });
     }
+} catch (error) {
+    console.error("Error al obtener conceptos Bauart:", error);
+    Swal.fire({
+        title: "Error".toUpperCase(),
+        text: "No se encontraron conceptos asociados a este presupuesto. Por favor, verifica la selección.".toUpperCase(),
+        icon: "warning",
+    });
+}
+}
 
-    async function buscarBauartDetalles(input) {
-        const query = input.value.trim();
-        const currentPresupuestoId = document.getElementById("presupuestoBauart").value; // ID del presupuesto seleccionado
 
-        if (!proyectoId || !currentPresupuestoId) {
-            Swal.fire({
-                title: "Información Faltante",
-                text: "Por favor, selecciona un proyecto y un presupuesto antes de continuar.",
-                icon: "warning",
+async function buscarBauartDetalles(input) {
+const query = input.value.trim();
+const currentPresupuestoId = document.getElementById("presupuestoBauart").value; // ID del presupuesto seleccionado
+
+if (!proyectoId || !currentPresupuestoId) {
+    Swal.fire({
+        title: "Información Faltante".toUpperCase(),
+        text: "Por favor, selecciona un proyecto y un presupuesto antes de continuar.".toUpperCase(),
+        icon: "warning",
+    });
+    return;
+}
+
+const suggestionsContainer = input.nextElementSibling;
+
+try {
+    const response = await fetch(`/api/get_bauart_conceptos/${proyectoId}/${currentPresupuestoId}/${idDetalleSeleccionado}?query=${encodeURIComponent(query)}`);
+    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+    const data = await response.json();
+    console.log("Conceptos Bauart recibidos:", data);
+
+    if (Array.isArray(data.conceptos_bauart) && data.conceptos_bauart.length > 0) {
+        // Mostrar las sugerencias en el autocompletado
+        suggestionsContainer.innerHTML = data.conceptos_bauart.map((concepto) => `
+            <a class="list-group-item list-group-item-action" 
+               data-id-concepto="${concepto.id_concepto}" 
+               data-nombre="${concepto.nombre}" 
+               data-unidad="${concepto.unidad_medida}">
+                ${concepto.nombre}
+            </a>
+        `).join("");
+        suggestionsContainer.style.display = "block";
+
+        // Agregar eventos para seleccionar un concepto
+        suggestionsContainer.querySelectorAll('.list-group-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const idConcepto = item.getAttribute("data-id-concepto");
+                const nombre = item.getAttribute("data-nombre");
+                const unidad = item.getAttribute("data-unidad");
+
+                // Actualizar los campos de la fila correspondiente
+                input.value = nombre; // Nombre del concepto
+                const row = input.closest('tr');
+                row.querySelector('.unidad').value = unidad; // Unidad de medida
+                suggestionsContainer.style.display = "none"; // Ocultar el autocompletado
             });
-            return;
-        }
-
-        const suggestionsContainer = input.nextElementSibling;
-
-        try {
-            const response = await fetch(`/api/get_bauart_conceptos/${proyectoId}/${currentPresupuestoId}/${idDetalleSeleccionado}?query=${encodeURIComponent(query)}`);
-            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-
-            const data = await response.json();
-            console.log("Conceptos Bauart recibidos:", data);
-
-            if (Array.isArray(data.conceptos_bauart) && data.conceptos_bauart.length > 0) {
-                suggestionsContainer.innerHTML = data.conceptos_bauart.map((concepto) => `
-                    <a class="list-group-item list-group-item-action" data-concepto="${concepto}">
-                        ${concepto}
-                    </a>
-                `).join("");
-                suggestionsContainer.style.display = "block";
-
-                // Agregar evento click a los elementos del autocompletador
-                suggestionsContainer.querySelectorAll('.list-group-item').forEach(item => {
-                    item.addEventListener('click', async () => {
-                        input.value = item.dataset.concepto;
-                        suggestionsContainer.style.display = "none";
-
-                        // Solicitar la unidad asociada al concepto seleccionado
-                        const unidadResponse = await fetch(`/api/get_material_by_name/${encodeURIComponent(item.dataset.concepto)}`);
-                        if (!unidadResponse.ok) {
-                            console.error("Unidad no encontrada para el material:", item.dataset.concepto);
-                            return;
-                        }
-
-                        const unidadData = await unidadResponse.json();
-                        console.log("Unidad encontrada:", unidadData);
-
-                        // Actualizar la unidad en la fila correspondiente
-                        const unidadInput = input.closest('tr').querySelector('.unidad');
-                        unidadInput.value = unidadData.unidad_medida;
-                    });
-                });
-            } else {
-                suggestionsContainer.innerHTML = `<p class="list-group-item text-warning">No se encontraron conceptos</p>`;
-                suggestionsContainer.style.display = "block";
-            }
-        } catch (error) {
-            console.error("Error al buscar conceptos Bauart:", error);
-            Swal.fire({
-                title: "Error",
-                text: "Ocurrió un error al buscar los conceptos Bauart. Intenta nuevamente.",
-                icon: "error",
-            });
-        }
-    }
-
-    
-
-    function validatePartidasPresence() {
-        return document.querySelectorAll("#requisitionTableBody tr").length > 0;
-    }
-
-    function validatePartidasFields() {
-        const rows = document.querySelectorAll("#requisitionTableBody tr");
-        return Array.from(rows).every(row => {
-            const descripcion = row.querySelector(".descripcion").value.trim();
-            const cantidad = row.querySelector(".cantidad").value.trim();
-            return descripcion && cantidad;
         });
+    } else {
+        suggestionsContainer.innerHTML = `<p class="list-group-item text-warning">No se encontraron conceptos</p>`;
+        suggestionsContainer.style.display = "block";
     }
+} catch (error) {
+    console.error("Error al buscar conceptos Bauart:", error);
+    Swal.fire({
+        title: "Error".toUpperCase(),
+        text: "Ocurrió un error al buscar los conceptos Bauart. Intenta nuevamente.".toUpperCase(),
+        icon: "error",
+    });
+}
+}
+
+
+function validatePartidasPresence() {
+    return document.querySelectorAll("#requisitionTableBody tr").length > 0;
+}
+
+function validatePartidasFields() {
+    const rows = document.querySelectorAll("#requisitionTableBody tr");
+    return Array.from(rows).every(row => {
+        const descripcion = row.querySelector(".descripcion").value.trim();
+        const cantidad = row.querySelector(".cantidad").value.trim();
+        return descripcion && cantidad;
+    });
+}
 })();
 function crearRequisicion(event) {
-    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
-    const nombreProyecto = document.getElementById("nombre_proyecto").value.trim();
-    const concepto = document.getElementById("concepto").value.trim();
-    const requiredDate = document.getElementById("requiredDate").value.trim();
+const nombreProyecto = document.getElementById("nombre_proyecto").value.trim();
+const concepto = document.getElementById("concepto").value.trim();
+const requiredDate = document.getElementById("requiredDate").value.trim();
 
-    // Validación de campos obligatorios
-    if (!nombreProyecto || !concepto || !requiredDate) {
-        Swal.fire({
-            title: "Campos Faltantes",
-            text: "Por favor, completa todos los campos obligatorios antes de enviar.",
-            icon: "warning"
-        });
-        return;
-    }
-
-    if (!validatePartidasPresence() || !validatePartidasFields()) {
-        Swal.fire({
-            title: "Error en Partidas",
-            text: "Asegúrate de que al menos una partida esté completa y que todos los campos de cada partida estén llenos.",
-            icon: "warning"
-        });
-        return;
-    }
-
-    if (isSubmitting) return; // Evitar múltiples envíos simultáneos
-    isSubmitting = true;
-
-    const data = {
-        nombre_proyecto: nombreProyecto,
-        concepto: concepto,
-        fecha_requerida: requiredDate,
-        status: 0 // Estado inicial
-    };
-
-    fetch('/api/nueva_requisicion', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(errorData => {
-                throw new Error(errorData.error || "Error al crear la requisición");
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        Swal.fire({
-            title: "Requisición Exitosa",
-            text: data.message || "Requisición creada exitosamente",
-            icon: "success"
-        }).then(() => {
-            enviarPartidas(data.id); // Llamar a enviarPartidas con el ID de la requisición creada
-        });
-    })
-    .catch(error => {
-        Swal.fire({
-            title: "Error",
-            text: error.message || "Ocurrió un error al crear la requisición",
-            icon: "error"
-        });
-    })
-    .finally(() => {
-        isSubmitting = false;
+// Validación de campos obligatorios
+if (!nombreProyecto || !concepto || !requiredDate) {
+    Swal.fire({
+        title: "Campos Faltantes".toUpperCase(),
+        text: "Por favor, completa todos los campos obligatorios antes de enviar.".toUpperCase(),
+        icon: "warning"
     });
+    return;
+}
+
+if (!validatePartidasPresence() || !validatePartidasFields()) {
+    Swal.fire({
+        title: "Error en Partidas",
+        text: "Asegúrate de que al menos una partida esté completa y que todos los campos de cada partida estén llenos.",
+        icon: "warning"
+    });
+    return;
+}
+
+if (isSubmitting) return; // Evitar múltiples envíos simultáneos
+isSubmitting = true;
+
+const data = {
+    nombre_proyecto: nombreProyecto,
+    concepto: concepto,
+    fecha_requerida: requiredDate,
+    status: 0 // Estado inicial
+};
+
+fetch('/api/nueva_requisicion', {
+    method: 'POST',
+    headers: { 
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCsrfToken()
+    },
+    body: JSON.stringify(data)
+})
+.then(response => {
+    if (!response.ok) {
+        return response.json().then(errorData => {
+            throw new Error(errorData.error || "Error al crear la requisición");
+        });
+    }
+    return response.json();
+})
+.then(data => {
+    Swal.fire({
+        title: "Requisición Exitosa".toUpperCase(),
+        text: data.message || "Requisición creada exitosamente".toUpperCase(),
+        icon: "success"
+    }).then(() => {
+        enviarPartidas(data.id); // Llamar a enviarPartidas con el ID de la requisición creada
+    });
+})
+.catch(error => {
+    Swal.fire({
+        title: "Error".toUpperCase(),
+        text: error.message || "Ocurrió un error al crear la requisición".toUpperCase(),
+        icon: "error"
+    });
+})
+.finally(() => {
+    isSubmitting = false;
+});
 }
 function enviarPartidas(id_requisicion) {
-    const filas = document.querySelectorAll("#requisitionTableBody tr");
-    const partidas = [];
-    let allFieldsFilled = true;
+const filas = document.querySelectorAll("#requisitionTableBody tr");
+const partidas = [];
+let allFieldsFilled = true;
 
-    filas.forEach(fila => {
-        const descripcion = fila.querySelector(".descripcion").value.trim();
-        const unidad = fila.querySelector(".unidad").value.trim();
-        const cantidad = fila.querySelector(".cantidad").value.trim();
-        const detalles = fila.querySelector(".detalles").value.trim();
+filas.forEach(fila => {
+    const descripcion = fila.querySelector(".descripcion").value.trim();
+    const unidad = fila.querySelector(".unidad").value.trim();
+    const cantidad = fila.querySelector(".cantidad").value.trim();
+    const moneda = fila.querySelector(".moneda").value; // Capturar valor del select
+    const tipoCambio = fila.querySelector(".tipo-cambio").value.trim(); // Capturar valor del input
+    const detalles = fila.querySelector(".detalles").value.trim();
 
-        // Validar que todos los campos obligatorios estén completos
-        if (!descripcion || !unidad || !cantidad) {
-            allFieldsFilled = false;
-            return;
-        }
-
-        partidas.push({
-            id_requisicion: id_requisicion,
-            descripcion: descripcion,
-            unidad: unidad,
-            cantidad: cantidad,
-            detalles: detalles || "" // Por defecto vacío si no se proporciona
-        });
-    });
-
-    if (!allFieldsFilled) {
-        Swal.fire({
-            title: "Error",
-            text: "Por favor, completa todos los campos de cada partida antes de enviar.",
-            icon: "warning"
-        });
-        return; // Detener si hay campos incompletos
+    // Validar que todos los campos obligatorios estén completos
+    if (!descripcion || !unidad || !cantidad || !moneda || !tipoCambio) {
+        allFieldsFilled = false;
+        return;
     }
 
-    fetch('/api/agregar_partida_requisicion', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
-        },
-        body: JSON.stringify({ partidas: partidas })
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(errorData => {
-                throw new Error(errorData.error || "Error al enviar las partidas");
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        Swal.fire({
-            title: "Partidas Enviadas",
-            text: data.message || "Partidas enviadas exitosamente",
-            icon: "success"
-        }).then(() => {
-            window.location.href = "/ConsultarRequisiciones"; // Redirigir después del éxito
-        });
-    })
-    .catch(error => {
-        Swal.fire({
-            title: "Error",
-            text: error.message || "Ocurrió un error al enviar las partidas",
-            icon: "error"
-        });
+    partidas.push({
+        id_requisicion: id_requisicion,
+        descripcion: descripcion,
+        unidad: unidad,
+        cantidad: cantidad,
+        moneda: moneda, // Agregar moneda
+        tipo_cambio: parseFloat(tipoCambio), // Convertir tipo_cambio a número
+        detalles: detalles || "" // Por defecto vacío si no se proporciona
     });
+});
+
+if (!allFieldsFilled) {
+    Swal.fire({
+        title: "Error".toUpperCase(),
+        text: "Por favor, completa todos los campos de cada partida antes de enviar.".toUpperCase(),
+        icon: "warning"
+    });
+    return; // Detener si hay campos incompletos
 }
+
+fetch('/api/agregar_partida_requisicion', {
+    method: 'POST',
+    headers: { 
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCsrfToken()
+    },
+    body: JSON.stringify({ partidas: partidas })
+})
+.then(response => {
+    if (!response.ok) {
+        return response.json().then(errorData => {
+            throw new Error(errorData.error || "Error al enviar las partidas");
+        });
+    }
+    return response.json();
+})
+.then(data => {
+    Swal.fire({
+        title: "Partidas Enviadas".toUpperCase(),
+        text: data.message || "Partidas enviadas exitosamente".toUpperCase(),
+        icon: "success"
+    }).then(() => {
+        window.location.href = "/ConsultarRequisiciones"; // Redirigir después del éxito
+    });
+})
+.catch(error => {
+    Swal.fire({
+        title: "Error".toUpperCase(),
+        text: error.message || "Ocurrió un error al enviar las partidas".toUpperCase(),
+        icon: "error"
+    });
+});
+}
+
 function validatePartidasPresence() {
-    const filas = document.querySelectorAll("#requisitionTableBody tr");
-    return filas.length > 0;
+const filas = document.querySelectorAll("#requisitionTableBody tr");
+return filas.length > 0;
 }
 function validatePartidasFields() {
-    const filas = document.querySelectorAll("#requisitionTableBody tr");
-    let allFieldsFilled = true;
+const filas = document.querySelectorAll("#requisitionTableBody tr");
+let allFieldsFilled = true;
 
-    filas.forEach(fila => {
-        const descripcion = fila.querySelector(".descripcion").value.trim();
-        const unidad = fila.querySelector(".unidad").value.trim();
-        const cantidad = fila.querySelector(".cantidad").value.trim();
+filas.forEach(fila => {
+    const descripcion = fila.querySelector(".descripcion").value.trim();
+    const unidad = fila.querySelector(".unidad").value.trim();
+    const cantidad = fila.querySelector(".cantidad").value.trim();
+    const moneda = fila.querySelector(".moneda").value;
+    const tipoCambio = fila.querySelector(".tipo-cambio").value.trim();
 
-        // Verificar que todos los campos obligatorios estén completos
-        if (!descripcion || !unidad || !cantidad) {
-            allFieldsFilled = false;
-        }
-    });
+    // Verificar que todos los campos obligatorios estén completos
+    if (!descripcion || !unidad || !cantidad || !moneda || !tipoCambio) {
+        allFieldsFilled = false;
+    }
+});
 
-    return allFieldsFilled;
+return allFieldsFilled;
 }
+
 function getCsrfToken() {
-    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 }
 
 function removeRow(button) {
-        const row = button.parentNode.parentNode;
-        row.parentNode.removeChild(row);
-        rowCount--;
-    }
-    </script>
-    
-                
-    {% endblock %}
+    const row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+    rowCount--;
+}
+
+document.getElementById("presupuestoBauart").addEventListener("change", reiniciarTablaPartidas);
+
+function reiniciarTablaPartidas() {
+const tableBody = document.getElementById("requisitionTableBody");
+const tableContainer = document.querySelector(".table-container");
+
+// Limpiar el contenido de la tabla
+tableBody.innerHTML = "";
+
+// Reiniciar el contador de filas
+rowCount = 1;
+
+// Deshabilitar la tabla si no hay presupuesto seleccionado
+const presupuestoSeleccionado = document.getElementById("presupuestoBauart").value;
+if (!presupuestoSeleccionado) {
+    tableContainer.classList.add("disabled");
+} else {
+    tableContainer.classList.remove("disabled");
+}
+}
+
+</script>
+
+            
+{% endblock %}

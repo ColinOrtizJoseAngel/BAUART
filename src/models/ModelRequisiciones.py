@@ -45,6 +45,8 @@ class ModelRequisiciones:
             descripcion = partida.get('descripcion')
             unidad = partida.get('unidad')
             cantidad = partida.get('cantidad')
+            moneda = partida.get('moneda', None)
+            tipo_cambio = partida.get('tipo_cambio', None)
             fecha_creacion = partida.get('fecha_creacion', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
             detalles = partida.get('detalles', None)
 
@@ -53,9 +55,9 @@ class ModelRequisiciones:
                 return False
 
             cursor.execute("""
-                INSERT INTO PARTIDAS_REQUISICION (ID_REQUISICION, DESCRIPCION, UNIDAD, CANTIDAD, FECHA_CREACION, DETALLES)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, id_requisicion, descripcion, unidad, cantidad, fecha_creacion, detalles)
+                INSERT INTO PARTIDAS_REQUISICION (ID_REQUISICION, DESCRIPCION, UNIDAD, CANTIDAD, MONEDA, TIPO_CAMBIO, FECHA_CREACION, DETALLES)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, id_requisicion, descripcion, unidad, cantidad, moneda, tipo_cambio, fecha_creacion, detalles)
             
             db.commit()
             print(f"Partida agregada a requisición {id_requisicion}")
@@ -161,7 +163,7 @@ class ModelRequisiciones:
         try:
             cursor = db.cursor()
             query = """
-                SELECT ID, DESCRIPCION, UNIDAD, CANTIDAD, FECHA_CREACION, DETALLES
+                SELECT ID, DESCRIPCION, UNIDAD, CANTIDAD, MONEDA, TIPO_CAMBIO, FECHA_CREACION, DETALLES
                 FROM PARTIDAS_REQUISICION
                 WHERE ID_REQUISICION = ?
             """
@@ -175,8 +177,10 @@ class ModelRequisiciones:
                     "descripcion": row[1],
                     "unidad": row[2],
                     "cantidad": row[3],
-                    "fecha_creacion": row[4].strftime("%d-%m-%Y %H:%M") if isinstance(row[4], datetime) else "N/A",
-                    "detalles": row[5]
+                    "moneda": row[4],
+                    "tipo_cambio": row[5],
+                    "fecha_creacion": row[6].strftime("%d-%m-%Y %H:%M") if isinstance(row[6], datetime) else "N/A",
+                    "detalles": row[7]
                 }
                 partidas.append(partida)
             
