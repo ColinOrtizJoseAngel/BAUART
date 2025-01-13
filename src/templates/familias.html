@@ -19,14 +19,21 @@
                 <h4 class="modal-title" id="miModalLabel">FILTRAR FAMILIAS</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <!-- <form action="" method="post"> -->
-            <form action="" method="post">
+            <form id="formFiltrarFamilia" onsubmit="filtrarFamilias(); return false;">
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="grupo" class="form-label">FAMILIA</label>
                         <input type="text" class="form-control" id="grupo" name="grupo">
-                    </div>                    
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">ESTADO</label>
+                        <select class="form-select" id="estado" name="estado">
+                            <option value="">Todos</option>
+                            <option value="activo">Activo</option>
+                            <option value="bloqueado">Bloqueado</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="d-grid gap-2 d-md-flex justify-content-start">
@@ -38,6 +45,7 @@
         </div>
     </div>
 </div>
+
 <!-- INICIA MODAL ALTA FAMILIA -->
 <div class="modal fade" id="altaFamiliaModal" tabindex="-1" aria-labelledby="altaFamiliaModalLabel"
     aria-hidden="true">
@@ -79,8 +87,9 @@
     </div>
 </div>
 <!-- FIN ALTA FAMILIA -->
- <!-- MODAL EDIT -->
- <div class="modal fade" id="ModalEditFamilia" tabindex="-1" aria-labelledby="editFamiliaModalLabel"
+
+<!-- MODAL EDIT -->
+<div class="modal fade" id="ModalEditFamilia" tabindex="-1" aria-labelledby="editFamiliaModalLabel"
  aria-hidden="true">
  <div class="modal-dialog modal-dialog-centered">
      <div class="modal-content">
@@ -112,14 +121,13 @@
                     <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
                  <button type="submit" class="btn botones"><i class="bi bi-floppy"> </i>GUARDAR</button>
                 </div>
-
-                 
              </div>
          </form>
      </div>
  </div>
 </div>
 <!-- FIN MODAL EDIT -->
+
 <br>
 <div class="container-fluid">
     <br>
@@ -133,7 +141,7 @@
             </button>
         </div>
     <br>
-    <!--TABLA ESPECIALIDAD-->
+    <!--TABLA FAMILIAS-->
     <div class="table-container">
         <table class="table table-borderless">
             <thead class="table-dark">
@@ -144,7 +152,7 @@
                     <th scope="col">ACCIONES</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="familiasTableBody">
                 {% for f in familias %}
                 {% if f.is_blocked %}
                 <tr class="table-secondary">
@@ -154,8 +162,6 @@
                         BLOQUEADO
                     </td>
                     <td>
-                       
-
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ f.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -167,7 +173,6 @@
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
                                     </form>
-                                    
                                 </li>
                             </ul>
                         </div>
@@ -181,8 +186,6 @@
                         ACTIVO
                     </td>
                     <td>
-                        
-
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ f.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -203,9 +206,6 @@
                                 </li>
                             </ul>
                         </div>
-
-
-
                     </td>
                 </tr>
                 {% endif %}
@@ -213,8 +213,65 @@
             </tbody>
         </table>
     </div>
-    <!--FIN TABLA ESPECIALIDAD-->
+    <!--FIN TABLA FAMILIAS-->
 </div>
-<script src="{{ url_for('static', filename='JS/funciones_familias.js') }}"></script>
 
+<script src="{{ url_for('static', filename='JS/funciones_familias.js') }}"></script>
+<script>
+    async function filtrarFamilias() {
+        const familia = document.getElementById('grupo').value;
+        const estado = document.getElementById('estado').value;
+
+        try {
+            const response = await fetch(`/api/filtrar_familia/?familia=${encodeURIComponent(familia)}&estado=${encodeURIComponent(estado)}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                const tableBody = document.getElementById('familiasTableBody');
+                tableBody.innerHTML = '';
+
+                data.forEach(f => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${f.id}</td>
+                        <td>${f.familia}</td>
+                        <td>${f.is_blocked ? 'BLOQUEADO' : 'ACTIVO'}</td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton${f.id}"
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    ACCIONES
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton${f.id}">
+                                    ${f.is_blocked ? `
+                                    <li>
+                                        <form action="/unblock_familia/${f.id}" method="post" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
+                                        </form>
+                                    </li>` : `
+                                    <li>
+                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#ModalEditFamilia" data-id="${f.id}" data-familia="${f.familia}">
+                                            EDITAR  
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <form action="/block_familia/${f.id}" method="post" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button class="dropdown-item" type="submit">BLOQUEAR</button>
+                                        </form>
+                                    </li>`}
+                                </ul>
+                            </div>
+                        </td>`;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                console.error(data.error);
+            }
+        } catch (error) {
+            console.error('Error al filtrar familias:', error);
+        }
+    }
+</script>
 {% endblock %}

@@ -46,19 +46,21 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
                                 data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
-                                aria-selected="true">Información
-                                General</button>
+                                aria-selected="true">INFORMACION GENERAL</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="direccion-tab" data-bs-toggle="tab"
                                 data-bs-target="#direccion-tab-pane" type="button" role="tab"
-                                aria-controls="direccion-tab-pane" aria-selected="false">Direccion de
-                                Proyecto/Obra</button>
+                                aria-controls="direccion-tab-pane" aria-selected="false">
+                            DIRECCIÓN DE PROYECTO/OBRA
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="ejecutiva-tab" data-bs-toggle="tab"
                                 data-bs-target="#ejecutiva-tab-pane" type="button" role="tab"
-                                aria-controls="ejecutiva-tab-pane" aria-selected="false">Direccion Ejecutiva</button>
+                                aria-controls="ejecutiva-tab-pane" aria-selected="false">
+                            DIRECCIÓN EJECUTIVA
+                        </button>
                         </li>
                     </ul>
                     <div class="tab-content" id="myTabContent">
@@ -98,8 +100,8 @@
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="probra" class="form-label">SELECIONA UN PROYECTO U OBRA</label>
                                     <select class="form-control" name="probra" id="probra" required>
-                                        <option value="1" {{ 'selected' if proyecto.tipo_id == '1' else '' }}>Proyecto</option>
-                                        <option value="2" {{ 'selected' if proyecto.tipo_id == '2 ' else '' }}>Obra</option>
+                                        <option value="1" {{ 'selected' if proyecto.tipo_id == '1' else '' }}>PROYECTO</option>
+                                        <option value="2" {{ 'selected' if proyecto.tipo_id == '2 ' else '' }}>OBRA</option>
                                     </select>
                                     <div class="invalid-feedback">
                                         Seleccione que tipo sera
@@ -150,8 +152,44 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
-                                    <input type="text" class="form-control" value="{{ proyecto.municipio }}" name="MUNICIPIO" id="MUNICIPIO"
-                                        placeholder="Municipio" required>
+                                    <select style="text-align: center;" class="form-control" name="MUNICIPIO" id="MUNICIPIO" required>
+                                        <option id="selectEstados" value="">SELECIONA UN ESTADO</option>
+                                        <option value="AGUASCALIENTES"  {{ 'selected' if proyecto.municipio == "AGUASCALIENTES" else '' }} >AGUASCALIENTES</option>
+                                        <option value="BAJA CALIFORNIA" {{ 'selected' if proyecto.municipio == "BAJA CALIFORNIA" else '' }} >BAJA CALIFORNIA</option>
+                                        <option value="BAJA CALIFORNIA SUR" {{ 'selected'  if proyecto.municipio == "BAJA CALIFORNIA SUR" else '' }}>BAJA CALIFORNIA SUR</option>
+                                        <option value="CHIAPAS" {{ 'selected' if proyecto.municipio == "CHIAPAS" }}>CHIAPAS</option>
+                                        <option value="CHIHUAHUA"  {{ 'selected' if proyecto.municipio == "CHIHUAHUA" }} >CHIHUAHUA</option>
+                                        <option value="CIUDAD DE MÉXICO"  {{ 'selected' if proyecto.municipio == "CIUDAD DE MÉXICO" }} >CIUDAD DE MÉXICO</option>
+                                        <option value="COAHUILA" {{ 'selected' if proyecto.municipio == "COAHUILA" }}>COAHUILA</option>
+                                        <option value="COLIMA" {{ 'selected' if proyecto.municipio == "COLIMA" }}>COLIMA</option>
+                                        <option value="DURANGO" {{ 'selected' if proyecto.municipio == "DURANGO" }}>DURANGO</option>
+                                        <option value="ESTADO DE MÉXICO" {{ 'selected' if proyecto.municipio == "ESTADO DE MÉXICO" }}>ESTADO DE MÉXICO</option>
+                                        <option value="GUANAJUATO" {{ 'selected' if proyecto.municipio == "GUANAJUATO" }}>GUANAJUATO</option>
+                                        <option value="GUERRERO" {{ 'selected' if proyecto.municipio == "GUERRERO" }}>GUERRERO</option>
+                                        <option value="HIDALGO"  {{ 'selected' if proyecto.municipio == "HIDALGO" }} >HIDALGO</option>
+                                        <option value="JALISCO"  {{ 'selected' if proyecto.municipio == "JALISCO" }} >JALISCO</option>
+                                        <option value="MICHOACÁN" {{ 'selected' if proyecto.municipio == "MICHOACÁN" }}>MICHOACÁN</option>
+                                        <option value="MORELOS" {{ 'selected' if proyecto.municipio == "MORELOS" }}>MORELOS</option>
+                                        <option value="NAYARIT" {{ 'selected' if proyecto.municipio == "NAYARIT" }} >NAYARIT</option>
+                                        <option value="NUEVO LEÓN" {{ 'selected' if proyecto.municipio == "NUEVO LEÓN" else '' }}>NUEVO LEÓN</option>
+                                        <option value="OAXACA" {{ 'selected' if proyecto.municipio == "OAXACA" else '' }}>OAXACA</option>
+                                        <option value="PUEBLA" {{ 'selected' if proyecto.municipio == "PUEBLA" else '' }}>PUEBLA</option>
+                                        <option value="QUERÉTARO" {{ 'selected' if proyecto.municipio == "QUERÉTARO" else '' }}>QUERÉTARO</option>
+                                        <option value="QUINTANA ROO" {{ 'selected' if proyecto.municipio == "QUINTANA ROO" else '' }}>QUINTANA ROO</option>
+                                        <option value="SAN LUIS POTOSÍ" {{ 'selected' if proyecto.municipio == "SAN LUIS POTOSÍ" else '' }}>SAN LUIS POTOSÍ</option>
+                                        <option value="SIN LOCALIDAD" {{ 'selected' if proyecto.municipio == "SIN LOCALIDAD" else '' }}>SIN LOCALIDAD</option>
+                                        <option value="SINALOA" {{ 'selected' if proyecto.municipio == "SINALOA" else '' }}>SINALOA</option>
+                                        <option value="SONORA" {{ 'selected' if proyecto.municipio == "SONORA" else '' }}>SONORA</option>
+                                        <option value="TABASCO" {{ 'selected' if proyecto.municipio == "TABASCO" else '' }}>TABASCO</option>
+                                        <option value="TAMAULIPAS" {{ 'selected' if proyecto.municipio == "TAMAULIPAS" else '' }}>TAMAULIPAS</option>
+                                        <option value="TLAXCALA" {{ 'selected' if proyecto.municipio == "TLAXCALA" else '' }}>TLAXCALA</option>
+                                        <option value="VERACRUZ" {{ 'selected' if proyecto.municipio == "VERACRUZ" else '' }}>VERACRUZ</option>
+                                        <option value="YUCATÁN" {{ 'selected' if proyecto.municipio == "YUCATÁN" else '' }}>YUCATÁN</option>
+                                        <option value="ZACATECAS" {{ 'selected' if proyecto.municipio == "ZACATECAS" else '' }}>ZACATECAS</option>
+                                        <option value="ZACATECAS" {{ 'selected' if proyecto.municipio == "ZACATECAS" else '' }}>ZACATECAS</option>
+
+                                    </select>
+                                    
                                     <div class="invalid-feedback">
                                         COMPLETA MUNICIPIO
                                     </div>

@@ -106,16 +106,19 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 mt-3">
                     <label for="nombre_proyecto">NOMBRE PROYECTO:</label>
                     <input type="text" id="nombre_proyecto" name="nombre_proyecto" class="form-control" placeholder="Buscar proyecto" required autocomplete="off">
                     <div id="projectSuggestions" class="list-group"></div>
                 </div>
 
-                <div class="col-md-6">
-                    <label for="concepto">CONCEPTO:</label>
-                    <input type="text" id="concepto" name="concepto" class="form-control" required>
+                <div class="col-md-6 mt-3">
+                    <label for="presupuestoBauart">SELECCIONA PRESUPUESTO BAUART:</label>
+                    <select id="presupuestoBauart" class="form-control text-uppercase" style="text-transform: uppercase;" required>
+                        <option value="" disabled selected>SELECCIONA UN PRESUPUESTO</option>
+                    </select>
                 </div>
+                
 
                 <div class="col-md-6 mt-3">
                     <label for="projectLeader">LÍDER DE PROYECTO:</label>
@@ -128,14 +131,9 @@
                 </div>
 
                 <div class="col-md-6 mt-3">
-                    <label for="requiredDate">FECHA REQUERIDA:</label>
-                    <input type="date" id="requiredDate" class="form-control" name="fecha_requerida" required>
-                </div>
-
-                <div class="col-md-6 mt-3">
-                    <label for="presupuestoBauart">SELECCIONA PRESUPUESTO BAUART:</label>
-                    <select id="presupuestoBauart" class="form-control text-uppercase" style="text-transform: uppercase;" required>
-                        <option value="" disabled selected>SELECCIONA UN PRESUPUESTO</option>
+                    <label for="concepto">SELECCIONA UNA FAMILIA:</label>
+                    <select class="form-control descripcion" id="concepto" name="concepto" onchange="actualizarMateriales()" required>
+                        <option value="" disabled selected>SELECCIONA UNA FAMILIA</option>
                     </select>
                 </div>
                 
@@ -189,6 +187,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    let proyectoId = null; // ID del proyecto seleccionado
     let isSubmitting = false;
     let idDetalleSeleccionado = null;
    (() => {
@@ -196,7 +195,7 @@
 
 // Variables globales
 let rowCount = 1; // Contador para las filas de la tabla de partidas
-let proyectoId = null; // ID del proyecto seleccionado
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const projectNameInput = document.getElementById("nombre_proyecto"); // Input de nombre del proyecto
@@ -353,93 +352,98 @@ function enableForm() {
 }
 
 function addRequisitionRow() {
-const tableBody = document.getElementById("requisitionTableBody");
-const row = document.createElement("tr");
+    const selectedFamily = document.getElementById("concepto").value;
 
-// Crear una nueva fila con un select para las partidas
-row.innerHTML = `
-    <td>${rowCount++}</td>
-    <td>
-        <select class="form-control descripcion" required>
-            <option value="" disabled selected>Seleccione una opción</option>
-        </select>
-    </td>
-    <td>
-        <input type="text" class="form-control unidad" placeholder="Unidad" readonly>
-    </td>
-    <td><input type="number" class="form-control cantidad" placeholder="Cantidad" required></td>
-    <td>
-        <select class="form-control moneda" required>
-            <option value="" disabled selected>Selecciona</option>
-            <option value="USD">USD</option>
-            <option value="MXN">MXN</option>
-        </select>
-    </td>
-    <td><input type="number" class="form-control tipo-cambio" placeholder="Tipo de Cambio" step="0.01" required></td>
-    <td><input type="text" class="form-control detalles" placeholder="Detalles"></td>
-    <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
-`;
-tableBody.appendChild(row);
+    if (!selectedFamily) {
+        Swal.fire({
+            title: "Falta Familia".toUpperCase(),
+            text: "Por favor, selecciona una familia antes de añadir partidas.".toUpperCase(),
+            icon: "warning",
+        });
+        return;
+    }
 
-// Llenar el select con las opciones disponibles
-const descripcionSelect = row.querySelector('.descripcion');
-llenarDescripcionOptions(descripcionSelect);
+    const tableBody = document.getElementById("requisitionTableBody");
+    const row = document.createElement("tr");
+
+    // Crear una nueva fila con un select para las partidas
+    row.innerHTML = `
+        <td>${rowCount++}</td>
+        <td>
+            <select class="form-control descripcion" required>
+                <option value="" disabled selected>Seleccione una opción</option>
+            </select>
+        </td>
+        <td>
+            <input type="text" class="form-control unidad" placeholder="Unidad" readonly>
+        </td>
+        <td><input type="number" class="form-control cantidad" placeholder="Cantidad" required></td>
+        <td>
+            <select class="form-control moneda" required>
+                <option value="" disabled selected>Selecciona</option>
+                <option value="USD">USD</option>
+                <option value="MXN">MXN</option>
+            </select>
+        </td>
+        <td><input type="number" class="form-control tipo-cambio" placeholder="Tipo de Cambio" step="0.01" required></td>
+        <td><input type="text" class="form-control detalles" placeholder="Detalles"></td>
+        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
+    `;
+    tableBody.appendChild(row);
+
+    // Llenar el select con las opciones disponibles
+    const descripcionSelect = row.querySelector('.descripcion');
+    llenarDescripcionOptions(descripcionSelect);
 }
 
 async function llenarDescripcionOptions(selectElement) {
-const currentPresupuestoId = document.getElementById("presupuestoBauart").value; // ID del presupuesto seleccionado
+    const currentPresupuestoId = document.getElementById("presupuestoBauart").value; // ID del presupuesto seleccionado
+    const selectedFamilyId = document.getElementById("concepto").value; // ID de la familia seleccionada
 
-if (!proyectoId || !currentPresupuestoId) {
-    Swal.fire({
-        title: "Información Faltante".toUpperCase(),
-        text: "Por favor, selecciona un proyecto y un presupuesto antes de continuar.".toUpperCase(),
-        icon: "warning",
-    });
-    return;
-}
-
-try {
-    const response = await fetch(`/api/get_bauart_conceptos/${proyectoId}/${currentPresupuestoId}/${idDetalleSeleccionado}`);
-    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-
-    const data = await response.json();
-    console.log("Conceptos Bauart recibidos:", data);
-
-    // Rellenar el select con las opciones de los conceptos
-    if (Array.isArray(data.conceptos_bauart) && data.conceptos_bauart.length > 0) {
-        selectElement.innerHTML = `
-            <option value="" disabled selected>Seleccione una opción</option>
-            ${data.conceptos_bauart.map(concepto => `
-                <option value="${concepto.id_concepto}" data-unidad="${concepto.unidad_medida}">
-                    ${concepto.nombre}
-                </option>
-            `).join('')}
-        `;
-
-        // Evento para seleccionar una opción y actualizar el campo de unidad
-        selectElement.addEventListener('change', () => {
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const unidad = selectedOption.getAttribute('data-unidad') || "";
-            const row = selectElement.closest('tr');
-            row.querySelector('.unidad').value = unidad; // Actualizar el campo de unidad
-        });
-    } else {
+    if (!proyectoId || !currentPresupuestoId || !selectedFamilyId) {
         Swal.fire({
-            title: "Sin Conceptos".toUpperCase(),
-            text: "No se encontraron conceptos Bauart asociados a este proyecto y presupuesto.".toUpperCase(),
+            title: "Información Faltante".toUpperCase(),
+            text: "Por favor, selecciona un proyecto, presupuesto y una familia antes de continuar.".toUpperCase(),
             icon: "warning",
         });
+        return;
     }
-} catch (error) {
-    console.error("Error al obtener conceptos Bauart:", error);
-    Swal.fire({
-        title: "Error".toUpperCase(),
-        text: "No se encontraron conceptos asociados a este presupuesto. Por favor, verifica la selección.".toUpperCase(),
-        icon: "warning",
-    });
-}
-}
 
+    try {
+        // Fetch para obtener los conceptos filtrados por familia
+        const response = await fetch(`/api/get_bauart_conceptos/${proyectoId}/${currentPresupuestoId}/${idDetalleSeleccionado}/${selectedFamilyId}`);
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+        
+        const data = await response.json();
+        console.log("Conceptos Bauart recibidos filtrados por familia:", data);
+
+        // Rellenar el select de materiales (conceptos)
+        if (Array.isArray(data.conceptos_bauart) && data.conceptos_bauart.length > 0) {
+            selectElement.innerHTML = `
+                <option value="" disabled selected>Seleccione una opción</option>
+                ${data.conceptos_bauart.map(concepto => `
+                    <option value="${concepto.id_concepto}" data-unidad="${concepto.unidad_medida}">
+                        ${concepto.nombre}
+                    </option>
+                `).join("")}
+            `;
+        } else {
+            Swal.fire({
+                title: "Sin Materiales".toUpperCase(),
+                text: "No se encontraron materiales para la familia seleccionada.".toUpperCase(),
+                icon: "warning",
+            });
+            selectElement.innerHTML = `<option value="" disabled selected>Sin opciones</option>`;
+        }
+    } catch (error) {
+        console.error("Error al obtener conceptos Bauart filtrados por familia:", error);
+        Swal.fire({
+            title: "Error".toUpperCase(),
+            text: "Ocurrió un error al cargar los materiales. Por favor, intenta nuevamente.".toUpperCase(),
+            icon: "error",
+        });
+    }
+}
 
 async function buscarBauartDetalles(input) {
 const query = input.value.trim();
@@ -522,7 +526,13 @@ event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
 const nombreProyecto = document.getElementById("nombre_proyecto").value.trim();
 const concepto = document.getElementById("concepto").value.trim();
-const requiredDate = document.getElementById("requiredDate").value.trim();
+// Calcular la fecha actual + 8 días
+const currentDate = new Date();
+const futureDate = new Date();
+futureDate.setDate(currentDate.getDate() + 8);
+
+// Formatear la fecha en formato ISO (YYYY-MM-DD)
+const requiredDate = futureDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
 
 // Validación de campos obligatorios
 if (!nombreProyecto || !concepto || !requiredDate) {
@@ -696,7 +706,60 @@ function removeRow(button) {
     rowCount--;
 }
 
-document.getElementById("presupuestoBauart").addEventListener("change", reiniciarTablaPartidas);
+document.getElementById("presupuestoBauart").addEventListener("change", async (event) => {
+    const currentPresupuestoId = event.target.value; // Obtener el ID del presupuesto seleccionado
+
+    if (!proyectoId || !currentPresupuestoId) {
+        Swal.fire({
+            title: "Información Faltante".toUpperCase(),
+            text: "Por favor, selecciona un proyecto antes de continuar.".toUpperCase(),
+            icon: "warning",
+        });
+        return;
+    }
+
+    try {
+        // Reiniciar tabla de partidas
+        reiniciarTablaPartidas();
+
+        // Llamar a la función llenarFamilias al cambiar de presupuesto
+        await llenarFamilias(proyectoId, currentPresupuestoId, idDetalleSeleccionado);
+    } catch (error) {
+        console.error("Error al llenar familias:", error);
+        Swal.fire({
+            title: "Error".toUpperCase(),
+            text: "Ocurrió un error al cargar las familias para este presupuesto.".toUpperCase(),
+            icon: "error",
+        });
+    }
+});
+
+document.getElementById("concepto").addEventListener("change", () => {
+    // Reiniciar tabla de partidas al cambiar la familia seleccionada
+    reiniciarTablaPartidas();
+});
+
+function reiniciarTablaPartidas() {
+    const tableBody = document.getElementById("requisitionTableBody");
+    const tableContainer = document.querySelector(".table-container");
+
+    // Limpiar el contenido de la tabla
+    tableBody.innerHTML = "";
+
+    // Reiniciar el contador de filas
+    rowCount = 1;
+
+    // Deshabilitar la tabla si no hay presupuesto o familia seleccionados
+    const presupuestoSeleccionado = document.getElementById("presupuestoBauart").value;
+    const familiaSeleccionada = document.getElementById("concepto").value;
+
+    if (!presupuestoSeleccionado || !familiaSeleccionada) {
+        tableContainer.classList.add("disabled");
+    } else {
+        tableContainer.classList.remove("disabled");
+    }
+}
+
 
 function reiniciarTablaPartidas() {
 const tableBody = document.getElementById("requisitionTableBody");
@@ -716,6 +779,85 @@ if (!presupuestoSeleccionado) {
     tableContainer.classList.remove("disabled");
 }
 }
+async function llenarFamilias(proyectoId, currentPresupuestoId, idDetalleSeleccionado) {
+    try {
+        const response = await fetch(`/api/get_bauart_conceptos/${proyectoId}/${currentPresupuestoId}/${idDetalleSeleccionado}`);
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+        
+        const data = await response.json();
+        console.log("Conceptos Bauart recibidos:", data);
+
+        const familiasSelect = document.getElementById("concepto");
+        const addRowButton = document.getElementById("addRow");
+
+        // Extraer familias únicas con su ID
+        const familiasUnicas = [];
+        const familiaMap = new Map(); // Para evitar duplicados
+        data.conceptos_bauart.forEach(concepto => {
+            if (!familiaMap.has(concepto.id_familia)) {
+                familiaMap.set(concepto.id_familia, concepto.nombre_familia);
+                familiasUnicas.push({
+                    id: concepto.id_familia,
+                    nombre: concepto.nombre_familia
+                });
+            }
+        });
+
+        if (familiasUnicas.length === 0) {
+            // Si no hay familias, limpiar el select y desactivar
+            familiasSelect.innerHTML = `
+                <option value="" disabled selected>SELECCIONA UNA FAMILIA</option>
+            `;
+            familiasSelect.setAttribute("disabled", true);
+            addRowButton.setAttribute("disabled", true);
+            Swal.fire({
+                title: "Sin Familias".toUpperCase(),
+                text: "No se encontraron familias asociadas al presupuesto seleccionado. El selector se ha limpiado.".toUpperCase(),
+                icon: "warning",
+            });
+        } else {
+            // Si hay familias, llena el select y habilita el botón de añadir partidas
+            familiasSelect.innerHTML = `
+                <option value="" disabled selected>SELECCIONA UNA FAMILIA</option>
+                ${familiasUnicas.map(familia => `
+                    <option value="${familia.id}">${familia.nombre}</option>
+                `).join("")}
+            `;
+            familiasSelect.removeAttribute("disabled");
+            addRowButton.removeAttribute("disabled");
+        }
+    } catch (error) {
+        console.error("Error al obtener conceptos Bauart:", error);
+        Swal.fire({
+            title: "Error".toUpperCase(),
+            text: "No se encontraron conceptos asociados a este presupuesto. Por favor, verifica la selección.".toUpperCase(),
+            icon: "error",
+        });
+
+        // Limpiar y desactivar el selector en caso de error
+        const familiasSelect = document.getElementById("concepto");
+        const addRowButton = document.getElementById("addRow");
+        familiasSelect.innerHTML = `
+            <option value="" disabled selected>SELECCIONA UNA FAMILIA</option>
+        `;
+        familiasSelect.setAttribute("disabled", true);
+        addRowButton.setAttribute("disabled", true);
+    }
+}
+
+document.getElementById("requisitionTableBody").addEventListener("change", (event) => {
+    if (event.target && event.target.matches(".descripcion")) {
+        const selectedOption = event.target.options[event.target.selectedIndex];
+        const unidad = selectedOption.dataset.unidad; // Extraer la unidad del atributo data-unidad
+
+        // Buscar el input de unidad en la misma fila y actualizarlo
+        const row = event.target.closest("tr");
+        const unidadInput = row.querySelector(".unidad");
+        if (unidadInput) {
+            unidadInput.value = unidad || ""; // Actualizar con la unidad o dejar vacío si no hay
+        }
+    }
+});
 
 </script>
 

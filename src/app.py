@@ -13,7 +13,7 @@ import base64
 
 
 
-# Configuracion app
+# C     onfiguracion app
 from config import config
 
 # Models
@@ -46,7 +46,6 @@ from models.ModelRequisiciones import ModelRequisiciones
 from models.ModelOrden import MyOrdendeCompra
 from models.ModelPDF import ModelPDF
 from models.ModelCompras import ModelCompras
-
 
 # Entities
 from models.entities.Empresas import Empresas
@@ -1508,6 +1507,10 @@ def buscar_proyecto():
                 diferencia = fecha_fin - fecha_inicio
                 semanas = round(diferencia.days / 7)
                 
+                direccion = f"{p.calle} {p.numero_exterior}"
+                if p.numero_interior:
+                    direccion += f" Int. {p.numero_interior}"
+                direccion += f", {p.colonia}, {p.municipio}, {p.estado}, {p.pais}"
                 
                 proyectos_filtradas.append({
                     'id': p.id,
@@ -1516,7 +1519,8 @@ def buscar_proyecto():
                     'fecha_inicio': p.fecha_inicio,
                     'fecha_fin': p.fecha_fin,
                     'semanas': semanas,
-                    'director_proyecto': p.director_proyecto
+                    'director_proyecto': p.director_proyecto,
+                    'direccion': direccion
                 })
         
         if proyectos_filtradas:
@@ -1566,7 +1570,34 @@ def get_all_familia():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-    
+@app.route('/api/filtrar_familia/', methods=['GET'])
+def filtrar_familia():
+    try:
+        # Obtener parámetros de la solicitud
+        familia = request.args.get('familia', '').strip()
+        estado = request.args.get('estado', '').strip().lower()
+
+        # Validar estado (opcional)
+        if estado not in ('', 'activo', 'bloqueado'):
+            return jsonify({'error': 'Estado no válido, debe ser "activo" o "bloqueado"'}), 400
+
+        # Filtrar familias usando el método del modelo
+        familias = ModelFamilias.filter_familia(db, familia=familia, estado=estado)
+
+        # Construir la respuesta como JSON
+        familias_data = [
+            {
+                'id': f.id,
+                'familia': f.familia,
+                'is_blocked': f.is_blocked
+            }
+            for f in familias
+        ]
+
+        return jsonify(familias_data), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 # API OBTENER CATEGORIAS
 @app.route('/api/obtener_categorias/', methods=['GET'])
 def get_all_categorias():
@@ -1888,6 +1919,88 @@ def obtener_materiales():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/filtrar_materiales/', methods=['GET'])
+def filtrar_materiales():
+    try:
+        # Obtener parámetros de la solicitud
+        descripcion = request.args.get('descripcion', '').strip()
+        estado = request.args.get('estado', '').strip().lower()
+        familia = request.args.get('familia', '').strip()
+        unidad_medida = request.args.get('unidad_medida', '').strip()
+
+        # Validar estado (opcional)
+        if estado not in ('', 'activo', 'bloqueado', ''):
+            return jsonify({'error': 'Estado no válido, debe ser "activo" o "bloqueado"'}), 400
+
+        # Llamar al método del modelo para filtrar materiales
+        materiales = ModelMateriales.filter_material_2(
+            db,
+            descripcion=descripcion,
+            estado=estado,
+            familia=familia,
+            unidad_medida=unidad_medida
+        )
+
+        # Construir la respuesta como JSON
+        materiales_data = [
+            {
+                'id': m.id,
+                'descripcion': m.descripcion,
+                'familia': m.clave_id,  # Ajustado al campo ID_FAMILIA
+                'unidad_medida': m.unidad_medida,
+                'is_blocked': m.is_blocked
+            }
+            for m in materiales
+        ]
+
+        return jsonify(materiales_data), 200
+
+    except Exception as e:
+        # Registrar el error para depuración
+        print(f"Error al filtrar materiales: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor al filtrar materiales.'}), 500
+
+@app.route('/api/editar_material/<int:id>', methods=['POST'])
+def editar_material(id):
+    try:
+        # Obtener los datos enviados en la solicitud
+        data = request.get_json()  # Asegúrate de que el cliente envíe JSON correctamente
+        if not data:
+            raise KeyError("Datos vacíos o no enviados correctamente.")
+
+        # Validar campos requeridos
+        required_fields = ['id_familia', 'material', 'unidad_medida']
+        for field in required_fields:
+            if field not in data:
+                raise KeyError(f"Falta el campo requerido: {field}")
+
+        # Construir el objeto Materiales
+        material_obj = Materiales(
+            id=id,
+            clave_id=data['id_familia'],  # Ahora asignamos correctamente el id_familia
+            descripcion=data['material'],
+            unidad_medida=data['unidad_medida'],
+            fecha_registro=data.get('fecha_registro', None),  # Si no se envía, será None
+            usuario=data.get('usuario_id', None),  # Si no se envía, será None
+            is_blocked=data.get('is_blocked', 0)  # Default a 0 si no se envía
+        )
+
+        # Llamar al método del modelo para actualizar
+        ModelMateriales.update_material_2(db, material_obj)
+
+        return jsonify({'message': 'Material actualizado correctamente.'}), 200
+
+    except KeyError as e:
+        # Si falta algún campo clave
+        print(f"Error de KeyError: {e}")
+        return jsonify({'error': f'Falta un campo clave: {str(e)}'}), 400
+
+    except Exception as e:
+        # Si ocurre cualquier otro error
+        print(f"Error al editar material: {e}")
+        return jsonify({'error': f'Error interno del servidor: {str(e)}'}), 500
+
+
 #CATEGORIAS
 @app.route('/Categorias', methods=['GET', 'POST'])
 def categorias():
@@ -2088,8 +2201,9 @@ def edit_presupuesto():
         pass
     else:
         proveedores = ModelProveedores.get_all_proveedores_not_blocked(db)
+        puestos = ModelPuesto.get_all_puestos_no_block(db)
         presupuesto = ModelPresupuesto.obtener_presupuesto_completo(db,id)
-        return render_template('modificar_presupuesto.html',presupuesto=presupuesto)
+        return render_template('modificar_presupuesto.html',presupuesto=presupuesto, proveedores=proveedores,puestos=puestos)
 
 
 
@@ -2122,24 +2236,32 @@ def altaPresupuestos():
             nuevo_presupuesto = Presupuesto(
                 id=0,
                 proyecto=request.form['PROYECTO'],
-                id_proyecto = request.form['PROYECTO_ID'],
-                id_cliente=request.form['CLIENTE_ID'],
+                id_proyecto = int(request.form['PROYECTO_ID']),
+                id_cliente=int(request.form['CLIENTE_ID']),
                 id_empresa=current_user.id_empresa,
-                id_director=request.form['DIRECTOR'],
                 presupuesto_cliente=convertir_a_float(request.form['PRESUPUESTO_CLIENTE']),
-                estatus_proyecto=request.form['ESTATUS_OBRA'],
+                falta_por_cobrar=convertir_a_float(request.form['FALTA_POR_COBRAR']),
+                porcentaje_por_cobra=convertir_a_float(request.form['PORCENTAJE_POR_COBRAR']),
+                fecha_inicio=request.form['FECHA_INICIO'],
+                direccion_obra=request.form['DIRECCION'],
                 pagado_cliente=convertir_a_float(request.form['PAGADO_CLIENTE']),
-                porcentaje_pagado=convertir_a_float(request.form['PORCENTAJE_PAGADO_CLIENTE']),
-                gastado_real=convertir_a_float(request.form['GASTADO_REAL']),  # Atributo agregado
-                porcentaje_gastado=convertir_a_float(request.form['PORCENTAJE_GASTADO']),  # Atributo agregado
-                falta_por_cobrar=convertir_a_float(request.form['FALTA_COBRAR']),
-                falta_por_gastar=convertir_a_float(request.form['FALTA_GASTAR']),
-                porcentaje_por_gastar=convertir_a_float(request.form['PORCENTAJE_POR_GASTAR']),  # Atributo agregado
-                sub_client_iva=convertir_a_float(request.form['subtotalCliente']),
-                indirecto_client_iva=convertir_a_float(request.form['totalIndirectoCliente']),
-                total_cliente_iva=convertir_a_float(request.form['totalCliente']),
-                sub_proveedor=convertir_a_float(request.form['subtotalContratista']),
-                sub_diferencia=convertir_a_float(request.form['subtotalDiferencia']),
+                porcentaje_pagado_cliente=float(request.form['PORCENTAJE_PAGADO_CLIENTE']),
+                falta_por_gastar=convertir_a_float(request.form['FALTA_POR_GASTAR']),
+                porcentaje_por_gastar=float(request.form['PORCENTAJE_POR_GASTAR']),
+                fecha_fin=request.form['FECHA_FIN'],
+                director_obra=int(request.form['DIRECTOR']),
+                gastado_real=convertir_a_float(request.form['GASTADO_REAL']),
+                porcetaje_gastado_real=float(request.form['PORCENTAJE_GASTADO_REAL']),
+                estatus_proyecto=convertir_a_float(request.form['ESTATUS_OBRA']),
+                total_semanas=int(request.form['DIAS_TOTALES']),
+                subtotal_cliente=convertir_a_float(request.form['subtotalCliente']),
+                subtotal_proveedor=convertir_a_float(request.form['subtotalContratista']),
+                subtotal_diferencia=convertir_a_float(request.form['subtotalDiferencia']),
+                porcentaje_indirecto=0,
+                total_porcentaje_indirecto=0,
+                total_cliente=0,
+                total_proveedor=0,
+                total_diferencia=0,
                 usuario_id=current_user.id,
                 estatus=0
             )
@@ -2446,6 +2568,42 @@ def buscar_proveedor():
 
 ordenes = {}
 
+@app.route('/update_requisicion_date/<int:id>', methods=['POST'])
+def update_requisicion_date(id):
+    """
+    Actualiza el estado de una requisición y su fecha de llegada si se marca como recibida.
+    Si el estado es "Pendiente", establece la fecha de llegada como NULL.
+    """
+    db = db_sql_server.get_connection()
+    if db is None:
+        return jsonify({"error": "Database connection failed"}), 500
+
+    try:
+        # Obtener el nuevo estado desde el formulario
+        new_status = request.form.get('status')
+        if new_status is None:
+            return jsonify({"error": "Estado no especificado"}), 400
+
+        new_status = int(new_status)
+
+        if new_status == 1:  # Estado "Recibido"
+            fecha_llegada = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            query = "UPDATE REQUISICIONES SET STATUS = ?, FECHA_LLEGADA = ? WHERE ID_REQUISICION = ?"
+            with db.cursor() as cursor:
+                cursor.execute(query, (new_status, fecha_llegada, id))
+                db.commit()
+        else:  # Estado "Pendiente", establecer FECHA_LLEGADA como NULL
+            query = "UPDATE REQUISICIONES SET STATUS = ?, FECHA_LLEGADA = NULL WHERE ID_REQUISICION = ?"
+            with db.cursor() as cursor:
+                cursor.execute(query, (new_status, id))
+                db.commit()
+
+        return jsonify({"success": True, "message": "Requisición actualizada con éxito."}), 200
+    except Exception as e:
+        print(f"Error al actualizar la requisición: {e}")
+        return jsonify({"error": "Error al actualizar la requisición"}), 500
+
+
 @app.route('/api/ordenes_requisicion', methods=['GET'])
 def get_ordenes_requisicion():
     id_requisicion = request.args.get('id_requisicion', type=int)
@@ -2612,33 +2770,50 @@ def get_bauart_presupuestos(proyecto_id):
         return jsonify({"error": f"Error al obtener presupuestos Bauart: {e}"}), 500
 
 
-@app.route('/api/get_bauart_conceptos/<int:proyecto_id>/<int:presupuesto_id>/<int:detalle_id>', methods=['GET'])
-def get_bauart_conceptos(proyecto_id, presupuesto_id, detalle_id):
+@app.route('/api/get_bauart_conceptos/<int:proyecto_id>/<int:presupuesto_id>/<int:detalle_id>', defaults={'id_familia': None}, methods=['GET'])
+@app.route('/api/get_bauart_conceptos/<int:proyecto_id>/<int:presupuesto_id>/<int:detalle_id>/<int:id_familia>', methods=['GET'])
+def get_bauart_conceptos(proyecto_id, presupuesto_id, detalle_id, id_familia):
     try:
-        # Paso 1: Verificar si el presupuesto Bauart existe utilizando el detalle_id recibido
+        print(f"[INFO] Ruta accedida: proyecto_id={proyecto_id}, presupuesto_id={presupuesto_id}, detalle_id={detalle_id}, id_familia={id_familia}")
+        
+        # Paso 1: Verificar si el presupuesto Bauart existe
+        print(f"[INFO] Buscando presupuesto Bauart para detalle_id={detalle_id}")
         presupuesto_bauart = ModelCompras.get_bauart_by_detalle(db, detalle_id)
         if not presupuesto_bauart:
+            print(f"[ERROR] No hay presupuesto Bauart para detalle_id={detalle_id}")
             return jsonify({"error": f"No hay presupuesto Bauart asociado con ID de detalle {detalle_id}"}), 404
-
-        # Paso 2: Obtener los detalles específicos del presupuesto Bauart seleccionado
-        detalles_bauart = ModelCompras.get_detalles_bauart_by_presupuesto(db, presupuesto_id)
+        print(f"[SUCCESS] Presupuesto Bauart encontrado: {presupuesto_bauart}")
+        
+        # Paso 2: Obtener los detalles Bauart
+        print(f"[INFO] Obteniendo detalles Bauart para presupuesto_id={presupuesto_id}, id_familia={id_familia}")
+        detalles_bauart = ModelCompras.get_detalles_bauart_by_presupuesto(db, presupuesto_id, id_familia=id_familia)
         if not detalles_bauart:
+            print(f"[ERROR] No se encontraron detalles para presupuesto_id={presupuesto_id}, id_familia={id_familia}")
             return jsonify({"error": f"No se encontraron detalles para el presupuesto Bauart con ID {presupuesto_id}"}), 404
+        print(f"[SUCCESS] Detalles Bauart obtenidos: {detalles_bauart}")
 
-        # Paso 3: Extraer los conceptos con sus IDs, nombres y unidades
+        # Paso 3: Procesar los conceptos Bauart
+        print(f"[INFO] Procesando detalles Bauart para construir la respuesta JSON")
         conceptos_bauart = [
             {
                 "id_concepto": detalle["id_concepto"],
                 "nombre": detalle["nombre_concepto"],
-                "unidad_medida": detalle["unidad_medida"]
+                "unidad_medida": detalle["unidad_medida"],
+                "id_familia": detalle["id_familia"],
+                "nombre_familia": detalle.get("nombre_familia", "N/A")  # Manejo de None
             }
             for detalle in detalles_bauart
         ]
+        print(f"[SUCCESS] Conceptos Bauart procesados: {conceptos_bauart}")
 
+        # Respuesta final
         return jsonify({"conceptos_bauart": conceptos_bauart}), 200
 
     except Exception as e:
+        print(f"[CRITICAL] Error interno del servidor: {e}")
         return jsonify({"error": f"Error interno del servidor: {e}"}), 500
+
+
     
 @app.route('/api/get_material_by_name/<string:material_name>', methods=['GET'])
 def get_material_by_name(material_name):
@@ -3130,17 +3305,33 @@ def get_partidas(requisicion_id):
 
     try:
         with db.cursor() as cursor:
-            query = "SELECT ID, DESCRIPCION, UNIDAD, CANTIDAD, FECHA_CREACION, DETALLES FROM PARTIDAS_REQUISICION WHERE ID_REQUISICION = ?"
+            # Consulta ajustada con JOIN a CATALOGO_MATERIALES_FAMILIAS
+            query = """
+                SELECT 
+                    pr.ID, 
+                    cmf.MATERIAL AS nombre_concepto,  -- Obtener el nombre del concepto
+                    cmf.UNIDAD_MEDIDA AS unidad_medida,  -- Unidad de medida
+                    pr.CANTIDAD, 
+                    pr.FECHA_CREACION, 
+                    pr.DETALLES
+                FROM 
+                    PARTIDAS_REQUISICION pr
+                LEFT JOIN 
+                    CATALOGO_MATERIALES_FAMILIAS cmf ON pr.DESCRIPCION = cmf.ID 
+                WHERE 
+                    pr.ID_REQUISICION = ?
+            """
             cursor.execute(query, (requisicion_id,))
             rows = cursor.fetchall()
+
             partidas = []
             for row in rows:
-                # Format the date as "DD-MM-YYYY HH:MM"
+                # Formatear los datos
                 fecha_creacion = row[4].strftime("%d-%m-%Y %H:%M") if row[4] else "N/A"
                 partidas.append({
                     "id": row[0],
-                    "descripcion": row[1],
-                    "unidad": row[2],
+                    "descripcion": row[1],  # Nombre del concepto/material
+                    "unidad": row[2],       # Unidad de medida
                     "cantidad": row[3],
                     "fecha_creacion": fecha_creacion,
                     "detalles": row[5]
@@ -3151,6 +3342,7 @@ def get_partidas(requisicion_id):
         return jsonify({"error": "Error fetching partition data"}), 500
     finally:
         db.close()
+
         
 ## MANEJO DE ERRORES
 def status_401(error):

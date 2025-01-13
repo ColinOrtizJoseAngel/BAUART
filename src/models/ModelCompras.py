@@ -103,25 +103,7 @@ class ModelCompras:
         except Exception as ex:
             raise Exception(f"Error al obtener todos los presupuestos Bauart: {ex}")
 
-    @classmethod
-    def get_detalles_bauart_by_presupuesto(cls, db, id_presupuesto_bauart):
-        """
-        Obtener las partidas asociadas a un presupuesto Bauart,
-        filtrando siempre por is_nonomina = 0.
-        """
-        try:
-            with db.cursor() as cursor:
-                query = """
-                    SELECT id_detalle_bauart, id_presupuesto_bauart, id_concepto, presupuesto_cliente, presupuesto_contratista,
-                        diferencia, id_proveedor, is_blocked
-                    FROM DetallesBauart
-                    WHERE id_presupuesto_bauart = ? AND is_nonomina = 0
-                """
-                cursor.execute(query, (id_presupuesto_bauart,))
-                rows = cursor.fetchall()
-                return [DetalleBauart(*row) for row in rows] if rows else []
-        except Exception as ex:
-            raise Exception(f"Error al obtener detalles Bauart: {ex}")
+    
 
 
     @classmethod
@@ -228,18 +210,22 @@ class ModelCompras:
             raise Exception(f"Error al verificar proveedores en detalles del presupuesto: {ex}")
         
     @classmethod
-    def get_detalles_bauart_by_presupuesto(cls, db, id_presupuesto_bauart):
+    def get_detalles_bauart_by_presupuesto(cls, db, id_presupuesto_bauart, id_familia=None):
         """
         Obtiene los detalles de DetallesBauart asociados a un PresupuestoBauart,
-        incluyendo los nombres y las unidades de los materiales desde CATALOGO_MATERIALES_FAMILIAS.
+        incluyendo el nombre de la familia desde CATALOGO_FAMILIAS.
+        Filtra opcionalmente por ID de familia.
         """
         try:
             with db.cursor() as cursor:
+                # Query ajustada con JOIN a CATALOGO_FAMILIAS
                 query = """
                     SELECT 
                         db.id_detalle_bauart, 
                         db.id_presupuesto_bauart, 
                         db.id_concepto, 
+                        cmf.ID_FAMILIA AS id_familia,  
+                        cf.FAMILIA AS nombre_familia,    -- Obtener el nombre de la familia
                         cmf.MATERIAL AS nombre_concepto, 
                         cmf.UNIDAD_MEDIDA AS unidad_medida, 
                         db.presupuesto_cliente, 
@@ -251,25 +237,37 @@ class ModelCompras:
                         DetallesBauart db
                     LEFT JOIN 
                         CATALOGO_MATERIALES_FAMILIAS cmf ON db.id_concepto = cmf.ID
+                    LEFT JOIN 
+                        CATALOGO_FAMILIAS cf ON cmf.ID_FAMILIA = cf.ID  -- JOIN para obtener nombre de familia
                     WHERE 
-                    db.id_presupuesto_bauart = ? AND db.is_nonomina = 0
+                        db.id_presupuesto_bauart = ? AND db.is_nomina = 0
                 """
-                cursor.execute(query, (id_presupuesto_bauart,))
+                
+                # Agregar filtro opcional por ID_FAMILIA
+                params = [id_presupuesto_bauart]
+                if id_familia is not None:
+                    query += " AND cmf.ID_FAMILIA = ?"
+                    params.append(id_familia)
+
+                # Ejecutar la consulta
+                cursor.execute(query, tuple(params))
                 rows = cursor.fetchall()
 
-                # Mapeo de los resultados a una lista de diccionarios
+                # Mapear los resultados
                 detalles = [
                     {
                         "id_detalle_bauart": row[0],
                         "id_presupuesto_bauart": row[1],
                         "id_concepto": row[2],
-                        "nombre_concepto": row[3],  # Nombre del concepto
-                        "unidad_medida": row[4],   # Unidad de medida
-                        "presupuesto_cliente": row[5],
-                        "presupuesto_contratista": row[6],
-                        "diferencia": row[7],
-                        "id_proveedor": row[8],
-                        "is_blocked": row[9]
+                        "id_familia": row[3],
+                        "nombre_familia": row[4],       # Nuevo campo: nombre de la familia
+                        "nombre_concepto": row[5],      # Nombre del material
+                        "unidad_medida": row[6],
+                        "presupuesto_cliente": row[7],
+                        "presupuesto_contratista": row[8],
+                        "diferencia": row[9],
+                        "id_proveedor": row[10],
+                        "is_blocked": row[11]
                     }
                     for row in rows
                 ]
@@ -277,7 +275,6 @@ class ModelCompras:
                 return detalles
         except Exception as ex:
             raise Exception(f"Error al obtener los detalles Bauart: {ex}")
-
 
     class PresupuestoService:
         @staticmethod

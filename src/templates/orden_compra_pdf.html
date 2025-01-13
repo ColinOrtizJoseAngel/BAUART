@@ -31,18 +31,19 @@
         }
     
         .encabezado {
-            border: 1px solid #082341;
-            padding: 10px;
-            overflow: hidden;
-            margin-bottom: 0; /* Elimina margen entre cuadros */
-        }
-    
-        .encabezado .column {
-            float: left;
-            width: 48%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
+    border: 1px solid #082341;
+    padding: 5px;
+    overflow: hidden;
+    margin-bottom: 0; /* Elimina completamente el margen inferior */
+    font-size: 13px;
+}
+
+.encabezado .column {
+    float: left;
+    width: 48%;
+    padding: 5px; /* Reducir padding dentro de cada columna */
+    box-sizing: border-box;
+}
     
         .encabezado .column img {
             max-width: 100%;
@@ -54,20 +55,22 @@
         }
     
         .encabezado .column p {
-            margin: 5px 0;
-            font-size: 14px;
-        }
+    margin: 2px 0; /* Reducir el espacio entre líneas */
+    font-size: 12px; /* Reducir el tamaño de la fuente de los textos */
+}
     
-        .titulo-doble {
-            width: 100%;
-            overflow: hidden;
-            background-color: #082341;
-            color: white;
-            padding: 10px;
-            margin-bottom: 0; /* Elimina margen inferior */
-            border: 1px solid #082341;
-            box-sizing: border-box;
-        }
+.titulo-doble {
+    width: 100%;
+    overflow: hidden;
+    background-color: #082341;
+    color: white;
+    padding: 10px;
+    margin-top: 0; /* Asegúrate de que no haya margen superior */
+    margin-bottom: 0;
+    border: 1px solid #082341;
+    box-sizing: border-box;
+}
+
     
         .titulo-doble .column {
             float: left;
@@ -232,7 +235,6 @@
         <!-- Primer recuadro -->
         <div class="encabezado">
             <div class="column">
-                <img src="data:image/jpeg;base64,{{ base64_logo }}" alt="Logo">
             </div>
             <div class="column">
                 <p><strong>OCC:</strong> {{ requisicion.occ or '' }}</p>

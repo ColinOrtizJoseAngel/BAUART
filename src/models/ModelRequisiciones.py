@@ -188,3 +188,21 @@ class ModelRequisiciones:
         except Exception as e:
             print(f"Error al obtener partidas de la requisición: {e}")
             return []
+
+    @classmethod
+    def update_status(cls, db, requisicion_id, new_status):
+        """
+        Actualiza el estado de una requisición y establece la fecha de llegada si se ha recibido.
+        """
+        try:
+            cursor = db.cursor()
+            if new_status == 1:  # Set FECHA_LLEGADA if status is "received"
+                fecha_llegada = datetime.now()
+                query = "UPDATE REQUISICIONES SET STATUS = ?, FECHA_LLEGADA = ? WHERE ID_REQUISICION = ?"
+                cursor.execute(query, (new_status, fecha_llegada, requisicion_id))
+            else:
+                query = "UPDATE REQUISICIONES SET STATUS = ? WHERE ID_REQUISICION = ?"
+                cursor.execute(query, (new_status, requisicion_id))
+            db.commit()
+        except Exception as ex:
+            print(f"Error al actualizar el estado de la requisición: {ex}")

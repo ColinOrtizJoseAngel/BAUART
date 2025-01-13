@@ -124,7 +124,7 @@ class ModelPDF:
                 partidas=partidas,
                 proveedor=MyOrdendeCompra.get_proveedor_by_id(db, proveedor_id),
                 contactos=MyOrdendeCompra.get_contactos_by_proveedor_id(db, proveedor_id),
-                base64_logo=base64.b64encode(open('static/img/Bauart-Logo-Pantalla-RGB.MED.jpg', 'rb').read()).decode('utf-8'),
+                #base64_logo = base64.b64encode(open(r'C:\Users\api\Documents\BAUART\src\static\Bauart-Logo-Pantalla.jpg', 'rb').read()).decode('utf-8'),
                 subtotal=subtotal,
                 descuento=descuento,
                 subtotal_descuento=subtotal_descuento,

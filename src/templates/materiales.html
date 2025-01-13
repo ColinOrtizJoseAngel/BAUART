@@ -11,35 +11,33 @@
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 
-<!-- Modal para Filtrar Especialidad -->
+<!-- Modal para Filtrar Material -->
 <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="miModalLabel">FILTAR</h4>
+                <h4 class="modal-title" id="miModalLabel">FILTRAR</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ url_for('fitro_especialidad') }}" method="post">
+            <form id="formFiltroMateriales">
                 <div class="modal-body">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
-                        <label for="especialidad" class="form-label">DESCRIPCION</label>
-                        <input type="text" class="form-control" id="inputDescripcionFiltro" name="inputDescripcionFiltro">
+                        <label for="inputDescripcionFiltro" class="form-label">DESCRIPCION</label>
+                        <input type="text" class="form-control" id="inputDescripcionFiltro" name="descripcion">
                     </div>
                     <div class="mb-3">
-                        <label for="especialidad" class="form-label">FAMILIA</label>
-                        <select class="form-control" id="selectFamiliaFiltro" name="selectEstatusFiltro">
-                            <option value="" disabled selected style="text-align: center;">SELECCIONA</option>
+                        <label for="selectFamiliaFiltro" class="form-label">FAMILIA</label>
+                        <select class="form-control" id="selectFamiliaFiltro" name="familia">
+                            <option value="" selected style="text-align: center;">SELECCIONA</option>
                             {% for f in familias %}
-                            <option value="{{f.id}}">{{f.familia}}</option>
+                            <option value="{{ f.id }}">{{ f.familia }}</option>
                             {% endfor %}
-                            
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label>UNIDAD DE MEDIDA</label>
-                        <select class="form-control" id="selectUOMFiltro" name="selectUOMFiltro" required>
-                            <option value="" disabled selected style="text-align: center;">SELECCIONA</option>
+                        <label for="selectUOMFiltro" class="form-label">UNIDAD DE MEDIDA</label>
+                        <select class="form-control" id="selectUOMFiltro" name="unidad_medida">
+                            <option value="" selected style="text-align: center;">SELECCIONA</option>
                             <option value="KG">KILOGRAMO (kg)</option>
                             <option value="M">METRO (m)</option>
                             <option value="M2">METRO (m²)</option>
@@ -53,11 +51,10 @@
                             <option value="BOB">BOBINA (BOBINA)</option>
                             <option value="FT3">PIE (Ft³)</option>
                         </select>
-                    </select>
                     </div>
                     <div class="mb-3">
-                        <label for="ESTATUS" class="form-label">ESTADO</label>
-                        <select class="form-control" selected style="text-align: center;" id="selectEstatusFiltro" name="selectEstatusFiltro">
+                        <label for="selectEstatusFiltro" class="form-label">ESTADO</label>
+                        <select class="form-control" id="selectEstatusFiltro" name="estado">
                             <option value="">SELECCIONA</option>
                             <option value="activo">ACTIVO</option>
                             <option value="bloqueado">BLOQUEADO</option>
@@ -65,17 +62,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="d-grid gap-2 d-md-flex justify-content-start">
-                        <button type="button" class="btn botones" data-bs-dismiss="modal">CERRAR</button>
-                        <button type="submit" class="btn botones">FILTRAR</button>
-                    </div>
+                    <button type="button" class="btn botones" data-bs-dismiss="modal">CERRAR</button>
+                    <button type="button" class="btn botones" id="btnFiltrarMateriales">FILTRAR</button>
                 </div>
             </form>
-            
         </div>
     </div>
 </div>
-
 
 <!-- INICIA MODAL ALTA MATERIAL -->
 <div class="modal fade" id="altaMaterialModal" tabindex="-1" aria-labelledby="altaMaterialModalLabel"
@@ -167,14 +160,10 @@
                     <div class="form-group row">
                         <!--Debe cambiarse por un select concetado al catalogo de FAMILIA/GRUPO-->
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <label for="grupo" class="form-label">FAMILIA</label>
-                            <input type="text" class="form-control" id="inputIdFamiliaEdit" name="inputIdFamiliaEdit" style="display: none;" required>
-                            <input type="text" class="form-control" id="inputFamiliaEdit" name="inputFamiliaEdit" placeholder="Introduzca la Familia/Grupo" required>
-                            <div class="invalid-feedback">
-                                COMPLETA FAMILIA
-                            </div>
-                            <div id="suggestions-editar" class="list-group"></div>
-                            
+                            <label for="familiaSelect" class="form-label">Selecciona una Familia</label>
+                            <select class="form-control" id="familiaSelect">
+                            <option value="" selected>Selecciona una familia</option>
+                            </select>
                         </div>    
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <label for="material" class="form-label">MATERIAL</label>
@@ -302,9 +291,15 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ m.id }}">
                                 <li>
-                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEditarMaterial" data-material="{{ m.material }}" data-material-id="{{ m.id }}" data-material-familia="{{ m.familia }}" data-material-uom="{{ m.unidad_medida }}">
-                                        EDITAR
-                                    </button>
+                                    <button class="dropdown-item" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalEditarMaterial" 
+                                    data-material-id="{{ m.id }}" 
+                                    data-material="{{ m.material }}" 
+                                    data-material-familia="{{ m.familia_id }}" 
+                                    data-material-uom="{{ m.unidad_medida }}">
+                                    EDITAR
+                                </button>
                                  
                                 <li>
                                     <form action="{{ url_for('block_material', id=m.id) }}" method="post"
@@ -326,4 +321,190 @@
 </div>
 
 <script src="{{ url_for('static', filename='JS/funciones_materiales.js') }}"></script>
+<script>
+    // Variable global para almacenar el ID de la familia seleccionada
+let selectedFamiliaId = null;
+
+// Función para manejar cambios en el selector de familia
+document.getElementById('familiaSelect').addEventListener('change', (event) => {
+    selectedFamiliaId = event.target.value; // Actualiza la variable global
+    console.log('Familia seleccionada:', selectedFamiliaId); // Imprime en la consola
+});
+    // Función para cargar las familias en el selector
+    async function cargarFamilias() {
+        try {
+            const response = await fetch('/api/llenar_familia/');
+            const familias = await response.json();
+
+            if (response.ok) {
+                const familiaSelect = document.getElementById('familiaSelect');
+
+                // Limpia el selector antes de llenarlo
+                familiaSelect.innerHTML = '<option value="" selected>Selecciona una familia</option>';
+
+                // Llena el selector con las opciones
+                familias.forEach(familia => {
+                    const option = document.createElement('option');
+                    option.value = familia.id;
+                    option.textContent = familia.familia;
+                    familiaSelect.appendChild(option);
+                });
+            } else {
+                console.error('Error al cargar las familias:', familias.error);
+            }
+        } catch (error) {
+            console.error('Error al realizar la solicitud de familias:', error);
+        }
+    }
+
+    // Llama a la función cargarFamilias al cargar la página
+    document.addEventListener('DOMContentLoaded', cargarFamilias);
+
+    // Función para manejar el evento de apertura del modal de edición
+document.getElementById('modalEditarMaterial').addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget; // Botón que activó el modal
+    const materialId = button.getAttribute('data-material-id');
+    const materialDescripcion = button.getAttribute('data-material');
+    const materialFamiliaId = button.getAttribute('data-material-familia');
+    const materialUOM = button.getAttribute('data-material-uom');
+
+    // Sincroniza el selector con el ID de la familia
+    document.getElementById('familiaSelect').value = materialFamiliaId;
+
+    // Actualiza la variable global
+    selectedFamiliaId = materialFamiliaId;
+    console.log('Familia inicial asignada:', selectedFamiliaId);
+
+    // Asigna los demás valores
+    document.getElementById('inputDecripcion').value = materialDescripcion;
+    document.getElementById('inputUOMEdit').value = materialUOM;
+
+    // Agrega el ID al formulario
+    const form = document.querySelector('#modalEditarMaterial form');
+    form.setAttribute('data-material-id', materialId);
+
+    // Validación extra para depurar
+    if (!materialId) {
+        console.error('Error: materialId no asignado al formulario.');
+    }
+    if (!materialFamiliaId) {
+        console.error('Error: materialFamiliaId no asignado al selector.');
+    }
+});
+
+
+    // Función para enviar el formulario de edición
+document.querySelector('#modalEditarMaterial form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const form = event.target;
+    const materialId = form.getAttribute('data-material-id');
+    if (!materialId) {
+        alert('Error: No se encontró el ID del material. Intenta nuevamente.');
+        return;
+    }
+
+    // Aseguramos que usamos la variable global `selectedFamiliaId` como `id_familia`
+    if (!selectedFamiliaId) {
+        alert('Error: No se seleccionó una familia. Intenta nuevamente.');
+        return;
+    }
+
+    const descripcion = document.getElementById('inputDecripcion').value;
+    const unidadMedida = document.getElementById('inputUOMEdit').value;
+
+    const data = {
+        id_familia: selectedFamiliaId, // Usamos la variable global
+        material: descripcion,
+        unidad_medida: unidadMedida,
+        fecha_registro: new Date().toISOString(),
+        usuario_id: 1, // Cambia este valor según corresponda
+        is_blocked: 0 // Asumimos que el material está activo
+    };
+
+    try {
+        const response = await fetch(`/api/editar_material/${materialId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrf_token]').value,
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+            location.reload(); // Recargar la página para reflejar los cambios
+        } else {
+            alert(result.error || 'Error desconocido al actualizar el material.');
+        }
+    } catch (error) {
+        console.error('Error al enviar la solicitud:', error);
+        alert('Error al enviar la solicitud. Revisa la consola para más detalles.');
+    }
+});
+
+
+    // Función para manejar el filtro de materiales
+    document.getElementById('btnFiltrarMateriales').addEventListener('click', async () => {
+        const descripcion = document.getElementById('inputDescripcionFiltro').value;
+        const familia = document.getElementById('selectFamiliaFiltro').value;
+        const unidadMedida = document.getElementById('selectUOMFiltro').value;
+        const estado = document.getElementById('selectEstatusFiltro').value;
+
+        try {
+            const response = await fetch(`/api/filtrar_materiales/?descripcion=${encodeURIComponent(descripcion)}&familia=${encodeURIComponent(familia)}&unidad_medida=${encodeURIComponent(unidadMedida)}&estado=${encodeURIComponent(estado)}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                actualizarTablaMateriales(data);
+            } else {
+                console.error('Error al filtrar materiales:', data.error);
+            }
+        } catch (error) {
+            console.error('Error al filtrar materiales:', error);
+        }
+    });
+
+    // Función para actualizar la tabla de materiales
+    function actualizarTablaMateriales(materiales) {
+        const tbody = document.querySelector('table tbody');
+        tbody.innerHTML = ''; // Limpia la tabla
+
+        materiales.forEach(material => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${material.id}</td>
+                <td>${material.descripcion}</td>
+                <td>${material.familia}</td>
+                <td>${material.unidad_medida}</td>
+                <td>${material.is_blocked ? 'BLOQUEADO' : 'ACTIVO'}</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">ACCIONES</button>
+                        <ul class="dropdown-menu">
+                            ${material.is_blocked ? `
+                                <li>
+                                    <form action="/unblock_material/${material.id}" method="post">
+                                        <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
+                                    </form>
+                                </li>` : `
+                                <li>
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEditarMaterial" data-material-id="${material.id}" data-material="${material.descripcion}" data-material-familia="${material.familia}" data-material-uom="${material.unidad_medida}">EDITAR</button>
+                                </li>
+                                <li>
+                                    <form action="/block_material/${material.id}" method="post">
+                                        <button class="dropdown-item" type="submit">BLOQUEAR</button>
+                                    </form>
+                                </li>`}
+                        </ul>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+</script>
+   
 {% endblock %}

@@ -36,40 +36,74 @@ class ModelPresupuesto:
             return None
     
     
-    
     @classmethod
     def crear_presupuesto(cls, db, presupuesto):
         try:
             with db.cursor() as cursor:
                 query = """
                     INSERT INTO Presupuestos (
-                        id_cliente, id_director, id_empresa,proyecto, id_proyecto, usuario, estatus_proyecto, presupuesto_cliente, 
-                        sub_proveedor, subtotal_cliente_iva, total_cliente_iva, indirecto_cliente_iva, sub_diferencia, 
-                        pagado_cliente, porcentaje_pagado, falta_por_cobrar, falta_por_gastar, 
-                        gastado_real, porcentaje_gastado, porcentaje_por_gastar
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                        id_cliente, 
+                        id_director, 
+                        id_empresa, 
+                        proyecto, 
+                        id_proyecto, 
+                        usuario, 
+                        estatus_proyecto, 
+                        presupuesto_cliente, 
+                        sub_proveedor, 
+                        subtotal_cliente_iva, 
+                        total_cliente_iva, 
+                        indirecto_cliente_iva, 
+                        sub_diferencia, 
+                        pagado_cliente, 
+                        porcentaje_pagado, 
+                        falta_por_cobrar, 
+                        falta_por_gastar, 
+                        gastado_real, 
+                        porcentaje_gastado, 
+                        porcentaje_por_gastar, 
+                        fecha_inicio, 
+                        direccion_obra, 
+                        fecha_fin, 
+                        total_semanas, 
+                        total_contratista, 
+                        total_diferencia, 
+                        is_blocked, 
+                        estatus,
+                        director
+                    ) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?);
                 """
                 cursor.execute(query, (
                     presupuesto.id_cliente,
-                    presupuesto.id_director,
+                    presupuesto.director_obra,
                     presupuesto.id_empresa,
                     presupuesto.proyecto,
                     presupuesto.id_proyecto,
                     presupuesto.usuario_id,
                     presupuesto.estatus_proyecto,
                     presupuesto.presupuesto_cliente,
-                    presupuesto.sub_proveedor,
-                    presupuesto.sub_client_iva,
-                    presupuesto.total_cliente_iva,
-                    presupuesto.indirecto_client_iva,
-                    presupuesto.sub_diferencia,
+                    presupuesto.subtotal_proveedor,
+                    presupuesto.subtotal_cliente,
+                    presupuesto.total_cliente,
+                    presupuesto.porcentaje_indirecto,
+                    presupuesto.subtotal_diferencia,
                     presupuesto.pagado_cliente,
-                    presupuesto.porcentaje_pagado,
+                    presupuesto.porcentaje_pagado_cliente,
                     presupuesto.falta_por_cobrar,
                     presupuesto.falta_por_gastar,
                     presupuesto.gastado_real,
-                    presupuesto.porcentaje_gastado,
-                    presupuesto.porcentaje_por_gastar
+                    presupuesto.porcetaje_gastado_real,
+                    presupuesto.porcentaje_por_gastar,
+                    presupuesto.fecha_inicio,
+                    presupuesto.direccion_obra,
+                    presupuesto.fecha_fin,
+                    presupuesto.total_semanas,
+                    presupuesto.total_proveedor,
+                    presupuesto.total_diferencia,
+                    0,  # is_blocked, se establece como 0 por defecto
+                    presupuesto.estatus,
+                    "director"
                 ))
 
                 # Recuperar el último ID insertado
@@ -82,7 +116,7 @@ class ModelPresupuesto:
             db.rollback()
             raise Exception(f"Error al crear el presupuesto: {ex}\nQuery: {query}\nDatos: {presupuesto}")
 
-
+    
     @classmethod
     def agregar_detalle_presupuesto(cls, db, detalle):
         try:
@@ -232,7 +266,11 @@ class ModelPresupuesto:
                         p.sub_diferencia,
                         p.usuario,
                         u.NOMBRE_USUARIO AS nombre_usuario,
-                        p.estatus
+                        p.estatus,
+						p.direccion_obra,
+						p.fecha_inicio,
+						p.fecha_fin,
+						p.total_semanas
                     FROM Presupuestos AS p
                     INNER JOIN CLIENTES AS c ON c.ID = p.id_cliente
                     INNER JOIN EMPRESAS AS e ON e.ID = p.id_empresa
@@ -270,6 +308,10 @@ class ModelPresupuesto:
                         "usuario": row[21],
                         "nombre_usuario": row[22],
                         "estatus": row[23],
+                        "direcion_obra" : row[24],
+                        "fecha_inicio": row[25],
+                        "fecha_fin": row[26],
+                        "total_semanas": row[27],
                         "detalle_presupuesto" : []
                     }
                 return presupuesto

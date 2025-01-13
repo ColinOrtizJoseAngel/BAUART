@@ -39,10 +39,7 @@
                         <label for="proyecto" class="form-label">Nombre del Proyecto</label>
                         <input type="text" class="form-control" id="proyecto" name="proyecto">
                     </div>
-                    <div class="mb-3">
-                        <label for="concepto" class="form-label">Concepto</label>
-                        <input type="text" class="form-control" id="concepto" name="concepto">
-                    </div>
+
                     <div class="mb-3">
                         <label for="estatus" class="form-label">Estatus</label>
                         <select class="form-select" id="estatus" name="estatus">
@@ -76,21 +73,19 @@
     </div>
     <br>
     
-    <div class="table-container">
-        <table class="table table-hover">
+    <div class="table-responsive"> <!-- Agregado para hacer la tabla responsiva -->
+        <table class="table table-hover table-bordered align-middle"> <!-- Agregamos bordes y alineación central -->
             <colgroup>
-                <col style="width: 30px;">
-                <col style="width: 200px;">
-                <col style="width: 150px;">
-                <col style="width: 150px;">
-                <col style="width: 100px;">
-                <col style="width: 125px;">
+                <col style="width: 10%;">
+                <col style="width: 45%;">
+                <col style="width: 25%;">
+                <col style="width: 10%;">
+                <col style="width: 10%;">
             </colgroup>
-            <thead class="table-dark">
+            <thead class="table-dark text-center"> <!-- Centramos el texto en el encabezado -->
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">PROYECTO</th>
-                    <th scope="col">CONCEPTO</th>
                     <th scope="col">FECHA LLEGADA</th>
                     <th scope="col">ESTATUS</th>
                     <th scope="col">ACCIONES</th>
@@ -99,12 +94,15 @@
             <tbody>
                 {% for requisicion in requisiciones %}
                 <tr data-id="{{ requisicion.id }}">
-                    <td onclick="showPartidasModal(this.parentElement)">{{ requisicion.id }}</td>
+                    <td onclick="showPartidasModal(this.parentElement)" class="text-center">{{ requisicion.id }}</td>
                     <td onclick="showPartidasModal(this.parentElement)">{{ requisicion.nombre_proyecto }}</td>
-                    <td onclick="showPartidasModal(this.parentElement)">{{ requisicion.concepto }}</td>
-                    <td onclick="showPartidasModal(this.parentElement)">{{ requisicion.fecha_recibido if requisicion.status == 1 else 'N/A' }}</td>
-                    <td onclick="showPartidasModal(this.parentElement)">{{ 'Recibido' if requisicion.status == 1 else 'Pendiente' }}</td>
-                    <td>
+                    <td onclick="showPartidasModal(this.parentElement)" class="text-center">
+                        {{ requisicion.fecha_recibido if requisicion.status == 1 else 'N/A' }}
+                    </td>
+                    <td onclick="showPartidasModal(this.parentElement)" class="text-center">
+                        {{ 'Recibido' if requisicion.status == 1 else 'Pendiente' }}
+                    </td>
+                    <td class="text-center">
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ requisicion.id }}"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -114,14 +112,14 @@
                                 <li>
                                     <form action="{{ url_for('update_requisicion_status', id=requisicion.id) }}" method="post" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <input type="hidden" name="status" value="0">
+                                        <input type="hidden" name="status" value="0"> <!-- Estado Pendiente -->
                                         <button type="submit" class="dropdown-item">Pendiente</button>
                                     </form>
                                 </li>
                                 <li>
                                     <form action="{{ url_for('update_requisicion_status', id=requisicion.id) }}" method="post" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <input type="hidden" name="status" value="1">
+                                        <input type="hidden" name="status" value="1"> <!-- Estado "Recibido" -->
                                         <button type="submit" class="dropdown-item">Recibido</button>
                                     </form>
                                 </li>
@@ -132,17 +130,16 @@
                                 <li>
                                     <button class="dropdown-item text-danger" onclick="confirmDelete('{{ requisicion.id }}')">Eliminar</button>
                                 </li>
-                                
                             </ul>
                         </div>
                     </td>                    
                 </tr>
                 {% endfor %}
             </tbody>
-            
         </table>
     </div>
 </div>
+
 
 <!-- Modal for Partitions -->
 <div class="modal fade" id="partidasModal" tabindex="-1" aria-labelledby="partidasModalLabel" aria-hidden="true">
@@ -246,5 +243,51 @@
             }
         });
     }
+
+    function marcarComoRecibido(requisicionId) {
+    fetch(`/update_requisicion_status/${requisicionId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token() }}'
+        },
+        body: new URLSearchParams({ status: 1 }) // Estado "Recibido"
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                title: 'Actualizado',
+                text: 'La requisición ha sido marcada como recibida.',
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                // Actualiza dinámicamente la tabla
+                const row = document.querySelector(`tr[data-id="${requisicionId}"]`);
+                if (row) {
+                    row.querySelector('td:nth-child(4)').textContent = new Date().toLocaleString(); // Actualizar fecha
+                    row.querySelector('td:nth-child(5)').textContent = 'Recibido'; // Actualizar estatus
+                }
+            });
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: data.error || 'No se pudo actualizar la requisición.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error al actualizar la requisición:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'No se pudo actualizar la requisición.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    });
+}
+
 </script>
 {% endblock %}

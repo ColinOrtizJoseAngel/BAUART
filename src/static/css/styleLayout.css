@@ -312,17 +312,36 @@ a.link {
   display: block;
 }
 
-.botones{
-    font-size: 12px;
-    background-color: #0f2d3a;
-    color: #ffff;
-    font-family: Arial, Helvetica, sans-serif;
-    margin: 0px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    display: block;
+.botones {
+  font-size: 12px;
+  background-color: #0f2d3a;
+  color: #ffff;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  text-transform: uppercase; /* Convierte el texto a mayúsculas */
 }
+
+.dropdown {
+  text-transform: uppercase; /* Convierte el texto a mayúsculas */
+}
+
+.btn-outline-dark {
+  text-transform: uppercase; /* Convierte el texto a mayúsculas */
+}
+
+.dropdown-item {
+  text-transform: uppercase; /* Convierte los textos de las acciones en mayúsculas */
+}
+
+.select-box {
+  text-transform: uppercase; /* Convierte el texto en mayúsculas */
+}
+
+
 
 .boton-nomina{
   font-size: 12px;

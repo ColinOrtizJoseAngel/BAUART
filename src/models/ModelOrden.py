@@ -97,21 +97,25 @@ class MyOrdendeCompra:
         row = cursor.fetchone()
 
         if row:
+            print(row[5])
+            print(row[6])
+            
+            
             return {
                 "id": row[0],
                 "nombre_proyecto": row[1],
                 "concepto": row[2],
-                "fecha_llegada": row[3].strftime('%Y-%m-%d') if row[3] else None,
+                "fecha_llegada": row[3] if row[3] else None,
                 "status": row[4],
-                "fecha_solicitud": row[5].strftime('%Y-%m-%d') if row[5] else None,
-                "fecha_requerida": row[6].strftime('%Y-%m-%d') if row[6] else None,
+                "fecha_solicitud": row[5] if row[5] else None,
+                "fecha_requerida": row[6] if row[6] else None,
             }
         else:
             return None
 
     @staticmethod
     def create_orden(db, id_requisicion, id_proveedor, fecha_hora_entrega=None, direccion_entrega=None, contacto=None, telefono=None):
-        query_insert = """
+        query_insert = """1
             INSERT INTO ORDENES (ID_REQUISICION, ID_PROVEEDOR, FechaHoraEntrega, DireccionEntrega, Contacto, Telefono)
             VALUES (?, ?, ?, ?, ?, ?)
         """
@@ -131,9 +135,20 @@ class MyOrdendeCompra:
     @staticmethod
     def get_partidas_by_requisicion_id(db, id_requisicion):
         query = """
-            SELECT ID, ID_REQUISICION, DESCRIPCION, UNIDAD, CANTIDAD, FECHA_CREACION, DETALLES, STATUS
-            FROM PARTIDAS_REQUISICION
-            WHERE ID_REQUISICION = ?
+            SELECT 
+                pr.ID, 
+                cmf.MATERIAL AS nombre_concepto,  -- Nombre del material/concepto
+                cmf.UNIDAD_MEDIDA AS unidad_medida,  -- Unidad de medida
+                pr.CANTIDAD, 
+                pr.FECHA_CREACION, 
+                pr.DETALLES, 
+                pr.STATUS
+            FROM 
+                PARTIDAS_REQUISICION pr
+            LEFT JOIN 
+                CATALOGO_MATERIALES_FAMILIAS cmf ON pr.DESCRIPCION = cmf.ID -- Relacionar con la tabla de materiales
+            WHERE 
+                pr.ID_REQUISICION = ?
         """
         cursor = db.cursor()
         cursor.execute(query, (id_requisicion,))
@@ -143,16 +158,16 @@ class MyOrdendeCompra:
         for row in rows:
             partidas.append({
                 "id": row[0],
-                "id_requisicion": row[1],
-                "descripcion": row[2],
-                "unidad": row[3],
-                "cantidad": row[4],
-                "fecha_creacion": row[5].strftime('%Y-%m-%d') if row[5] else None,
-                "detalles": row[6],
-                "status": row[7]
+                "descripcion": row[1],  # Nombre del material
+                "unidad": row[2],       # Unidad de medida
+                "cantidad": row[3],
+                "fecha_creacion": row[4].strftime('%Y-%m-%d %H:%M:%S') if row[4] else None,
+                "detalles": row[5],
+                "status": row[6]
             })
 
         return partidas
+
 
     @staticmethod
     def guardar_orden(conn, id_requisicion, id_proveedor, fecha_hora_entrega, direccion_entrega, contacto, telefono, porcentaje_descuento, numero_cotizacion):

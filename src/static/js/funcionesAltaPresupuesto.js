@@ -1,10 +1,38 @@
+document.addEventListener('DOMContentLoaded', () => {
+  // Seleccionar todos los elementos con la clase "precio"
+  const elementosPrecio = document.querySelectorAll('.currency-input');
+  console.log(elementosPrecio);
+  
+  // Crear un formateador de moneda para pesos mexicanos
+  const formateadorPesos = new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN'
+  });
+
+  // Recorrer los elementos y formatear su contenido
+  elementosPrecio.forEach(elemento => {
+      let valor = parseFloat(elemento.textContent); // Intentar convertir el contenido a número
+      console.log(elemento.textContent);
+      console.log("Este es el valor"+valor);
+      if (isNaN(valor)) { // Si no es un número válido, usar 0 como valor por defecto
+          valor = 0;
+      }
+      console.log("Este es el valor"+valor);
+      elemento.value = formateadorPesos.format(valor); // Formatear y reemplazar el contenido
+  });
+});
+
+
+
 document.addEventListener("DOMContentLoaded", function () {
   var inputPROYECTO = document.querySelector("#PROYECTO");
   var inputPROYECTO_ID = document.querySelector("#PROYECTO_ID");
   var inputFECHA_INICIO = document.querySelector("#FECHA_INICIO");
   var inputFECHA_FIN = document.querySelector("#FECHA_FIN");
   var input_Id_Cliente = document.querySelector("#CLIENTE_ID");
-  var inputDIAS_TOTALES = document.querySelector("#DIAS_TOTALES"); // Nuevo input para mostrar los días totales
+  var inputDIAS_TOTALES = document.querySelector("#DIAS_TOTALES"); 
+  var inputDirecion = document.querySelector("#DIRECCION"); 
+
 
 
   if (inputPROYECTO) {
@@ -14,7 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
       inputFECHA_INICIO,
       inputFECHA_FIN,
       inputDIAS_TOTALES,
-      input_Id_Cliente
+      input_Id_Cliente,
+      inputDirecion
     );
   }
 });
@@ -25,7 +54,8 @@ function configurar_autocompletado(
   inputFECHA_INICIO,
   inputFECHA_FIN,
   inputDIAS_TOTALES,
-  inputCLIENTE_ID
+  inputCLIENTE_ID,
+  inputDIRECCION
 ) {
   var proyectosDisponibles = [];
   var opcionSeleccionada = false;
@@ -42,7 +72,8 @@ function configurar_autocompletado(
       inputPROYECTO_ID.value = "";
       inputFECHA_INICIO.value = "";
       inputFECHA_FIN.value = "";
-      inputDIAS_TOTALES.value = ""; // Limpiar el campo de días totales también
+      inputDIAS_TOTALES.value = "";
+      inputDIRECCION.value = "";
       return false;
     }
 
@@ -68,13 +99,14 @@ function configurar_autocompletado(
             var fechafin = proyectoData.fecha_fin;
             var totalSemanas = proyectoData.semanas;
             var id_cliente = proyectoData.id_cliente;
+            var direccion = proyectoData.direccion;
    
             var regex = new RegExp(`(${val})`, "gi");
             var item = document.createElement("div");
             item.classList.add("list-group-item");
 
             item.innerHTML = proyecto.replace(regex, "<strong style='font-size: 14px;font-family: arial;'>$1</strong>");
-            item.innerHTML += `<input type='hidden' value='${proyecto}' data-cliente='${id_cliente}' data-id='${id}'  data-fecha-inicio='${fechainicio}' data-fecha-fin='${fechafin}'>`;
+            item.innerHTML += `<input type='hidden' value='${proyecto}' data-cliente='${id_cliente}' data-id='${id}'  data-fecha-inicio='${fechainicio}' data-fecha-fin='${fechafin}' data-direccion='${direccion}'>`;
 
             item.addEventListener("click", function () {
              
@@ -94,6 +126,7 @@ function configurar_autocompletado(
               
               inputDIAS_TOTALES.value = totalSemanas; // Asignar la diferencia de días al input correspondiente
 
+              inputDIRECCION.value = this.querySelector("input").getAttribute("data-direccion");
               opcionSeleccionada = true;
               cerrarListaAutocompletado();
             });
@@ -203,8 +236,8 @@ function añadirConcepto() {
 `;
 
   cell8.innerHTML = `
-<select id="STATUS" name="STATUS[]" class="form-control">
-    <option value="1">Carga presupuesto</option>
+<select style="text-align: center" id="STATUS" name="STATUS[]" class="form-control" disabled>
+    <option value="1">PRESUPUESTO CARGADO</option>
     <option value="2">Aprobación director</option>
     <option value="3">Primera modificación de presupuesto</option> 
 </select>
@@ -220,7 +253,7 @@ function añadirConcepto() {
 }
 
 
-// Añadir concepto nomina BAUART
+// Añadir concepto BAUART
 function añadir_concepto_sub(id,es_nomina) {
 
   var tabla = document.getElementById(`tablasub_${id}`);
@@ -838,7 +871,7 @@ function configurar_autocompletado_especialida(row,contador) {
       })
       .then((data) => {
         selectElement.innerHTML =
-          '<option value="">Seleciona un proveedor</option>';
+          '<option value="">SELECIONA UN PROVEEDOR</option>';
         selectElement.innerHTML += '<option value="0">BAUART</option>';
         if (data.length > 0) {
           // Habilitar el selectProveedor solo si hay opciones disponibles
