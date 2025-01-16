@@ -55,25 +55,49 @@ class ModelPuesto():
     def get_all_puestos_no_block(cls, db):
         try:
             with db.cursor() as cursor:
-                query = "SELECT * FROM PUESTOS WHERE IS_BLOCKED = 0"
+                # Consulta con JOIN para obtener datos de PUESTOS y CATEGORIAS
+                query = """
+                    SELECT 
+                        p.ID, 
+                        p.PUESTO, 
+                        p.SUELDO_BASE, 
+                        p.SUELDO_TARJETA, 
+                        p.HORA_EXTRA, 
+                        p.CATEGORIA, 
+                        p.IS_BLOCKED, 
+                        c.CATEGORIA AS CATEGORIA_NOMBRE, 
+                        c.FECHA_REGISTRO AS CATEGORIA_FECHA, 
+                        c.IS_BLOCKED AS CATEGORIA_IS_BLOCKED
+                    FROM PUESTOS p
+                    LEFT JOIN CATEGORIAS c ON p.CATEGORIA = c.ID
+                    WHERE p.IS_BLOCKED = 0
+                """
                 cursor.execute(query)
                 rows = cursor.fetchall()
+                
+                # Procesa los resultados
                 puestos = []
                 for row in rows:
                     puestos.append(Puesto(
-                            id=row[0], 
-                            puesto=row[1], 
-                            sueldo_base=row[2],
-                            sueldo_tarjeta=row[3],
-                            horas_extras=row[4], 
-                            categoria=row[6],
-                            is_blocked=row[7]
-                            
-                            ))
-                    
+                        id=row[0],
+                        puesto=row[1],
+                        sueldo_base=row[2],
+                        sueldo_tarjeta=row[3],
+                        horas_extras=row[4],
+                        categoria={
+                            "id": row[5],
+                            "nombre": row[7],  # Nombre de la categoría
+                            "fecha_registro": row[8],  # Fecha de registro de la categoría
+                            "is_blocked": row[9]  # Estado de bloqueo de la categoría
+                        },
+                        is_blocked=row[6]
+                    ))
+                
                 return puestos
         except Exception as ex:
+            print(f"Error en get_all_puestos_no_block: {str(ex)}")
             raise Exception(ex)
+
 
     @classmethod
     def get_puestos_by_id(cls, db,id):

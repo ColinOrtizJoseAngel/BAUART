@@ -1,16 +1,12 @@
-<!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
 {% block title %}EMPLEADOS{% endblock %}
-<!--HOJA DE ESTILOS EXTERNA-->
+
 {% block customCSS %}
 
 {% endblock %}
 
-<!-- TITULO DE PAGINA -->
 {% block titutlo %}EMPLEADOS{% endblock %}
-<!-- FIN DE TITULO -->
 
-<!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
 <!-- MODAL PARA EDITAR EMPLEADO -->
 <div class="modal fade" id="editBancoModal" tabindex="-1" aria-labelledby="editBancoModalLabel" aria-hidden="true">
@@ -24,7 +20,7 @@
                 <form id="editBancoForm" action="" method="post">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" id="editBancoId" name="banco_id">
-                    
+
                     <div class="mb-3">
                         <label for="editBancoNombre" class="form-label">NOMBRE BANCO</label>
                         <input type="text" class="form-control" id="editBancoNombre" name="BANCO" required>
@@ -40,6 +36,7 @@
     </div>
 </div>
 <!-- FIN MODAL EDITAR EMPLEADO -->
+
 <!-- Modal para Filtrar cliente -->
 <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -64,7 +61,7 @@
                     <div class="mb-3">
                         <label for="TIPO_EMPLEADO" class="form-label">TIPO DE EMPLEADO</label>
                         <select class="form-control" name="TIPO_EMPLEADO" id="TIPO_EMPLEADO">
-                            <option value="" style="text-align: center;">SELECIONA</option>
+                            <option value="" style="text-align: center;">SELECCIONA</option>
                             <option value="1">ADMINISTRATIVO</option>
                             <option value="2">OBRA</option>
                         </select>
@@ -72,9 +69,9 @@
                     <div class="mb-3">
                         <label for="ESTATUS" class="form-label">ESTATUS</label>
                         <select class="form-select" id="ESTATUS" name="ESTATUS" style="text-align: center;">
-                            <option value="">SELECIONA</option>
+                            <option value="">SELECCIONA</option>
                             <option value="0">ACTIVO</option>
-                            <option value="1">BLOQUEDO</option>
+                            <option value="1">BLOQUEADO</option>
                         </select>
                     </div>
                 </div>
@@ -86,6 +83,7 @@
         </div>
     </div>
 </div>
+
 <br>
 <div class="container-fluid">
     <div class="d-grid gap-2 d-md-flex justify-content-start">
@@ -103,13 +101,11 @@
     <div class="table-container">
         <table class="table table-hover">
             <colgroup>
-                <col style="width: 50px;"> <!-- Primera columna de 150px -->
-                <col style="width: 200px;"> <!-- Segunda columna de 200px -->
-                <col style="width: 200px;"> <!-- Tercera columna de 100px -->
-                <col style="width: 200px;"> <!-- Primera columna de 150px -->
-                <col style="width: 150px;"> <!-- Segunda columna de 200px -->
-                
-
+                <col style="width: 50px;">
+                <col style="width: 200px;">
+                <col style="width: 200px;">
+                <col style="width: 200px;">
+                <col style="width: 150px;">
             </colgroup>
             <thead class="table-dark">
                 <tr>
@@ -124,72 +120,49 @@
             </thead>
             <tbody>
                {% for e in empleados %}
-               {% if e.is_blocked%}
-               <tr class="table-secondary">
+               <tr class="{% if e.is_blocked %}table-secondary{% endif %}">
                 <td>{{ e.id }}</td>
                 <td>{{ e.nombre }}</td>
                 <td>{{ e.apellido }}</td>
                 <td>{{ e.puesto }}</td>
                 <td>{{ e.tipo_empleado }}</td>
                 <td>
-                    BLOQUEADO
+                    {% if e.baja_empleado %}
+                        BAJA
+                    {% else %}
+                        ALTA
+                    {% endif %}
                 </td>
                 <td>
+                    {% if e.baja_empleado %}
+                    <form action="{{ url_for('unblock_empleado', id=e.id) }}" method="post" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-warning" type="submit">DESBLOQUEAR</button>
+                    </form>
+                    {% else %}
                     <div class="dropdown">
-                        <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ e.id }}"
-                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ e.id }}" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             ACCIONES
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ e.id }}">
                             <li>
-                                <form  action="{{ url_for('unblock_empleado', id=e.id) }}" method="post"
-                                    style="display:inline;">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button class="dropdown-item" type="submit">DESBLOQUEAR</button>
-                                </form>
+                                <a class="dropdown-item" href="{{ url_for('edit_empleado', id=e.id) }}">EDITAR</a>
                             </li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td>{{ e.id }}</td>
-                <td>{{ e.nombre }}</td>
-                <td>{{ e.apellido }}</td>
-                <td>{{ e.puesto }}</td>
-                <td>{{ e.tipo_empleado }}</td>
-              
-                <td>
-                    ACTIVO
-                </td>
-                <td>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ e.id }}"
-                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            ACCIONES
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ e.id }}">
-                            <li><a class="dropdown-item"
-                                href="{{ url_for('edit_empleado', id=e.id) }}">EDITAR</a></li>
                             <li>
-                                <form action="{{ url_for('block_empleado', id=e.id) }}" method="post"
-                                    style="display:inline;">
+                                <form action="{{ url_for('block_empleado', id=e.id) }}" method="post" style="display:inline;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button class="dropdown-item" type="submit">BLOQUEAR</button>
                                 </form>
                             </li>
                         </ul>
                     </div>
+                    {% endif %}
                 </td>
             </tr>
-            {% endif %}
             {% endfor %}
-             
             </tbody>
         </table>
     </div>
 </div>
-
 
 {% endblock %}

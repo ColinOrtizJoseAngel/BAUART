@@ -931,57 +931,176 @@ def empleados():
         raise Exception(ex)
 
 #ALTA EMPLEADOS
-@app.route('/Altaempleados',methods=['GET','POST'])
+@app.route('/Altaempleados', methods=['GET', 'POST'])
 def Altaempleados():
     try:
-        puesto = ModelPuesto.get_all_puestos_no_block(db)   
+        print("Iniciando ruta /Altaempleados")
+
+        # Obtener datos iniciales
+        print("Obteniendo datos iniciales...")
+        puesto = ModelPuesto.get_all_puestos_no_block(db)
         bancos = ModelBanco.get_all_bancos_no_block(db)
         empresas = ModelEmpresas.get_empresas_not_block(db)
-       
+
+        # Validar que los datos no estén vacíos
+        if not puesto:
+            print("Error: No se encontraron puestos disponibles")
+            return redirect(url_for('empleados'))
+        if not bancos:
+            print("Error: No se encontraron bancos disponibles")
+            return redirect(url_for('empleados'))
+        if not empresas:
+            print("Error: No se encontraron empresas disponibles")
+            return redirect(url_for('empleados'))
 
         if request.method == 'POST':
-            
-            
-            # Verifica si el token en la sesión coincide con el del formulario
-            token = request.form.get('token')
-            if token and session.get('token') == token:
-                # Elimina el token de la sesión para evitar reenvíos duplicados
+            print("Procesando método POST")
+
+            try:
+                print(f"Datos recibidos del formulario: {request.form}")
+
+                # Verificar token
+                token = request.form.get('token')
+                if not token or session.get('token') != token:
+                    print("Error: Token inválido o no coincide")
+                    raise ValueError("Token inválido o no coincide")
                 session.pop('token', None)
-            
+
+                # Validar campos obligatorios
+                required_fields = [
+                    'NOMBRE', 'APELLIDO', 'EMPRESA', 'PUESTO', 'TIPO_EMPLEADO',
+                    'TIPO_NOMINA', 'SUELDO_IMSS', 'MONEDERO', 'NOMINA', 'BANCO',
+                    'CLABE', 'CATEGORIA', 'NO_IMSS', 'CURP', 'RFC',
+                    'ESTADO_CIVIL', 'FECHA_NACIMIENTO', 'TELEFONO_CONTACTO', 'DOMICILIO',
+                    'TOPE_HORAS_EXTRA', 'TIPO_SANGRE', 'LUGAR_NACIMIENTO', 'SEXO', 'CALLE',
+                    'COLONIA', 'CODIGO_POSTAL', 'ESTADO', 'EDIFICIO', 'ALCALDIA', 'MUNICIPIO',
+                    'REGISTRO_PATRONAL', 'CUENTA'
+                ]
+
+                for field in required_fields:
+                    if field not in request.form or not request.form[field].strip():
+                        print(f"Error: El campo requerido '{field}' está vacío o no se envió")
+                        raise KeyError(f"Falta el campo requerido: {field}")
+
+                # Validar campos numéricos
+                sueldo_imss = float(request.form['SUELDO_IMSS'].replace('$', '').replace(',', ''))
+                monedero = float(request.form['MONEDERO'].replace('$', '').replace(',', ''))
+                nomina = float(request.form['NOMINA'].replace('$', '').replace(',', ''))
+
+                # Manejar campos opcionales
+                numero_cuenta = request.form.get('NUM_CUENTA', None)
+                foto_base64 = request.form.get('FOTO_BASE64', '')
+                manzana = request.form.get('MANZANA', '')
+                lote = request.form.get('LOTE', '')
+                numero_exterior = request.form.get('NUMERO_EXTERIOR', '')
+                numero_interior = request.form.get('NUMERO_INTERIOR', '')
+                telefono_domicilio = request.form.get('TELEFONO_DOMICILIO', '')
+                cuenta_correo = request.form.get('CUENTA_CORREO', '')
+                salario_diario_integrado = request.form.get('SALARIO_DIARIO_INTEGRADO', 0.0)
+                numero_credito_infonavit = request.form.get('NUMERO_CREDITO_INFONAVIT', '')
+                tipo_descuento_infonavit = request.form.get('TIPO_DESCUENTO_INFONAVIT', '')
+                factor_infonavit = request.form.get('FACTOR_INFONAVIT', 0.0)
+                fecha_ingreso = request.form.get('FECHA_INGRESO', '')
+                turno = request.form.get('TURNO', '')
+                tipo_contrato = request.form.get('TIPO_CONTRATO', '')
+                contacto_accidente = request.form.get('CONTACTO_ACCIDENTE', '')
+                alergias = request.form.get('ALERGIAS', '')
+                enfermedades_controladas = request.form.get('ENFERMEDADES_CONTROLADAS', '')
+                edificio = request.form.get('EDIFICIO', '')
+                alcaldia = request.form.get('ALCALDIA', '')
+                municipio = request.form.get('MUNICIPIO', '')
+                registro_patronal = request.form.get('REGISTRO_PATRONAL', '')
+                cuenta = request.form.get('CUENTA', '')
+
+                # Crear objeto empleado
                 empleado = Empleados(
                     id=0,
                     nombre=request.form['NOMBRE'],
-                    apellido= request.form['APELLIDO'],
-                    id_empresa= request.form['EMPRESA'],
-                    puesto= request.form['PUESTO'],
-                    tipo_empleado= request.form['TIPO_EMPLEADO'],
-                    tipo_nomina= request.form['TIPO_NOMINA'],
-                    sueldo_imss=request.form['SUELDO_IMSS'],
-                    monedero=request.form['MONEDERO'],
-                    nomina=request.form['NOMINA'],
+                    apellido=request.form['APELLIDO'],
+                    id_empresa=request.form['EMPRESA'],
+                    puesto=request.form['PUESTO'],
+                    tipo_empleado=request.form['TIPO_EMPLEADO'],
+                    tipo_nomina=request.form['TIPO_NOMINA'],
+                    sueldo_imss=sueldo_imss,
+                    monedero=monedero,
+                    nomina=nomina,
                     banco=request.form['BANCO'],
-                    numero_cuenta=request.form['NUM_CUENTA'],
+                    numero_cuenta=numero_cuenta,
                     clabe=request.form['CLABE'],
-                    is_blocked=0
+                    alta_empleado=request.form.get('ALTA_EMPLEADO', ''),
+                    baja_empleado=None,
+                    fecha_registro=request.form.get('FECHA_REGISTRO', ''),
+                    is_blocked=0,
+                    categoria=request.form['CATEGORIA'],
+                    no_imss=request.form['NO_IMSS'],
+                    curp=request.form['CURP'],
+                    ine=request.form.get('INE', ''),
+                    rfc=request.form['RFC'],
+                    cedula_profesional=request.form.get('CEDULA_PROFESIONAL', ''),
+                    estado_civil=request.form['ESTADO_CIVIL'],
+                    fecha_nacimiento=request.form['FECHA_NACIMIENTO'],
+                    telefono_contacto=request.form['TELEFONO_CONTACTO'],
+                    domicilio=request.form['DOMICILIO'],
+                    tope_horas_extra=request.form['TOPE_HORAS_EXTRA'],
+                    foto_base64=foto_base64,
+                    tipo_sangre=request.form['TIPO_SANGRE'],
+                    lugar_nacimiento=request.form['LUGAR_NACIMIENTO'],
+                    sexo=request.form['SEXO'],
+                    calle=request.form['CALLE'],
+                    manzana=manzana,
+                    lote=lote,
+                    numero_exterior=numero_exterior,
+                    numero_interior=numero_interior,
+                    colonia=request.form['COLONIA'],
+                    codigo_postal=request.form['CODIGO_POSTAL'],
+                    estado=request.form['ESTADO'],
+                    telefono_domicilio=telefono_domicilio,
+                    cuenta_correo=cuenta_correo,
+                    salario_diario_integrado=salario_diario_integrado,
+                    numero_credito_infonavit=numero_credito_infonavit,
+                    tipo_descuento_infonavit=tipo_descuento_infonavit,
+                    factor_infonavit=factor_infonavit,
+                    fecha_ingreso=fecha_ingreso,
+                    turno=turno,
+                    tipo_contrato=tipo_contrato,
+                    contacto_accidente=contacto_accidente,
+                    alergias=alergias,
+                    enfermedades_controladas=enfermedades_controladas,
+                    edificio=edificio,
+                    alcaldia=alcaldia,
+                    municipio=municipio,
+                    registro_patronal=registro_patronal,
+                    cuenta=cuenta
+                )
+                print(f"Empleado creado: {vars(empleado)}")
 
-
-                        )
-
-                ModelEmpleado.alta_empleado(db,empleado)
-                
+                # Insertar en la base de datos
+                ModelEmpleado.alta_empleado(db, empleado)
+                print("Empleado insertado con éxito")
                 return redirect(url_for('empleados'))
-            
-            else:
-                return redirect(url_for('empleados'))
+
+            except KeyError as ke:
+                print(f"Error: {str(ke)}")
+                return redirect(url_for('Altaempleados'))
+
+            except ValueError as ve:
+                print(f"Error de validación: {str(ve)}")
+                return redirect(url_for('Altaempleados'))
+
+            except Exception as ex:
+                print(f"Error procesando el método POST: {str(ex)}")
+                return redirect(url_for('Altaempleados'))
+
         else:
-            # Genera un token único y lo almacena en la sesión
+            print("Procesando método GET")
             session['token'] = str(uuid.uuid4())
-            return render_template('altaEmpleados.html', empresas=empresas, bancos=bancos, puesto=puesto,token=session['token'])
-        
+            return render_template('altaEmpleados.html', empresas=empresas, bancos=bancos, puesto=puesto, token=session['token'])
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
+        print(f"Error en la ruta /Altaempleados: {str(e)}")
+        return redirect(url_for('empleados'))
+    
+    
 #BLOQUEAR EMPLEADO
 @app.route('/block_empleado/<int:id>', methods=['POST'])
 def block_empleado(id):
