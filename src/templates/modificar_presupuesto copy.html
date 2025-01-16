@@ -294,7 +294,7 @@
                             </td>
                             <th scope="row" style="text-align: right;">PRESUPUESTO CLIENTE:</th>
                             <td>
-                                <input type="text" class="form-control currency-input borderless" name="PRESUPUESTO_CLIENTE" id="PRESUPUESTO_CLIENTE"  value="{{ presupuesto['presupuesto_cliente'] }}"  disabled style="width: 110px;">
+                                <input type="text" class="form-control currency-input borderless" name="PRESUPUESTO_CLIENTE" value="{{ presupuesto['presupuesto_cliente'] }}" disabled id="PRESUPUESTO_CLIENTE" placeholder="$0.00" readonly>
                             </td>
                             <td>
                                 <th scope="row" style="text-align: right;">FALTA POR COBRAR:</th>
@@ -567,8 +567,9 @@
 {% for detalle in presupuesto['detalle_presupuesto'] %}
     {% set indice_detalle = loop.index %}
     {% if detalle['id_proveedor'] == 0 and detalle['presupuesto_bauart'] %}
+   
     <div class="modal fade modal-xl" id="modalPresupuesto_{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
+        <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title" id="exampleModalLabel">PRESUPUESTO BAUART</h4>
@@ -745,14 +746,14 @@
                 </div>
             </div>
           </div>
-         <div class="modal-footer">
+          <div class="modal-footer">
             <div class="d-grid gap-2 d-md-flex justify-content-start">
-              <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
-              <button type="button" class="btn botones"  data-bs-dismiss="modal" onclick="guardar_presuouesto('{{indice_detalle}}')" ><i class="bi bi-floppy"></i> CONFIRMAR</button
+                <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
+                <button type="button" class="btn botones"  data-bs-dismiss="modal" onclick="guardar_presuouesto('{{indice_detalle}}')" ><i class="bi bi-floppy"></i> CONFIRMAR</button>
             </div>
           </div>
         </div>
-      </div>
+    </div>
     </div>
     {% endif %}
 {%endfor%}

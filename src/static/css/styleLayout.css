@@ -130,6 +130,7 @@ body{
   width: 100%;
   border-collapse: collapse;
   position: relative;
+  margin:0px;
   /* Para colocar los resizers */
 }
 
@@ -374,4 +375,25 @@ a.link {
 }
 
 
+
   
+
+.table-borderless tbody th,
+.table-borderless tfoot td,
+.table-borderless tbody td {
+    padding: 2px;
+    margin: 0;
+}
+
+.table-borderless tbody td input {
+  margin: 0 auto;
+}
+
+.table-borderless tbody td select {
+  text-align: center;
+}
+
+.table-borderless tfoot td input {
+  margin: 0 auto;
+}
+

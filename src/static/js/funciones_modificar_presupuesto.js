@@ -197,8 +197,8 @@ document.addEventListener("DOMContentLoaded", function () {
   
     cell7.innerHTML = `
   <select style="text-align: center;"  id="CONTRATO_FIRMADO" name="CONTRATO_FIRMADO[]" class="form-control" >
-      <option value="1">No</option>
-      <option value="2">Sí</option>
+      <option value="True">SÍ</option>
+      <option value="False">NO</option>
   </select>
   <div class="invalid-feedback">
       Completa el banco
@@ -207,9 +207,8 @@ document.addEventListener("DOMContentLoaded", function () {
   
     cell8.innerHTML = `
   <select id="STATUS" name="STATUS[]" class="form-control">
-      <option value="1">Carga presupuesto</option>
-      <option value="2">Aprobación director</option>
-      <option value="3">Primera modificación de presupuesto</option> 
+      <option value="1">PRESUPUESTO CARGADO</option>
+      <option value="2">APROBADO POR DIRECTOR</option>
   </select>
   `;
   
@@ -247,7 +246,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var cell5 = newRow.insertCell(4);
     var cell6 = newRow.insertCell(5);
     var cell7 = newRow.insertCell(6);
-    var cell9 = newRow.insertCell(7);
+    var cell8 = newRow.insertCell(7);
 
 
   
@@ -293,9 +292,15 @@ document.addEventListener("DOMContentLoaded", function () {
       cell6.innerHTML = `
           <input type="text" class="form-control currency-input presupuesto-diferencia" name="SUB_DIFERENCIA-${id}[]" placeholder="$0.00" readonly>
       `;
-  
-  
+      
       cell7.innerHTML = `
+      <select id="STATUS" name="STATUS[]" class="form-control">
+                                    <option value="0">PRESUPUESTO CARGADO</option>
+                                    <option value="0">APROBADO POR DIRECTOR</option>
+                                </select>
+      `;                      
+  
+      cell8.innerHTML = `
       <div class="d-flex align-items-center justify-content-center">
         <button type="button" onclick="sub_eliminarFila(this,${contador})" class="btn"><i class="bi bi-trash"></i></button>
       </div>
@@ -338,13 +343,18 @@ document.addEventListener("DOMContentLoaded", function () {
           <input type="text" class="form-control currency-input presupuesto-diferencia" name="SUB_DIFERENCIA-${id}[]" placeholder="$0.00" readonly>
       `;
   
-  
       cell7.innerHTML = `
+      <select id="STATUS" name="STATUS[]" class="form-control">
+                                    <option value="0">PRESUPUESTO CARGADO</option>
+                                    <option value="0">APROBADO POR DIRECTOR</option>
+                                </select>
+      `;                      
+  
+      cell8.innerHTML = `
       <div class="d-flex align-items-center justify-content-center">
         <button type="button" onclick="sub_eliminarFila(this,${contador})" class="btn"><i class="bi bi-trash"></i></button>
       </div>
       `;
-  
   
       configurar_autocompletado_especialida_sub(newRow,contador,id,false);
       
@@ -714,7 +724,7 @@ document.addEventListener("DOMContentLoaded", function () {
           })
           .then((data) => {
             selectElement.innerHTML =
-              '<option value="">Seleciona un proveedor</option>';
+              '<option value="">SELECIONA UN PROVEDOR</option>';
             if (data.length > 0) {
               // Habilitar el selectProveedor solo si hay opciones disponibles
               selectElement.disabled = false;
@@ -811,7 +821,7 @@ document.addEventListener("DOMContentLoaded", function () {
           inputEspecialidad.value = "";
           inputIdEspecialidad.value = "";
           selectProveedor.innerHTML =
-            '<option value="">Seleciona un proveedor</option>';
+            '<option value="">SELECIONA UN PROVEEDOR</option>';
           selectProveedor.disabled = true; // Deshabilitar el selectProveedor
         }
       }, 200);
@@ -827,7 +837,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then((data) => {
           selectElement.innerHTML =
-            '<option value="">Seleciona un proveedor</option>';
+            '<option value="">SELECIONA UN PROVEEDOR</option>';
           selectElement.innerHTML += '<option value="0">BAUART</option>';
           if (data.length > 0) {
             // Habilitar el selectProveedor solo si hay opciones disponibles
@@ -1015,9 +1025,21 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("subtotalContratista").value = formatearMoneda(
       totalProveedor.toString()
     );
-    document.getElementById("subtotalDiferencia").value = formatearMoneda(
-      totalDiferencia.toString()
-    );
+
+   
+    inputSubtotalDiferencia = document.getElementById("subtotalDiferencia")
+    inputSubtotalDiferencia.value = formatearMoneda(totalDiferencia.toString());
+
+    if (inputSubtotalDiferencia.value < 0){
+      diferencia_input.style.backgroundColor = "red";
+      diferencia_input.style.color = "white"; // Cambia el texto a blanco para mayor visibilidad
+    } else {
+      diferencia_input.style.backgroundColor = ""; // Restaurar color de fondo original
+      diferencia_input.style.color = ""; // Restaurar color de texto original
+    }
+    
+
+   
     
     document.getElementById("PRESUPUESTO_CLIENTE").value = formatearMoneda(
       totalCliente.toString()
@@ -1293,3 +1315,24 @@ document.addEventListener("DOMContentLoaded", function () {
           })
           .catch((error) => console.error("Error en la solicitud Fetch:", error));
       }
+
+      document.addEventListener("DOMContentLoaded", function () {
+    // Obtener todos los inputs con la clase 'currency-input'
+    const currencyInputs = document.querySelectorAll(".currency-input");
+
+    // Recorrer cada input
+    currencyInputs.forEach(input => {
+        // Obtener el valor del input
+        const rawValue = input.value;
+
+        // Eliminar símbolos como '$' y ',' para convertirlo a un número
+        const numericValue = parseFloat(rawValue.replace(/[\$,]/g, ''));
+
+        // Verificar si el valor es negativo
+        if (!isNaN(numericValue) && numericValue < 0) {
+            // Aplicar estilo al input
+            input.style.backgroundColor = "red";
+            input.style.color = "white";
+        }
+    });
+});

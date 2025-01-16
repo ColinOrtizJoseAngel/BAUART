@@ -189,13 +189,14 @@ function añadirConcepto() {
 
   cell2.innerHTML = `
   <input type="text" class="form-control borderless text-center" style="display: none" id="ID_PARTIDA_${contador}" name="ID_PARTIDAS[]" value="${contador}" readonly>
-
-  <input type="text" class="form-control" id="INPUT_ESPECIALIDADES_${contador}" name="ESPECIALIDADES[]" autocomplete="off" required>
   <input type="text" class="form-control" style="display: none" id="INPUT_ID_ESPECIALIDADES" name=ID_ESPECIALIDADES[]>
+  <div class="position-relative">
+    <input type="text" class="form-control" id="INPUT_ESPECIALIDADES_${contador}" name="ESPECIALIDADES[]" autocomplete="off" required>
   <div class="autocomplete-items"></div>
-  <div class="invalid-feedback">
-      Selecciona una especialidad
-  </div>`;
+  </div>
+  
+    `;
+  
 
   cell3.innerHTML = `
     <div class="oculto" id="contenedor_boton_subpresupuesto_${contador}">
@@ -203,51 +204,60 @@ function añadirConcepto() {
           VER PRESUPUESTO BAUART
       </button>
     </div>
-    <select class="form-control" id="INPUT_PROVEEDOR_${contador}" name="PROVEEDOR[]" onchange="sub_presupuesto(this,${contador})">
+
+
+    <div class="position-relative">
+      <select class="form-control" id="INPUT_PROVEEDOR_${contador}" name="PROVEEDOR[]" onchange="sub_presupuesto(this,${contador})" required>
         <option value="">SELECIONA UN PROVEEDOR</option>
         
-    </select>
-    <input type="text" class="form-control" style="display: none" id="INPUT_ID_PROVEEDOR" name="ID_PROVEDOR">
-    <div class="invalid-feedback">
-        Selecciona un proveedor
+      </select>
+      
     </div>
+    <input type="text" class="form-control" style="display: none" id="INPUT_ID_PROVEEDOR" name="ID_PROVEDOR">
+
+    
     `;
 
   cell4.innerHTML = `
-  <input type="text" class="form-control currency-input presupuesto-cliente" id="PRESUPUESTO_CLIENTE_${contador}" name="PRESUPUESTO_CLIENTE[]" placeholder="$0.00" onchange="concular_diferecnia()">
+  <div class="position-relative">
+    <input type="text" class="form-control currency-input presupuesto-cliente" id="PRESUPUESTO_CLIENTE_${contador}" name="PRESUPUESTO_CLIENTE[]" placeholder="$0.00" maxlength="9" onchange="concular_diferecnia()" required>
+  </div>
 `;
 
   cell5.innerHTML = `
-  <input type="text" class="form-control currency-input presupuesto-proveedor" id="PRESUPUESTO_PROVEEDOR_${contador}" name="PRESUPUESTO_PROVEEDOR[]" placeholder="$0.00" onchange="concular_diferecnia()">
+  <div class="position-relative">
+    <input type="text" class="form-control currency-input presupuesto-proveedor" id="PRESUPUESTO_PROVEEDOR_${contador}" name="PRESUPUESTO_PROVEEDOR[]" placeholder="$0.00" maxlength="9" onchange="concular_diferecnia()" required>
+  </div>
 `;
 
   cell6.innerHTML = `
-    <input type="text" class="form-control currency-input presupuesto-diferencia" id="DIFERENCIA_${contador}" name="DIFERENCIA[]" onchange="concular_diferencia()" placeholder="$0.00" readonly>
+  <div class="position-relative">
+    <input type="text" class="form-control currency-input presupuesto-diferencia" id="DIFERENCIA_${contador}" name="DIFERENCIA[]" onchange="concular_diferencia()" maxlength="9" placeholder="$0.00" readonly>
+  </div>
 `;
 
   cell7.innerHTML = `
-<select style="text-align: center;"  id="CONTRATO_FIRMADO" name="CONTRATO_FIRMADO[]" class="form-control" >
-    <option value="1">No</option>
-    <option value="2">Sí</option>
-</select>
-<div class="invalid-feedback">
-    Completa el banco
-</div>
-`;
+  <div class="position-relative"> 
+  <select style="text-align: center;"  id="CONTRATO_FIRMADO" name="CONTRATO_FIRMADO[]" class="form-control" required>
+      <option value="">SELECCIONA</option>
+      <option value="1">No</option>
+      <option value="2">Sí</option>
+  </select>
+  </div>
+  `;
 
   cell8.innerHTML = `
-<select style="text-align: center" id="STATUS" name="STATUS[]" class="form-control" disabled>
-    <option value="1">PRESUPUESTO CARGADO</option>
-    <option value="2">Aprobación director</option>
-    <option value="3">Primera modificación de presupuesto</option> 
-</select>
-`;
+  <select style="text-align: center" id="STATUS" name="STATUS[]" class="form-control" disabled>
+      <option value="1">PRESUPUESTO CARGADO</option>
+      <option value="2">APROBADO POR DIRECTOR</option>
+  </select>
+  `;
 
   cell9.innerHTML = `
-<div class="d-flex align-items-center justify-content-center">
-  <button type="button" onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i></button>
-</div>
-`;
+  <div class="d-flex align-items-center justify-content-center">
+    <button type="button" onclick="eliminarFila(this)" class="btn"><i class="bi bi-trash"></i></button>
+  </div>
+  `;
   configurar_autocompletado_especialida(newRow,contador);
   actualizarNumeracion();
 }
@@ -380,12 +390,11 @@ function sub_presupuesto(select, id) {
     const modalContainer = document.getElementById("subpresupuestos");
     const modalHTML = `
     <!-- Modal -->
-    <div class="modal fade modal-xl" id="modalPresupuesto_${id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade modal-xl" id="modalPresupuesto_${id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static"  data-bs-keyboard="false">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title" id="exampleModalLabel">PRESUPUESTO BAUART</h4>
-            <button type="button" style="background-color: white;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="form-group row">
@@ -472,7 +481,6 @@ function sub_presupuesto(select, id) {
           </div>
          <div class="modal-footer">
             <div class="d-grid gap-2 d-md-flex justify-content-start">
-              <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
               <button type="button" class="btn botones"  data-bs-dismiss="modal" onclick="guardar_presuouesto(${id})" ><i class="bi bi-floppy"></i> CONFIRMAR</button
             </div>
           </div>
@@ -1059,10 +1067,20 @@ function concular_diferecnia() {
   document.getElementById("subtotalContratista").value = formatearMoneda(
     totalProveedor.toString()
   );
-  document.getElementById("subtotalDiferencia").value = formatearMoneda(
-    totalDiferencia.toString()
-  );
-  
+
+
+  inputSubtotalDiferencia = document.getElementById("subtotalDiferencia")
+  inputSubtotalDiferencia.value = formatearMoneda(totalDiferencia.toString());
+
+    if (inputSubtotalDiferencia.value < 0){
+      diferencia_input.style.backgroundColor = "red";
+      diferencia_input.style.color = "white"; // Cambia el texto a blanco para mayor visibilidad
+    } else {
+      diferencia_input.style.backgroundColor = ""; // Restaurar color de fondo original
+      diferencia_input.style.color = ""; // Restaurar color de texto original
+    }
+    
+
   document.getElementById("PRESUPUESTO_CLIENTE").value = formatearMoneda(
     totalCliente.toString()
   );
@@ -1237,3 +1255,5 @@ function colocarSueldo(select, contador) {
       console.error("Error en la solicitud Fetch:", error);
     });
 }
+
+
