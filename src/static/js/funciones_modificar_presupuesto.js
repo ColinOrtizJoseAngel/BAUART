@@ -424,12 +424,13 @@ document.addEventListener("DOMContentLoaded", function () {
                           <colgroup>
                               <!-- Agrega más columnas según sea necesario -->
                               <col style="width: 40px;"> <!-- Primera columna -->
-                              <col style="width: 500px;"> <!-- Segunda columna -->
-                              <col style="width: 500px;"> <!-- Tercera columna -->
+                              <col style="width: 400px;"> <!-- Segunda columna -->
+                              <col style="width: 200px;"> <!-- Tercera columna -->
                               <col style="width: 130px;"> <!-- Cuarta columna -->
                               <col style="width: 130px;"> <!-- Quinta columna -->
                               <col style="width: 130px;"> <!-- Sexta columna -->
-                              <col style="width: 50px;"> <!-- Novena columna -->
+                              <col style="width: 200px;"> <!-- Novena columna -->
+                              <col style="width: 50px;"> <!-- Decima columna -->
                               <!-- Añade más columnas si es necesario -->
                           </colgroup>
                           <thead class="thead-dark" style="text-align: center;">
@@ -440,6 +441,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                   <th  style="white-space: normal;word-wrap: break-word;">PRESUPUESTO CLIENTE COSTO DIRECTO IVA INC.</th>
                                   <th  style="white-space: normal;word-wrap: break-word;">PRESUPUESTO CONTRATISTAS IVA INC.</th>
                                   <th  style="white-space: normal;word-wrap: break-word;">DIFERENCIA PRESUPUESTOS</th>
+                                  <th>ESTATUS</th>
                                   <th></th>
                                   <!-- Agrega más encabezados si es necesario -->
                               </tr>
@@ -508,8 +510,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   
   function guardar_presuouesto(id){
-    // OBTENER SUBTOTALES DE PRESUPUESTO
-    const inputSubpresupuestoCliente = document.getElementById(`INPUT_PRESUPUESTO_CLIENTE_BAUART_${id}`)
+    const inputSubpresupuestoCliente = document.getElementById(`SUB_PRESUPUESTO_CLIENTE-${id}`)
     const inputSubpresuouestoContratista = document.getElementById(`INPUT_PRESUPUESTO_CONTRATISTA_${id}`)
     const inputSubpresupuestoDiferencia = document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`)
   
@@ -951,6 +952,15 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById(`INPUT_PRESUPUESTO_CONTRATISTA_${id}`).value = formatearMoneda(
       totalProveedor.toString()
     );
+    if (totalDiferencia<0){
+      document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.backgroundColor = "red";
+      document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.color = "white";
+  
+    }else{
+      document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.backgroundColor = "";
+      document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.color = "";
+    }
+  
     document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).value = formatearMoneda(
       totalDiferencia.toString()
     );
@@ -1026,20 +1036,17 @@ document.addEventListener("DOMContentLoaded", function () {
       totalProveedor.toString()
     );
 
-   
-    inputSubtotalDiferencia = document.getElementById("subtotalDiferencia")
-    inputSubtotalDiferencia.value = formatearMoneda(totalDiferencia.toString());
-
-    if (inputSubtotalDiferencia.value < 0){
-      diferencia_input.style.backgroundColor = "red";
-      diferencia_input.style.color = "white"; // Cambia el texto a blanco para mayor visibilidad
-    } else {
-      diferencia_input.style.backgroundColor = ""; // Restaurar color de fondo original
-      diferencia_input.style.color = ""; // Restaurar color de texto original
+    if(totalDiferencia<0){
+      document.getElementById("subtotalDiferencia").style.backgroundColor = "red";
+      document.getElementById("subtotalDiferencia").style.color = "white"
     }
-    
-
-   
+    else{
+      document.getElementById("subtotalDiferencia").style.backgroundColor = "";
+      document.getElementById("subtotalDiferencia").style.color = ""
+    }
+    document.getElementById("subtotalDiferencia").value = formatearMoneda(
+      totalDiferencia.toString()
+    );
     
     document.getElementById("PRESUPUESTO_CLIENTE").value = formatearMoneda(
       totalCliente.toString()

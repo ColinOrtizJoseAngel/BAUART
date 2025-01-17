@@ -659,11 +659,11 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control currency-input presupuesto-cliente" id="SUB_PRESUPUESTO_CLIENTE-{{indice_detalle}}-{{indice_subdetalle}}"  name="SUB_PRESUPUESTO_CLIENTE-{{loop.index}}[]" value="{{ subdetalle['presupuesto_cliente'] }}" placeholder="$0.00" onchange="sub_cular_diferecnia('{{indice_detalle}}')">
+                                    <input type="text" class="form-control currency-input presupuesto-cliente" id="SUB_PRESUPUESTO_CLIENTE-{{indice_detalle}}-{{indice_subdetalle}}"  name="SUB_PRESUPUESTO_CLIENTE-{{loop.index}}[]" value="{{ subdetalle['presupuesto_cliente'] }}" placeholder="$0.00" onchange="sub_cular_diferecnia('{{loop.index}}')">
                                     
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control currency-input presupuesto-proveedor" name="SUB_PRESUPUESTO_PROVEEDOR-{{loop.index}}[]" value="{{ subdetalle['presupuesto_contratista'] }}" onchange="sub_cular_diferecnia('{{indice_detalle}}')">
+                                    <input type="text" class="form-control currency-input presupuesto-proveedor" name="SUB_PRESUPUESTO_PROVEEDOR-{{loop.index}}[]" value="{{ subdetalle['presupuesto_contratista'] }}" onchange="sub_cular_diferecnia('{{loop.index}}')">
                                 </td>
                                 <td>
                                     <input type="text" class="form-control currency-input presupuesto-diferencia" name="SUB_DIFERENCIA-{{loop.index}}[]" value="{{ subdetalle['diferencia'] }}" readonly>
@@ -695,11 +695,11 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control currency-input presupuesto-cliente" name="SUB_PRESUPUESTO_CLIENTE-{{loop.index}}[]" value="{{ subdetalle['presupuesto_cliente'] }}" placeholder="$0.00" onchange="sub_cular_diferecnia(1)">
+                                    <input type="text" class="form-control currency-input presupuesto-cliente" name="SUB_PRESUPUESTO_CLIENTE-{{loop.index}}[]" value="{{ subdetalle['presupuesto_cliente'] }}" placeholder="$0.00" onchange="sub_cular_diferecnia('{{loop.index}}')">
                                     
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control currency-input presupuesto-proveedor" name="SUB_PRESUPUESTO_PROVEEDOR-{{loop.index}}[]" value="{{ subdetalle['presupuesto_contratista'] }}" onchange="sub_cular_diferecnia(1)">
+                                    <input type="text" class="form-control currency-input presupuesto-proveedor" name="SUB_PRESUPUESTO_PROVEEDOR-{{loop.index}}[]" value="{{ subdetalle['presupuesto_contratista'] }}" onchange="sub_cular_diferecnia('{{loop.index}}')">
                                 </td>
                                 <td>
                                     <input type="text" class="form-control currency-input presupuesto-diferencia" name="SUB_DIFERENCIA-{{loop.index}}[]" value="{{ subdetalle['diferencia'] }}" readonly="">

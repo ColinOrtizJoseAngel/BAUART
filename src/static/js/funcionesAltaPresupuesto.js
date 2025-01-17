@@ -220,13 +220,13 @@ function añadirConcepto() {
 
   cell4.innerHTML = `
   <div class="position-relative">
-    <input type="text" class="form-control currency-input presupuesto-cliente" id="PRESUPUESTO_CLIENTE_${contador}" name="PRESUPUESTO_CLIENTE[]" placeholder="$0.00" maxlength="9" onchange="concular_diferecnia()" required>
+    <input type="text" class="form-control currency-input presupuesto-cliente" id="PRESUPUESTO_CLIENTE_${contador}" name="PRESUPUESTO_CLIENTE[]" placeholder="$0.00" maxlength="9" onchange="calcular_diferencia()" required>
   </div>
 `;
 
   cell5.innerHTML = `
   <div class="position-relative">
-    <input type="text" class="form-control currency-input presupuesto-proveedor" id="PRESUPUESTO_PROVEEDOR_${contador}" name="PRESUPUESTO_PROVEEDOR[]" placeholder="$0.00" maxlength="9" onchange="concular_diferecnia()" required>
+    <input type="text" class="form-control currency-input presupuesto-proveedor" id="PRESUPUESTO_PROVEEDOR_${contador}" name="PRESUPUESTO_PROVEEDOR[]" placeholder="$0.00" maxlength="9" onchange="calcular_diferencia()" required>
   </div>
 `;
 
@@ -531,7 +531,7 @@ function guardar_presuouesto(id){
 
   document.getElementById(`PRESUPUESTO_CLIENTE_${id}`).value = inputSubpresupuestoCliente.value
   document.getElementById(`PRESUPUESTO_PROVEEDOR_${id}`).value  = inputSubpresuouestoContratista.value
-  concular_diferecnia()
+  calcular_diferencia()
   //document.getElementById(`DIFERENCIA_${id}`).value = inputSubpresupuestoDiferencia.value
 
 }
@@ -540,7 +540,7 @@ function eliminarFila(button) {
   var row = button.closest("tr"); 
   row.parentNode.removeChild(row);
   actualizarNumeracion();
-  concular_diferecnia();
+  calcular_diferencia();
 }
 
 function sub_eliminarFila(button,id) {
@@ -993,6 +993,16 @@ function sub_cular_diferecnia(id) {
   document.getElementById(`INPUT_PRESUPUESTO_CONTRATISTA_${id}`).value = formatearMoneda(
     totalProveedor.toString()
   );
+  
+  if (totalDiferencia<0){
+    document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.backgroundColor = "red";
+    document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.color = "white";
+
+  }else{
+    document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.backgroundColor = "";
+    document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.color = "";
+  }
+
   document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).value = formatearMoneda(
     totalDiferencia.toString()
   );
@@ -1000,7 +1010,7 @@ function sub_cular_diferecnia(id) {
 
 }
 
-function concular_diferecnia() {
+function calcular_diferencia() {
   var tabla = document.getElementById("DETALLE_PRESUPUESTO");
   var cuerpoTabla = tabla.getElementsByTagName("tbody")[0];
   var filas = cuerpoTabla.getElementsByTagName("tr");
@@ -1068,19 +1078,18 @@ function concular_diferecnia() {
     totalProveedor.toString()
   );
 
-
-  inputSubtotalDiferencia = document.getElementById("subtotalDiferencia")
-  inputSubtotalDiferencia.value = formatearMoneda(totalDiferencia.toString());
-
-    if (inputSubtotalDiferencia.value < 0){
-      diferencia_input.style.backgroundColor = "red";
-      diferencia_input.style.color = "white"; // Cambia el texto a blanco para mayor visibilidad
-    } else {
-      diferencia_input.style.backgroundColor = ""; // Restaurar color de fondo original
-      diferencia_input.style.color = ""; // Restaurar color de texto original
-    }
-    
-
+  if(totalDiferencia<0){
+    document.getElementById("subtotalDiferencia").style.backgroundColor = "red";
+    document.getElementById("subtotalDiferencia").style.color = "white"
+  }
+  else{
+    document.getElementById("subtotalDiferencia").style.backgroundColor = "";
+    document.getElementById("subtotalDiferencia").style.color = ""
+  }
+  document.getElementById("subtotalDiferencia").value = formatearMoneda(
+    totalDiferencia.toString()
+  );
+  
   document.getElementById("PRESUPUESTO_CLIENTE").value = formatearMoneda(
     totalCliente.toString()
   );
