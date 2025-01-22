@@ -7,6 +7,7 @@ from datetime import datetime, timedelta,date
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import A4
+from werkzeug.exceptions import BadRequestKeyError
 import pdfkit
 from flask import make_response
 import base64
@@ -2304,27 +2305,247 @@ def convertir_a_float(valor, valor_default=0.0):
 
 
 # EDIT PRESUPUESTO
-@app.route('/edit_presupuesto/', methods=['GET', 'POST'] )
+@app.route('/edit_presupuesto/', methods=['GET', 'POST'])
 def edit_presupuesto():
-    
     id = request.args.get('id')
-    if request.method == 'POST':
-         # Verifica si el token en la sesión coincide con el del formulario
-        token = request.form.get('token')
-        if token and session.get('token') == token:
-            # Elimina el token de la sesión para evitar reenvíos duplicados
-            session.pop('token', None)
-            
-            
-            
-        pass
-    else:
-        proveedores = ModelProveedores.get_all_proveedores_not_blocked(db)
-        puestos = ModelPuesto.get_all_puestos_no_block(db)
-        presupuesto = ModelPresupuesto.obtener_presupuesto_completo(db,id)
-        return render_template('modificar_presupuesto.html',presupuesto=presupuesto, proveedores=proveedores,puestos=puestos)
+    try:
+        if request.method == 'POST':
+            print("SE EJECUTA METODO POST")
+            # Verifica si el token en la sesión coincide con el del formulario
+            token = request.form.get('token')
+            if token and session.get('token') == token:
+                # Elimina el token de la sesión para evitar reenvíos duplicados
+                session.pop('token', None)
+                print("Token validado y eliminado de la sesión")
+                
+                try:
+                    # 1- ACTUALIZAR CABECERA DE PRESUPUESTO
+                    presupuesto = Presupuesto(
+                        id=id,
+                        proyecto=request.form['PROYECTO'],
+                        presupuesto_cliente=request.form['PRESUPUESTO_CLIENTE'],
+                        pagado_cliente=request.form['PAGADO_CLIENTE'],
+                        porcetaje_gastado_real=request.form['PORCENTAJE_GASTADO_REAL'],
+                        subtotal_cliente=request.form['subtotalCliente'],
+                        subtotal_proveedor=request.form['subtotalContratista'],
+                        subtotal_diferencia=request.form['subtotalDiferencia'],
+                        porcentaje_indirecto=request.form.get('porcentajeIndirecto', 0),
+                        total_porcentaje_indirecto=request.form.get('totalIndirectoCliente', 0),
+                        total_cliente=request.form.get('totalCliente', 0),
+                        total_proveedor=request.form.get('totalContratista', 0),
+                        total_diferencia=request.form.get('totalDiferencia', 0),
+                        usuario_id=current_user.id,
+                        estatus=0
+                    )
+                    
+                    
+                    ### ACTUALIZAR DETALLE DE PRESUPUESTO
+                    
+                    ### Actualizar partidas cargadas por lider de obra
+                    id_detalle = request.form.getlist('ID_DETALLE[]')
+                    proveedor_db = request.form.getlist('PROVEEDOR_DB[]')
+                    presupuesto_cliente_db = request.form.getlist('PRESUPUESTO_CLIENTE_DB[]')
+                    presupuesto_proveedor_db = request.form.getlist('PRESUPUESTO_PROVEEDOR_DB[]')
+                    diferencia_presupuestos_db = request.form.getlist('DIFERENCIA_DB[]')  
+                    contrato_firmado_partidas_db = request.form.getlist('CONTRATO_FIRMADO_DB[]')   
+                    estatus_db = request.form.getlist('STATUS_DB[]')
+                    
+                    #ACTUALIZAR LAS PARTIDAD CARGADAS
+                    for i in range(len(id_detalle)):
+                        fila = {
+                            'id_detalle': id_detalle[i],
+                            'id_proveedor': proveedor_db[i],
+                            'presupuesto_cliente': convertir_a_float(presupuesto_cliente_db[i]),
+                            'presupuesto_contratista': convertir_a_float(presupuesto_proveedor_db[i]),
+                            'diferencia': convertir_a_float(diferencia_presupuestos_db[i]),
+                            'contrato_firmado': contrato_firmado_partidas_db[i],
+                             'estatus': estatus_db[i],
+                        }
+                        
+                        resultado = ModelPresupuesto.actualizar_detalle_presupuesto(db, fila)
+                    
+                    #ACTUALIZAR PRESUPUESTO BAUART
+                    id_presupuestos_buart = request.form.getlist('ID_DETALLE_BUART_DB[]')
+                    presupuesto_cliente_buart = request.form.getlist('INPUT_PRESUPUESTO_CLIENTE_BAUART_DB[]')
+                    presupuesto_proveedor_buart = request.form.getlist('INPUT_PRESUPUESTO_CONTRATISTA_BAUART_DB[]')
+                    diferencia_presupuestos_buart = request.form.getlist('INPUT_DIFERENCIA_PRESUPUESTOS_BUART_DB[]')
+                    
+                    for i in range(len(id_presupuestos_buart)):
+                        fila = {
+                            'id_detalle': id_presupuestos_buart[i],
+                            'presupuesto_cliente': convertir_a_float(presupuesto_cliente_buart[i]),
+                            'presupuesto_contratista': convertir_a_float(presupuesto_proveedor_buart[i]),
+                            'diferencia': convertir_a_float(diferencia_presupuestos_buart[i]),
+                        }
+                        
+                        resultado_actualizacion = ModelPresupuesto.actualizar_presupuesto_bauart(db, fila)
+                    
 
+                     
+                    # ACTUALIZAR PARTIDAS PRESUPUESTO BUART
+                    id_partidas_buart_db = request.form.getlist('ID_DETALLE_SUB_BUART_DB[]')
+                    especialidades_buart_db = request.form.getlist('ESPECIALIDADES_SUB_DB[]')
+                    id_concepto_partidas_buart_db = request.form.getlist('INPUT_ID_ESPECIALIDADES_SUB_DB[]')
+                    id_proveedor_partidas_buart_db = request.form.getlist('PROVEEDOR_SUB_DB[]')
+                    presupuesto_cliente_buart_db = request.form.getlist('SUB_PRESUPUESTO_CLIENTE_DB[]')
+                    presupuesto_proveedor_buart_db = request.form.getlist('SUB_PRESUPUESTO_PROVEEDOR_DB[]')
+                    diferencia_presupuestos_buart_db = request.form.getlist('SUB_DIFERENCIA_DB[]')                     
+                    estatus_presupues_bauart_db = request.form.getlist('STATUS_SUB_DB[]')
+                    
+                    
+                    
+                    for i in range(len(id_partidas_buart_db)):
+                        fila = {
+                            'id_detalle': id_partidas_buart_db[i],
+                            'especialidad': especialidades_buart_db[i],
+                            'id_concepto': id_concepto_partidas_buart_db[i],
+                            'id_proveedor': id_proveedor_partidas_buart_db[i],
+                            'presupuesto_cliente': convertir_a_float(presupuesto_cliente_buart_db[i]),
+                            'presupuesto_proveedor': convertir_a_float(presupuesto_proveedor_buart_db[i]),
+                            'diferencia': convertir_a_float(diferencia_presupuestos_buart_db[i]),
+                            'estatus': estatus_presupues_bauart_db[i]
+                        }
+                        
+                        resultado_actualizacion = ModelPresupuesto.actualizar_presupuesto_bauart_detalle(db, fila)
+                    
+                    
+                    ### GUARDAR NUEVAR PARTIDAD PRESUPUESTO BUART
+                    id_partida_detalle_presupuesto = request.form.getlist('ID_PARTIDA_DB[]')
+                    
+                    for i in range(len(id_partida_detalle_presupuesto)):
+                        # OBTENER LOS DATOS DE LA PARTIDA
+                        id_concepto_nueva_partida = request.form.getlist(f'INPUT_ID_ESPECIALIDADES_SUB_{i}[]')
+                        is_nomina_nueva_partida = request.form.getlist(f'IS_NOMINA_{i}[]')
+                        conceptos_nueva_partida = request.form.getlist(f'ESPECIALIDADES_SUB-{i}[]')
+                        proveedor_nueva_partida = request.form.getlist(f'PROVEEDOR_SUB-{i}[]')
+                        presupuesto_cliente_nueva = request.form.getlist(f'SUB_PRESUPUESTO_CLIENTE-{i}[]')
+                        presupuesto_proveedor_nueva = request.form.getlist(f'SUB_PRESUPUESTO_PROVEEDOR-{i}[]')
+                        diferencia_presupuesto_nueva = request.form.getlist(f'SUB_DIFERENCIA-{i}[]')
+                        status_nueva = request.form.getlist(f'SUB_STATUS-{i}[]')
+                        
+                        
+                        for j in range(len(id_concepto_nueva_partida)):
+                            
+                            nueva_detalle = DetalleBauart(id=0,
+                                    id_presupuesto_bauart=id_presupuestos_buart[j],
+                                    id_concepto=id_concepto_nueva_partida[j],
+                                    concepto=conceptos_nueva_partida[j],
+                                    id_proveedor=proveedor_nueva_partida[j],
+                                    presupuesto_cliente=convertir_a_float(presupuesto_cliente_nueva[j]),
+                                    presupuesto_contratista=convertir_a_float(presupuesto_proveedor_nueva[j]),
+                                    diferencia=convertir_a_float(diferencia_presupuesto_nueva[j]),
+                                    is_nomina=is_nomina_nueva_partida[j],
+                                    estatus=status_nueva[j]
+                                    )
+                            
+                            # Guarda el detalle Bauart
+                            ModelPresupuesto.agregar_detalle_bauart(db, nueva_detalle)
+                            
+                
+                    #### GUARDAR NUEVAS PARTIDAS PRESUPUESTO
+                    id_partida = request.form.getlist('ID_PARTIDAS_NV[]')
+                    conceptos_partidas = request.form.getlist('ESPECIALIDADES_NV[]')
+                    id_concepto_partidas = request.form.getlist('ID_ESPECIALIDADES_NV[]')
+                    proveedor_partidas = request.form.getlist('PROVEEDOR_NV[]')
+                    presupuesto_cliente_partidas = request.form.getlist('PRESUPUESTO_CLIENTE_NV[]')
+                    presupuesto_proveedor_partidas = request.form.getlist('PRESUPUESTO_PROVEEDOR_NV[]')
+                    diferencia_presupuestos_partidas = request.form.getlist('DIFERENCIA_NV[]')
+                    contrato_firmado_partidas = request.form.getlist('CONTRATO_FIRMADO_NV[]')
+                    status_partidas = request.form.getlist('STATUS_NV[]')
 
+                    for i in range(len(id_partida)):
+                        detalle = DetallePresupuesto(id=0,
+                            id_presupuesto=id,
+                            id_concepto=id_concepto_partidas[i],
+                            concepto=conceptos_partidas[i],
+                            id_proveedor=proveedor_partidas[i],
+                            presupuesto_cliente=convertir_a_float(presupuesto_cliente_partidas[i]),
+                            presupuesto_contratista=convertir_a_float(presupuesto_proveedor_partidas[i]),
+                            diferencia=convertir_a_float(diferencia_presupuestos_partidas[i]),
+                            contrato_firmado=contrato_firmado_partidas[i],
+                            estatus = status_partidas[i]
+                            
+                        )
+
+                        # Guarda el detalle del presupuesto
+                        detalle_id = ModelPresupuesto.agregar_detalle_presupuesto(db, detalle)
+                        detalle.id = detalle_id
+
+                        # Si el proveedor es "Bauart", se genera un presupuesto Bauart
+                        if detalle.id_proveedor == '0':
+                            nombre_sub_presupuesto = request.form[f'NOMBRE_SUB-{id_partida[i]}']
+                            total_cliente_bauart = request.form[f'INPUT_PRESUPUESTO_CLIENTE_BAUART-{id_partida[i]}']
+                            total_proveedor_bauart = request.form[f'INPUT_PRESUPUESTO_CONTRATISTA_BAUART-{id_partida[i]}']
+                            diferencia_bauart = request.form[f'INPUT_DIFERENCIA_PRESUPUESTOS-{id_partida[i]}']
+
+                            presupuesto_bauart = PresupuestoBauart(
+                                id=0,
+                                concepto=detalle.concepto,
+                                id_detalle=detalle.id,
+                                nombre_presupuesto=nombre_sub_presupuesto,
+                                total_presupuesto_cliente=convertir_a_float(total_cliente_bauart),
+                                total_presupuesto_proveedor=convertir_a_float(total_proveedor_bauart),
+                                diferencia_presupuesto=convertir_a_float(diferencia_bauart)
+                            )
+
+                            # Guarda el presupuesto Bauart
+                            presupuesto_bauart_id = ModelPresupuesto.agregar_presupuesto_bauart(db, presupuesto_bauart)
+                            presupuesto_bauart.id = presupuesto_bauart_id
+
+                            # Detalles del presupuesto Bauart
+                            id_concepto_sub = request.form.getlist(f'INPUT_ID_ESPECIALIDADES_SUB_{id_partida[i]}[]')
+                            is_nomina_sub = request.form.getlist(f'IS_NOMINA_{id_partida[i]}[]')
+                            conceptos_sub = request.form.getlist(f'ESPECIALIDADES_SUB-{id_partida[i]}[]')
+                            proveedores_sub = request.form.getlist(f'PROVEEDOR_SUB-{id_partida[i]}[]')
+                            sub_presupuesto_cliente = request.form.getlist(f'SUB_PRESUPUESTO_CLIENTE-{id_partida[i]}[]')
+                            sub_presupuesto_proveedor = request.form.getlist(f'SUB_PRESUPUESTO_PROVEEDOR-{id_partida[i]}[]')
+                            sub_diferencia = request.form.getlist(f'SUB_DIFERENCIA-{id_partida[i]}[]')
+
+                            for j in range(len(conceptos_sub)):
+                                detalle_bauart = DetalleBauart(id=0,
+                                    id_presupuesto_bauart=presupuesto_bauart.id,
+                                    id_concepto=id_concepto_sub[j],
+                                    concepto=conceptos_sub[j],
+                                    id_proveedor=proveedores_sub[j],
+                                    presupuesto_cliente=convertir_a_float(sub_presupuesto_cliente[j]),
+                                    presupuesto_contratista=convertir_a_float(sub_presupuesto_proveedor[j]),
+                                    diferencia=convertir_a_float(sub_diferencia[j]),
+                                    is_nomina=is_nomina_sub[j]
+                                )
+
+                                # Guarda el detalle Bauart
+                                ModelPresupuesto.agregar_detalle_bauart(db, detalle_bauart)
+
+                    return redirect(url_for('prespuestos'))
+
+                            
+              
+                    # Aquí deberías tener la lógica para actualizar el presupuesto en la base de datos
+                    
+                    return "Presupuesto actualizado correctamente"
+                
+                except BadRequestKeyError as e:
+                    print(f"Error al acceder a una clave en request.form: {e}")
+                    return jsonify({"error": f"Clave faltante en el formulario: {e}"}), 400
+                
+                except Exception as e:
+                    print(f"Error al crear el presupuesto: {e}")
+                    return jsonify({"error": f"Ocurrió un error al actualizar el presupuesto: {e}"}), 500
+                
+            else:
+                return redirect(url_for('prespuestos'))
+        else:
+            print("SE EJECUTA METODO GET")
+            session['token'] = str(uuid.uuid4())
+            proveedores = ModelProveedores.get_all_proveedores_not_blocked(db)
+            puestos = ModelPuesto.get_all_puestos_no_block(db)
+            presupuesto = ModelPresupuesto.obtener_presupuesto_completo(db, id)
+            return render_template('modificar_presupuesto.html', presupuesto=presupuesto, proveedores=proveedores, puestos=puestos,token=session['token'])
+    
+    except Exception as e:
+        db.rollback()
+        print(f"Error en edit_presupuesto: {e}")
+        return jsonify({"error": f"Ocurrió un error en edit_presupuesto: {e}"}), 500
 
 
 # PRESUPUESTO
@@ -3474,6 +3695,7 @@ app.register_error_handler(401,status_401)
 app.register_error_handler(404,status_404)
 
 if __name__ == '__main__':
+    app.run(debug=True)
     #app.config.from_object(config['development'])
     
-    app.run(debug=True)
+    

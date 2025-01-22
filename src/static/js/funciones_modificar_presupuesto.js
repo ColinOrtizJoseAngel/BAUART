@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function añadirConcepto() {
-   
+    
     var tabla = document.getElementById("DETALLE_PRESUPUESTO");
     var cuerpoTabla = tabla.getElementsByTagName("tbody")[0];
     var contador = cuerpoTabla.rows.length + 1;
@@ -158,10 +158,10 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
   
     cell2.innerHTML = `
-    <input type="text" class="form-control borderless text-center" style="display: none" id="ID_PARTIDA_${contador}" name="ID_PARTIDAS[]" value="${contador}" readonly>
+    <input type="text" class="form-control borderless text-center" style="display: none" id="ID_PARTIDA_${contador}" name="ID_PARTIDAS_NV[]" value="${contador}" readonly>
   
-    <input type="text" class="form-control" id="INPUT_ESPECIALIDADES_${contador}" name="ESPECIALIDADES[]" autocomplete="off" required>
-    <input type="text" class="form-control" style="display: none" id="INPUT_ID_ESPECIALIDADES" name=ID_ESPECIALIDADES[]>
+    <input type="text" class="form-control" id="INPUT_ESPECIALIDADES_${contador}" name="ESPECIALIDADES_NV[]" autocomplete="off" required>
+    <input type="text" class="form-control" style="display: none" id="INPUT_ID_ESPECIALIDADES" name=ID_ESPECIALIDADES_NV[]>
     <div class="autocomplete-items"></div>
     <div class="invalid-feedback">
         Selecciona una especialidad
@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
             VER PRESUPUESTO BAUART
         </button>
       </div>
-      <select class="form-control" id="INPUT_PROVEEDOR_${contador}" name="PROVEEDOR[]" onchange="sub_presupuesto(this,${contador})">
+      <select class="form-control" id="INPUT_PROVEEDOR_${contador}" name="PROVEEDOR_NV[]" onchange="sub_presupuesto(this,${contador})">
           <option value="">SELECIONA UN PROVEEDOR</option>
           
       </select>
@@ -184,21 +184,21 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
   
     cell4.innerHTML = `
-    <input type="text" class="form-control currency-input presupuesto-cliente" id="PRESUPUESTO_CLIENTE_${contador}" name="PRESUPUESTO_CLIENTE[]" placeholder="$0.00" onchange="concular_diferecnia()">
+    <input type="text" class="form-control currency-input presupuesto-cliente" id="PRESUPUESTO_CLIENTE_${contador}" name="PRESUPUESTO_CLIENTE_NV[]" placeholder="$0.00" onchange="concular_diferecnia()">
   `;
   
     cell5.innerHTML = `
-    <input type="text" class="form-control currency-input presupuesto-proveedor" id="PRESUPUESTO_PROVEEDOR_${contador}" name="PRESUPUESTO_PROVEEDOR[]" placeholder="$0.00" onchange="concular_diferecnia()">
+    <input type="text" class="form-control currency-input presupuesto-proveedor" id="PRESUPUESTO_PROVEEDOR_${contador}" name="PRESUPUESTO_PROVEEDOR_NV[]" placeholder="$0.00" onchange="concular_diferecnia()">
   `;
   
     cell6.innerHTML = `
-      <input type="text" class="form-control currency-input presupuesto-diferencia" id="DIFERENCIA_${contador}" name="DIFERENCIA[]" onchange="concular_diferencia()" placeholder="$0.00" readonly>
+      <input type="text" class="form-control currency-input presupuesto-diferencia" id="DIFERENCIA_${contador}" name="DIFERENCIA_NV[]" onchange="concular_diferencia()" placeholder="$0.00" readonly>
   `;
   
     cell7.innerHTML = `
-  <select style="text-align: center;"  id="CONTRATO_FIRMADO" name="CONTRATO_FIRMADO[]" class="form-control" >
-      <option value="True">SÍ</option>
-      <option value="False">NO</option>
+  <select style="text-align: center;"  id="CONTRATO_FIRMADO" name="CONTRATO_FIRMADO_NV[]" class="form-control" >
+      <option value=True>SÍ</option>
+      <option value=False>NO</option>
   </select>
   <div class="invalid-feedback">
       Completa el banco
@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
   `;
   
     cell8.innerHTML = `
-  <select id="STATUS" name="STATUS[]" class="form-control">
+  <select id="STATUS" name="STATUS_NV[]" class="form-control">
       <option value="1">PRESUPUESTO CARGADO</option>
       <option value="2">APROBADO POR DIRECTOR</option>
   </select>
@@ -294,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
       
       cell7.innerHTML = `
-      <select id="STATUS" name="STATUS[]" class="form-control">
+      <select id="STATUS" name="SUB_STATUS-${id}[]" class="form-control">
                                     <option value="0">PRESUPUESTO CARGADO</option>
                                     <option value="0">APROBADO POR DIRECTOR</option>
                                 </select>
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
   
       cell7.innerHTML = `
-      <select id="STATUS" name="STATUS[]" class="form-control">
+      <select id="STATUS" name="SUB_STATUS-${id}[]" class="form-control">
                                     <option value="0">PRESUPUESTO CARGADO</option>
                                     <option value="0">APROBADO POR DIRECTOR</option>
                                 </select>
@@ -373,12 +373,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const modalContainer = document.getElementById("subpresupuestos");
       const modalHTML = `
       <!-- Modal -->
-      <div class="modal fade modal-xl" id="modalPresupuesto_${id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade modal-xl" id="modalPresupuesto_${id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title" id="exampleModalLabel">PRESUPUESTO BAUART</h4>
-              <button type="button" style="background-color: white;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <div class="form-group row">
@@ -467,8 +466,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
            <div class="modal-footer">
               <div class="d-grid gap-2 d-md-flex justify-content-start">
-                <button type="button" class="btn botones" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> CERRAR</button>
-                <button type="button" class="btn botones"  data-bs-dismiss="modal" onclick="guardar_presuouesto(${id})" ><i class="bi bi-floppy"></i> CONFIRMAR</button
+                 <button type="button" class="btn botones"  data-bs-dismiss="modal" onclick="guardar_presuouesto(${id})" ><i class="bi bi-floppy"></i> CONFIRMAR</button
               </div>
             </div>
           </div>
@@ -510,13 +508,18 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   
   function guardar_presuouesto(id){
-    const inputSubpresupuestoCliente = document.getElementById(`SUB_PRESUPUESTO_CLIENTE-${id}`)
+    const inputSubpresupuestoCliente = document.getElementById(`INPUT_PRESUPUESTO_CLIENTE_BAUART_${id}`)
     const inputSubpresuouestoContratista = document.getElementById(`INPUT_PRESUPUESTO_CONTRATISTA_${id}`)
+    console.log(inputSubpresuouestoContratista.value)
     const inputSubpresupuestoDiferencia = document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`)
-  
-  
-    document.getElementById(`PRESUPUESTO_CLIENTE_${id}`).value = inputSubpresupuestoCliente.value
-    document.getElementById(`PRESUPUESTO_PROVEEDOR_${id}`).value  = inputSubpresuouestoContratista.value
+    const inputDetallePresupuestoCliente = document.getElementById(`PRESUPUESTO_CLIENTE_${id}`)
+    const inputDetallePresupuestoContratista = document.getElementById(`PRESUPUESTO_PROVEEDOR_${id}`)
+    
+    console.log(inputDetallePresupuestoCliente.value)
+    console.log(inputDetallePresupuestoContratista.value)
+
+    inputDetallePresupuestoCliente.value = inputSubpresupuestoCliente.value
+    inputDetallePresupuestoContratista.value  = inputSubpresuouestoContratista.value
     concular_diferecnia()
     //document.getElementById(`DIFERENCIA_${id}`).value = inputSubpresupuestoDiferencia.value
   
@@ -886,8 +889,17 @@ document.addEventListener("DOMContentLoaded", function () {
     return valor.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
   }
   
-  function sub_cular_diferecnia(id) {
-    var tabla = document.getElementById(`tablasub_${id}`);
+  /**
+   * FUNCION PARA CALCULAR LA DIFERENCIA EN EL SUBPRESUPUESTO
+   *
+   * @param {Tipo} idDetallePresupuesto  - Id de partida presupuestal
+   * @param {Tipo} idSubDetallePresupuesto - Id de partida Subpresupuesto
+  */
+
+  function sub_cular_diferecnia(idDetallePresuouesto,idSubDetallePresupuesto) {
+
+
+    var tabla = document.getElementById(`tablasub_${idDetallePresuouesto}`);
     var cuerpoTabla = tabla.getElementsByTagName("tbody")[0];
     var filas = cuerpoTabla.getElementsByTagName("tr");
   
@@ -945,26 +957,30 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   
-    // Actualizar los totales en la tabla
-    document.getElementById(`INPUT_PRESUPUESTO_CLIENTE_BAUART_${id}`).value = formatearMoneda(
-      totalCliente.toString()
-    );
-    document.getElementById(`INPUT_PRESUPUESTO_CONTRATISTA_${id}`).value = formatearMoneda(
-      totalProveedor.toString()
-    );
+  
+
+
+    inputPresupuestoClienteBauart = document.getElementById(`INPUT_PRESUPUESTO_CLIENTE_BAUART_${idDetallePresuouesto}`)
+    inputPresupuestoProveedor = document.getElementById(`INPUT_PRESUPUESTO_CONTRATISTA_${idDetallePresuouesto}`)
+    inputDiferencia = document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${idDetallePresuouesto}`)
+
+
     if (totalDiferencia<0){
-      document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.backgroundColor = "red";
-      document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.color = "white";
+      inputDiferencia.style.backgroundColor = "red";
+      inputDiferencia.style.color = "white";
   
-    }else{
-      document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.backgroundColor = "";
-      document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).style.color = "";
     }
-  
-    document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`).value = formatearMoneda(
-      totalDiferencia.toString()
-    );
+    else{
+      inputDiferencia.style.backgroundColor = "";
+      inputDiferencia.style.color = "";
+    }
+
+    inputPresupuestoClienteBauart.value = formatearMoneda(totalCliente.toString());
+    inputPresupuestoProveedor.value = formatearMoneda(totalProveedor.toString());
+    inputDiferencia.value = formatearMoneda(totalDiferencia.toString());
+
     
+
   
   }
   
@@ -1036,6 +1052,10 @@ document.addEventListener("DOMContentLoaded", function () {
       totalProveedor.toString()
     );
 
+    document.getElementById("totalContratista").value = formatearMoneda(
+      totalProveedor.toString()
+    );
+
     if(totalDiferencia<0){
       document.getElementById("subtotalDiferencia").style.backgroundColor = "red";
       document.getElementById("subtotalDiferencia").style.color = "white"
@@ -1048,9 +1068,12 @@ document.addEventListener("DOMContentLoaded", function () {
       totalDiferencia.toString()
     );
     
-    document.getElementById("PRESUPUESTO_CLIENTE").value = formatearMoneda(
+    /*
+      document.getElementById("PRESUPUESTO_CLIENTE").value = formatearMoneda(
       totalCliente.toString()
-    );
+      );
+    */
+    
     document.getElementById("totalContratista").value = formatearMoneda(
       totalProveedor.toString()
     );
@@ -1079,9 +1102,16 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("totalCliente").value = formatearMoneda(
       totalCliente.toString()
     );
+
+    document.getElementById("PRESUPUESTO_CLIENTE").value = formatearMoneda(
+      totalCliente.toString()
+    )
+
     document.getElementById("totalIndirectoCliente").value = formatearMoneda(
       valorAdicionalCliente.toString()
     );
+
+
     calcularTotalDiferencia();
   }
   

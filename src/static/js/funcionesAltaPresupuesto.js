@@ -1078,6 +1078,10 @@ function calcular_diferencia() {
     totalProveedor.toString()
   );
 
+  document.getElementById("totalContratista").value = formatearMoneda(
+    totalProveedor.toString()
+  );
+
   if(totalDiferencia<0){
     document.getElementById("subtotalDiferencia").style.backgroundColor = "red";
     document.getElementById("subtotalDiferencia").style.color = "white"
@@ -1090,9 +1094,12 @@ function calcular_diferencia() {
     totalDiferencia.toString()
   );
   
-  document.getElementById("PRESUPUESTO_CLIENTE").value = formatearMoneda(
+  /*
+    document.getElementById("PRESUPUESTO_CLIENTE").value = formatearMoneda(
     totalCliente.toString()
   );
+  */
+  
   document.getElementById("totalContratista").value = formatearMoneda(
     totalProveedor.toString()
   );

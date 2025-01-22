@@ -175,13 +175,13 @@ class ModelPresupuesto:
                 query = """
                     INSERT INTO DetallesBauart (
                         id_presupuesto_bauart, id_concepto,concepto, presupuesto_cliente, presupuesto_contratista, diferencia, 
-                        id_proveedor, is_blocked,is_nomina
-                    ) VALUES (?, ?, ?,?, ?, ?, ?, ?,?);
+                        id_proveedor, is_blocked,is_nomina,estatus
+                    ) VALUES (?, ?, ?,?, ?, ?, ?, ?,?,?);
                 """
                 cursor.execute(query, (
                     detalle_bauart.id_presupuesto_bauart,detalle_bauart.id_concepto ,detalle_bauart.concepto, detalle_bauart.presupuesto_cliente,
                     detalle_bauart.presupuesto_contratista, detalle_bauart.diferencia, detalle_bauart.id_proveedor,
-                    detalle_bauart.is_blocked,detalle_bauart.is_nomina
+                    detalle_bauart.is_blocked,detalle_bauart.is_nomina,detalle_bauart.estatus
                 ))
                  # Recuperar el último ID insertado
                 cursor.execute("SELECT TOP (1) [id_detalle_bauart] FROM DetallesBauart ORDER BY [id_detalle_bauart] DESC;")
@@ -286,7 +286,10 @@ class ModelPresupuesto:
 						p.fecha_fin,
 						p.total_semanas,
                         p.porcentaje_por_cobra,
-                        p.porcentaje_por_gastar
+                        p.porcentaje_por_gastar,
+                        p.total_contratista,
+                        p.total_diferencia,
+                        p.porcentaje_indirecto
                     FROM Presupuestos AS p
                     INNER JOIN CLIENTES AS c ON c.ID = p.id_cliente
                     INNER JOIN EMPRESAS AS e ON e.ID = p.id_empresa
@@ -330,6 +333,9 @@ class ModelPresupuesto:
                         "total_semanas": row[27],
                         "porcentaje_por_cobrar":row[28],
                         "porcentaje_por_gastar":row[29],
+                        "total_proveedor":cls.formatear_a_pesos(row[30]),
+                        "total_diferencia":cls.formatear_a_pesos(row[31]),
+                        "porcentaje_indirecto":row[32],
                         "detalle_presupuesto" : []
                     }
                 return presupuesto
@@ -470,7 +476,10 @@ class ModelPresupuesto:
                         p.sub_diferencia,
                         p.usuario,
                         u.NOMBRE_USUARIO AS nombre_usuario,
-                        p.estatus
+                        p.estatus,
+                        p.total_contratista,
+                        p.total_diferencia,
+                        p.porcentaje_indirecto
                     FROM Presupuestos AS p
                     INNER JOIN CLIENTES AS c ON c.ID = p.id_cliente
                     INNER JOIN EMPRESAS AS e ON e.ID = p.id_empresa
@@ -506,7 +515,10 @@ class ModelPresupuesto:
                         "diferencia_es_negativa" : cls.vierificar_diferecnia(row[20]),
                         "usuario": row[21],
                         "nombre_usuario": row[22],
-                        "estatus": row[23]
+                        "estatus": row[23],
+                        "total_proveedor":row[24],
+                        "total_diferencia": row[25],
+                        "porcentaje_indirecto": row[26]
                     }
                     for row in rows
                 ]
@@ -516,34 +528,7 @@ class ModelPresupuesto:
             raise Exception(f"Error al obtener los presupuestos: {ex}")
 
 
-    @classmethod
-    def actualizar_presupuesto(cls, db, presupuesto):
-        try:
-            with db.cursor() as cursor:
-                query = """
-                    UPDATE Presupuestos
-                    SET id_cliente = ?, id_director = ?, id_empresa = ?, id_proyecto = ?, usuario = ?, 
-                        estatus_proyecto = ?, presupuesto_cliente = ?, sub_proveedor = ?, subtotal_cliente_iva = ?, 
-                        total_cliente_iva = ?, indirecto_cliente_iva = ?, sub_diferencia = ?, pagado_cliente = ?, 
-                        porcentaje_pagado = ?, falta_por_cobrar = ?, falta_por_gastar = ?
-                    WHERE id_presupuesto = ?;
-                """
-                cursor.execute(query, (
-                    presupuesto.id_cliente, presupuesto.id_director, presupuesto.id_empresa, presupuesto.id_proyecto,
-                    presupuesto.usuario, presupuesto.estatus_proyecto, presupuesto.presupuesto_cliente,
-                    presupuesto.sub_proveedor, presupuesto.subtotal_cliente_iva, presupuesto.total_cliente_iva,
-                    presupuesto.indirecto_cliente_iva, presupuesto.sub_diferencia, presupuesto.pagado_cliente,
-                    presupuesto.porcentaje_pagado, presupuesto.falta_por_cobrar, presupuesto.falta_por_gastar,
-                    presupuesto.id_presupuesto
-                ))
-                db.commit()
-        except Exception as ex:
-            db.rollback()
-            raise Exception(f"Error al actualizar el presupuesto: {ex}")
 
-  
-
- 
     @classmethod
     def get_detalles_by_presupuesto(cls, db, id_presupuesto):
         """
@@ -842,4 +827,242 @@ class ModelPresupuesto:
         except Exception as ex:
             raise Exception(f"Error al obtener presupuestos Bauart: {ex}")
         
+    
+    def convertir_a_float(valor, valor_default=0.0):
+        """
+        Convierte un valor a float. Si no es posible, devuelve un valor predeterminado.
+        
+        :param valor: Valor a convertir
+        :param valor_default: Valor por defecto si la conversión falla
+        :return: Valor convertido a float o el valor por defecto
+        """
+        try:
+            # Elimina el símbolo '$' y las comas, luego convierte a float
+            return float(valor.replace("$", "").replace(",", ""))
+        except (ValueError, AttributeError):
+            return valor_default
+
+
+    
+    @classmethod
+    def actualizar_presupuesto(cls, db, presupuesto):
+        try:
+            with db.cursor() as cursor:
+                presupuesto_actual = cls.obtener_presupuesto_por_id(db,presupuesto.id)
+                
+                query = "UPDATE Presupuestos SET "
+                params = []
+                updates = []
+
+                if presupuesto_actual['presupuesto_cliente'] != presupuesto.presupuesto_cliente:
+                    updates.append("presupuesto_cliente = ?")
+                    params.append(cls.convertir_a_float(presupuesto.presupuesto_cliente))
+                
+                if presupuesto_actual['pagado_cliente'] != presupuesto.pagado_cliente:
+                    updates.append("pagado_cliente = ?")
+                    params.append(cls.convertir_a_float(presupuesto.pagado_cliente))
+                
+                if presupuesto_actual['porcentaje_gastado'] != presupuesto.porcetaje_gastado_real:
+                    updates.append("porcentaje_gastado = ?")
+                    params.append(presupuesto.porcetaje_gastado_real)
+                
+                if presupuesto_actual['subtotal_cliente_iva'] != presupuesto.subtotal_cliente:
+                    updates.append("subtotal_cliente_iva = ?")
+                    params.append(cls.convertir_a_float(presupuesto.subtotal_cliente))
+                
+                if presupuesto_actual['sub_proveedor'] != presupuesto.subtotal_proveedor:
+                    updates.append("sub_proveedor = ?")
+                    params.append(cls.convertir_a_float(presupuesto.subtotal_proveedor))
+                
+                if presupuesto_actual['sub_diferencia'] != presupuesto.subtotal_diferencia:
+                    updates.append("sub_diferencia = ?")
+                    params.append(cls.convertir_a_float(presupuesto.subtotal_diferencia))
+                
+                if presupuesto_actual['indirecto_cliente_iva'] != presupuesto.total_porcentaje_indirecto:
+                    updates.append("indirecto_cliente_iva = ?")
+                    params.append(cls.convertir_a_float(presupuesto.total_porcentaje_indirecto))
+                
+                if presupuesto_actual['total_cliente_iva'] != presupuesto.total_cliente:
+                    updates.append("total_cliente_iva = ?")
+                    params.append(cls.convertir_a_float(presupuesto.total_cliente))
+                
+                if presupuesto_actual['total_proveedor'] != presupuesto.total_proveedor:
+                    updates.append("total_contratista = ?")
+                    params.append(cls.convertir_a_float(presupuesto.total_proveedor))
+                
+                if presupuesto_actual['total_diferencia'] != presupuesto.total_diferencia:
+                    updates.append("total_diferencia = ?")
+                    params.append(cls.convertir_a_float(presupuesto.total_diferencia))
+                
+                if presupuesto_actual['usuario'] != presupuesto.usuario_id:
+                    updates.append("usuario = ?")
+                    params.append(presupuesto.usuario_id)
+                
+                if presupuesto_actual['estatus'] != presupuesto.estatus:
+                    updates.append("estatus = ?")
+                    params.append(presupuesto.estatus)
+                
+                updates.append("porcentaje_indirecto = ?")
+                params.append(presupuesto.porcentaje_indirecto)
+                    
+                if updates:
+                    query += ", ".join(updates) + " WHERE id_presupuesto = ?"
+                    params.append(presupuesto.id)
+                    cursor.execute(query, params)
+                    db.commit()
+                
+                return presupuesto
+                
+        except Exception as ex:
+            print(f"Error al actualizar el presupuesto: {ex}")
+            raise ex
+    
   
+        
+    @classmethod
+    def actualizar_detalle_presupuesto(cls, db, fila):
+        try:
+            with db.cursor() as cursor:
+                # Recuperar el detalle actual
+                cursor.execute("SELECT * FROM DetallesPresupuesto WHERE id_detalle = ?", (fila['id_detalle'],))
+                detalle_actual = cursor.fetchone()
+                
+                query = "UPDATE DetallesPresupuesto SET "
+                params = []
+                updates = []
+                
+                if detalle_actual[2] != fila['id_proveedor']:
+                    updates.append("id_proveedor = ?")
+                    params.append(fila['id_proveedor'])
+                    
+                if detalle_actual[6] != fila['presupuesto_cliente']:
+                    updates.append("presupuesto_cliente = ?")
+                    params.append(fila['presupuesto_cliente'])
+                    
+                if detalle_actual[7] != fila['presupuesto_contratista']:
+                    updates.append("presupuesto_contratista = ?")
+                    params.append(fila['presupuesto_contratista'])
+                
+                if detalle_actual[8] != fila['diferencia']:
+                    updates.append("diferencia = ?")
+                    params.append(fila['diferencia'])
+                
+                if detalle_actual[10] != fila['estatus']:
+                    updates.append("estatus = ?")
+                    params.append(int(fila['estatus']))
+                    
+                if updates:
+                    query += ", ".join(updates) + " WHERE id_detalle = ?"
+                    params.append(fila['id_detalle'])
+                    
+                    # Imprime la consulta SQL para depuración
+                    print("Executing query:", query)
+                    print("With parameters:", params)
+                    
+                    cursor.execute(query, params)
+                    db.commit()
+            
+            return True
+        except Exception as ex:
+            db.rollback()
+            print(f"Error al actualizar el detalle del presupuesto: {ex}")
+            raise ex    
+        
+    @classmethod
+    def actualizar_presupuesto_bauart(cls, db, fila):
+        try:
+            with db.cursor() as cursor:
+                # Recuperar el detalle actual
+                cursor.execute("SELECT * FROM PresupuestosBauart WHERE id_presupuesto_bauart = ?", (fila['id_detalle'],))
+                detalle_actual = cursor.fetchone()
+                
+                query = "UPDATE PresupuestosBauart SET "
+                params = []
+                updates = []
+                
+                if detalle_actual[3] != fila['presupuesto_cliente']:
+                    updates.append("total_presupuesto_cliente = ?")
+                    params.append(fila['presupuesto_cliente'])
+                    
+                if detalle_actual[4] != fila['presupuesto_contratista']:
+                    updates.append("total_presupuesto_proveedor = ?")
+                    params.append(fila['presupuesto_contratista'])
+                    
+                if detalle_actual[5] != fila['diferencia']:
+                    updates.append("diferencia_presupuesto = ?")
+                    params.append(fila['diferencia'])
+                
+                    
+                if updates:
+                    query += ", ".join(updates) + " WHERE id_presupuesto_bauart = ?"
+                    params.append(fila['id_detalle'])
+                    
+                    # Imprime la consulta SQL para depuración
+                    print("Executing query:", query)
+                    print("With parameters:", params)
+                    
+                    cursor.execute(query, params)
+                    db.commit()
+            
+            return True
+        except Exception as ex:
+            db.rollback()
+            print(f"Error al actualizar el detalle del presupuesto: {ex}")
+            raise ex
+        
+        
+    @classmethod
+    def actualizar_presupuesto_bauart_detalle(cls,db,fila):
+            try:
+                with db.cursor() as cursor:
+                    # Recuperar el detalle actual
+                    cursor.execute("SELECT * FROM DetallesBauart WHERE id_detalle_bauart = ?", (fila['id_detalle'],))
+                    detalle_actual = cursor.fetchone()
+                    
+                    query = "UPDATE DetallesBauart SET "
+                    params = []
+                    updates = []
+                    
+                    if detalle_actual[2] != fila['especialidad']:
+                        updates.append("[concepto] = ?")
+                        params.append(fila['especialidad'])
+                    
+                    if detalle_actual[3] != fila['presupuesto_cliente']:
+                        updates.append("presupuesto_cliente = ?")
+                        params.append(fila['presupuesto_cliente'])
+                        
+                    if detalle_actual[4] != fila['presupuesto_proveedor']:
+                        updates.append("presupuesto_contratista = ?")
+                        params.append(fila['presupuesto_proveedor'])
+                        
+                    if detalle_actual[5] != fila['diferencia']:
+                        updates.append("diferencia = ?")
+                        params.append(fila['diferencia'])
+                    
+                
+                    if detalle_actual[9] != fila['id_concepto']:
+                        updates.append("id_concepto = ?")
+                        params.append(fila['id_concepto'])
+                    
+                    if detalle_actual[10] != fila['estatus']:
+                        updates.append("estatus = ?")
+                        params.append(fila['estatus'])
+                    
+                    if updates:
+                        query += ", ".join(updates) + " WHERE id_detalle_bauart = ?"
+                        params.append(fila['id_detalle'])
+                        
+                        # Imprime la consulta SQL para depuración
+                        print("Executing query:", query)
+                        print("With parameters:", params)
+                        
+                        cursor.execute(query, params)
+                        db.commit()
+                
+                return True
+            except Exception as ex:
+                db.rollback()
+                print(f"Error al actualizar el detalle del presupuesto: {ex}")
+                raise ex
+            
+            
