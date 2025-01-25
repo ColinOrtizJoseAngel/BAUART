@@ -206,11 +206,11 @@ document.addEventListener("DOMContentLoaded", function () {
   `;
   
     cell8.innerHTML = `
-  <select id="STATUS" name="STATUS_NV[]" class="form-control">
-      <option value="1">PRESUPUESTO CARGADO</option>
-      <option value="2">APROBADO POR DIRECTOR</option>
-  </select>
-  `;
+    <select id="STATUS" name="STATUS_NV[]"  id="STATUS_${contador}" class="form-control">
+        <option value="1">PRESUPUESTO CARGADO</option>
+        <option value="2">APROBADO POR DIRECTOR</option>
+    </select>
+    `;
   
     cell9.innerHTML = `
   <div class="d-flex align-items-center justify-content-center">
@@ -518,11 +518,46 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(inputDetallePresupuestoCliente.value)
     console.log(inputDetallePresupuestoContratista.value)
 
+
     inputDetallePresupuestoCliente.value = inputSubpresupuestoCliente.value
     inputDetallePresupuestoContratista.value  = inputSubpresuouestoContratista.value
     concular_diferecnia()
     //document.getElementById(`DIFERENCIA_${id}`).value = inputSubpresupuestoDiferencia.value
-  
+
+
+    //VERIFICAR QUE EL TODOS LOS ESTATUS ESTEN APROBADO
+
+     // Selecciona la tabla por su ID
+     var table = document.getElementById(`tablasub_${id}`);
+    
+     // Selecciona todas las filas del cuerpo de la tabla
+     var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+     
+     // Recorre todas las filas
+     for (var i = 0; i < rows.length; i++) {
+         // Selecciona el campo de estatus en la fila actual
+         var estatusSelect = rows[i].querySelector('select[name="STATUS_SUB_DB[]"]');
+         
+         // Verifica si el estatus es "APROBADO POR DIRECTOR"
+         if (estatusSelect && estatusSelect.value === "1") {
+            contrado_aprobado = true
+         }
+         else {
+            contrado_aprobado = false
+         }
+
+     }
+
+    if(contrado_aprobado){
+      // Si no se encontró ningún estatus "APROBADO POR DIRECTOR", muestra un mensaje de error
+      selectEstatus = document.getElementById(`STATUS_${id}`)
+      selectEstatus.value = 1
+    }
+    else{
+      selectEstatus = document.getElementById(`STATUS_${id}`)
+      selectEstatus.value = 0
+    }
+    
   }
   
   function eliminarFila(button) {

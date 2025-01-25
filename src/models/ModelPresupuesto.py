@@ -864,7 +864,7 @@ class ModelPresupuesto:
                 
                 if presupuesto_actual['porcentaje_gastado'] != presupuesto.porcetaje_gastado_real:
                     updates.append("porcentaje_gastado = ?")
-                    params.append(presupuesto.porcetaje_gastado_real)
+                    params.append(float(presupuesto.porcetaje_gastado_real))
                 
                 if presupuesto_actual['subtotal_cliente_iva'] != presupuesto.subtotal_cliente:
                     updates.append("subtotal_cliente_iva = ?")
@@ -898,20 +898,18 @@ class ModelPresupuesto:
                     updates.append("usuario = ?")
                     params.append(presupuesto.usuario_id)
                 
-                if presupuesto_actual['estatus'] != presupuesto.estatus:
-                    updates.append("estatus = ?")
-                    params.append(presupuesto.estatus)
+                
                 
                 updates.append("porcentaje_indirecto = ?")
-                params.append(presupuesto.porcentaje_indirecto)
+                params.append(float(presupuesto.porcentaje_indirecto))
                     
                 if updates:
                     query += ", ".join(updates) + " WHERE id_presupuesto = ?"
-                    params.append(presupuesto.id)
+                    params.append(int(presupuesto.id))
                     cursor.execute(query, params)
                     db.commit()
                 
-                return presupuesto
+                return True
                 
         except Exception as ex:
             print(f"Error al actualizar el presupuesto: {ex}")
@@ -933,8 +931,13 @@ class ModelPresupuesto:
                 
                 if detalle_actual[2] != fila['id_proveedor']:
                     updates.append("id_proveedor = ?")
-                    params.append(fila['id_proveedor'])
-                    
+                    params.append(int(fila['id_proveedor']))
+                
+                if detalle_actual[5] != fila['contrato_firmado']:   
+                    updates.append("contrato_firmado = ?")
+                    params.append(fila['contrato_firmado'])
+                   
+                 
                 if detalle_actual[6] != fila['presupuesto_cliente']:
                     updates.append("presupuesto_cliente = ?")
                     params.append(fila['presupuesto_cliente'])

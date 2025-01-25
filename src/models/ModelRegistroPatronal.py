@@ -108,7 +108,6 @@ class ModelRegistroPatronal:
         except Exception as ex:
             db.rollback()
             raise Exception(ex)
-        
     @classmethod
     def get_all_registros_patronales(cls, db):
         try:
@@ -120,13 +119,12 @@ class ModelRegistroPatronal:
                 for row in rows:
                     registrospatronales.append(RegistroPatronal(
                         id_registro=row[0],
-                        id=row[0],
-                        id_empresa=row[2],
-                        numero_registro_patronal=row[1],
-                        estado=row[4],
-                        fecha_registro=row[5],
-                        usuario=row[6],
-                        is_blocked=row[7]
+                        id_empresa=row[1],
+                        numero_registro_patronal=row[2],
+                        estado=row[3],
+                        fecha_registro=row[4],
+                        usuario=row[5],
+                        is_blocked=row[6]
                     ))
                 return registrospatronales
         except Exception as ex:

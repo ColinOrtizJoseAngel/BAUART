@@ -37,6 +37,70 @@
 </div>
 <!-- FIN MODAL EDITAR EMPLEADO -->
 
+<div class="modal fade" id="monederoModal" tabindex="-1" aria-labelledby="monederoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="monederoModalLabel">ASIGNAR MONEDERO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/AsignarMonedero" method="post" class="needs-validation" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="token" value="{{ token }}">
+                <input type="hidden" id="empleadoId" name="empleado_id">
+                <input type="hidden" name="monedero_id" id="monederoId">
+
+                <div class="modal-body">
+                     <!-- Contenedor para mensajes de error -->
+                    <div id="alert-container" style="display: none;" class="alert alert-danger" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label for="numeroTarjeta" class="form-label">NÚMERO DE TARJETA</label>
+                        <input type="text" class="form-control" id="numeroTarjeta" name="numero_tarjeta" placeholder="Buscar por número de tarjeta">
+                        <ul class="list-group" id="resultadosMonedero" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Opciones de monedero se generan dinámicamente aquí -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn botones">ASIGNAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal para Desasignar Monedero -->
+<div class="modal fade" id="desasignarMonederoModal" tabindex="-1" aria-labelledby="desasignarMonederoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="desasignarMonederoModalLabel">DESASIGNAR MONEDERO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>El empleado ya tiene un monedero asignado:</p>
+                <ul>
+                    <li><strong>Número de Tarjeta:</strong> <span id="desasignarNumeroTarjeta"></span></li>
+                    <li><strong>ID del Monedero:</strong> <span id="desasignarIdMonedero"></span></li>
+                </ul>
+                <p>¿Deseas desasignar este monedero?</p>
+            </div>
+            <div class="modal-footer">
+                <form id="desasignarForm" action="/DesasignarMonedero" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" id="desasignarEmpleadoId" name="empleado_id">
+                    <input type="hidden" id="desasignarMonederoId" name="monedero_id">
+                    <button type="submit" class="btn botones">Desasignar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Modal para Filtrar cliente -->
 <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -114,6 +178,7 @@
                     <th scope="col">APELLIDO</th>
                     <th scope="col">PUESTO</th>
                     <th scope="col">TIPO EMPLEADO</th>
+                    <th scope="col">MONEDERO</th> <!-- Nueva columna -->
                     <th scope="col">ALTA/BAJA</th>
                     <th scope="col">ACCIONES</th>
                 </tr>
@@ -121,18 +186,25 @@
             <tbody>
                {% for e in empleados %}
                <tr class="{% if e.is_blocked %}table-secondary{% endif %}">
-                <td>{{ e.id }}</td>
-                <td>{{ e.nombre }}</td>
-                <td>{{ e.apellido }}</td>
-                <td>{{ e.puesto }}</td>
-                <td>{{ e.tipo_empleado }}</td>
-                <td>
-                    {% if e.baja_empleado %}
-                        BAJA
-                    {% else %}
-                        ALTA
-                    {% endif %}
-                </td>
+                    <td>{{ e.id }}</td>
+                    <td>{{ e.nombre }}</td>
+                    <td>{{ e.apellido }}</td>
+                    <td>{{ e.puesto }}</td>
+                    <td>{{ e.tipo_empleado }}</td>
+                    <td> <!-- Nueva celda para el monedero -->
+                        {% if e.id_monedero %}
+                            ASIGNADO
+                        {% else %}
+                            SIN ASIGNAR
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if e.baja_empleado %}
+                            BAJA
+                        {% else %}
+                            ALTA
+                        {% endif %}
+                    </td>
                 <td>
                     {% if e.baja_empleado %}
                     <form action="{{ url_for('unblock_empleado', id=e.id) }}" method="post" style="display:inline;">
@@ -147,6 +219,19 @@
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ e.id }}">
                             <li>
                                 <a class="dropdown-item" href="{{ url_for('edit_empleado', id=e.id) }}">EDITAR</a>
+                            </li>
+                            <li>
+                                {% if e.id_monedero %}
+                                    <!-- Si tiene monedero, mostrar modal de desasignar -->
+                                    <button class="dropdown-item" type="button" onclick="abrirModalMonedero('{{ e.id }}', { id: '{{ e.id_monedero }}', numero_tarjeta: '{{ e.numero_tarjeta }}' })">
+                                        DESASIGNAR MONEDERO
+                                    </button>
+                                {% else %}
+                                    <!-- Si no tiene monedero, mostrar modal de asignar -->
+                                    <button class="dropdown-item" type="button" onclick="abrirModalMonedero('{{ e.id }}', null)">
+                                        ASIGNAR MONEDERO
+                                    </button>
+                                {% endif %}
                             </li>
                             <li>
                                 <form action="{{ url_for('block_empleado', id=e.id) }}" method="post" style="display:inline;">
@@ -164,5 +249,129 @@
         </table>
     </div>
 </div>
+<script>
+    let selectedMonederoId = null; // Constante para almacenar el ID del monedero seleccionado
+
+// Escuchar el input para buscar monederos
+document.getElementById('numeroTarjeta').addEventListener('input', function () {
+    const numeroTarjeta = this.value;
+    const resultados = document.getElementById('resultadosMonedero');
+
+    fetch(`/BuscarMonederosDisponibles?numero_tarjeta=${numeroTarjeta}`)
+        .then(response => response.json())
+        .then(data => {
+            resultados.innerHTML = ''; // Limpiar resultados previos
+
+            if (data.error) {
+                resultados.innerHTML = `<li class="list-group-item text-danger">${data.error}</li>`;
+            } else if (data.length === 0) {
+                resultados.innerHTML = '<li class="list-group-item">No se encontraron resultados</li>';
+            } else {
+                data.forEach(monedero => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item list-group-item-action';
+
+                    if (monedero.id_empleado) {
+                        // Monedero asignado: deshabilitar clic y estilo diferente
+                        li.textContent = `${monedero.banco} - ${monedero.numero_tarjeta} (Asignado)`;
+                        li.classList.add('text-muted'); // Agregar estilo para deshabilitado
+                        li.style.cursor = 'not-allowed'; // Cambiar el cursor
+                    } else {
+                        // Monedero disponible: habilitar clic
+                        li.textContent = `${monedero.banco} - ${monedero.numero_tarjeta} (Disponible)`;
+                        li.dataset.monederoId = monedero.id;
+
+                        // Evento de clic para seleccionar el monedero
+                        li.addEventListener('click', function () {
+                            selectedMonederoId = monedero.id; // Guardar el ID en la constante
+                            console.log('Monedero seleccionado ID:', selectedMonederoId);
+                            document.getElementById('numeroTarjeta').value = `${monedero.banco} - ${monedero.numero_tarjeta}`;
+                            document.getElementById('monederoId').value = selectedMonederoId; // Actualizar el campo oculto
+                            resultados.innerHTML = ''; // Limpiar resultados
+                        });
+                    }
+
+                    resultados.appendChild(li);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error al buscar monederos:', error);
+            resultados.innerHTML = '<li class="list-group-item text-danger">Error al buscar monederos</li>';
+        });
+});
+
+
+// Validar y asignar el ID del monedero seleccionado al formulario al enviar
+document.querySelector("#monederoModal form").addEventListener("submit", function (event) {
+    const empleadoId = document.getElementById('empleadoId').value;
+
+    if (!selectedMonederoId || !empleadoId) {
+        event.preventDefault();
+        mostrarError("Por favor, selecciona un monedero y asegúrate de que el empleado esté definido.");
+    } else {
+        const monederoAsignado = document.querySelector(`[data-monedero-id="${selectedMonederoId}"]`);
+        if (monederoAsignado && monederoAsignado.textContent.includes("(Asignado)")) {
+            // Si el monedero ya está asignado, bloquea el envío y muestra el mensaje de error
+            event.preventDefault();
+            mostrarError("Este monedero ya está asignado. Selecciona otro monedero.");
+        } else {
+            console.log("Formulario enviado con:", {
+                empleado_id: empleadoId,
+                monedero_id: selectedMonederoId,
+            });
+        }
+    }
+});
+
+// Función para mostrar el mensaje de error visualmente
+function mostrarError(mensaje) {
+    const alertContainer = document.querySelector("#alert-container");
+    alertContainer.style.display = "block"; // Hacer visible el contenedor
+    alertContainer.textContent = mensaje;  // Actualizar el texto del mensaje
+}
+
+    // Cargar todos los monederos al abrir el modal
+    document.getElementById('monederoModal').addEventListener('show.bs.modal', function () {
+        document.getElementById('numeroTarjeta').dispatchEvent(new Event('input'));
+    });
+
+    function abrirModalMonedero(empleadoId, monedero) {
+    if (monedero) {
+        // Si el empleado ya tiene un monedero asignado, abre el modal para desasignar
+        document.getElementById('desasignarEmpleadoId').value = empleadoId;
+        document.getElementById('desasignarIdMonedero').textContent = monedero.id;
+        document.getElementById('desasignarNumeroTarjeta').textContent = monedero.numero_tarjeta;
+        document.getElementById('desasignarMonederoId').value = monedero.id;
+
+        const modal = new bootstrap.Modal(document.getElementById('desasignarMonederoModal'));
+        modal.show();
+    } else {
+        // Si no tiene monedero asignado, abre el modal para asignar uno
+        document.getElementById('empleadoId').value = empleadoId;
+        const modal = new bootstrap.Modal(document.getElementById('monederoModal'));
+        modal.show();
+    }
+}
+function abrirModalMonedero(empleadoId, monedero) {
+    if (monedero) {
+        // Si el empleado ya tiene un monedero asignado, abre el modal para desasignar
+        document.getElementById('desasignarEmpleadoId').value = empleadoId;
+        document.getElementById('desasignarIdMonedero').textContent = monedero.id;
+        document.getElementById('desasignarNumeroTarjeta').textContent = monedero.numero_tarjeta;
+        document.getElementById('desasignarMonederoId').value = monedero.id;
+
+        const modal = new bootstrap.Modal(document.getElementById('desasignarMonederoModal'));
+        modal.show();
+    } else {
+        // Si no tiene monedero asignado, abre el modal para asignar uno
+        document.getElementById('empleadoId').value = empleadoId;
+
+        const modal = new bootstrap.Modal(document.getElementById('monederoModal'));
+        modal.show();
+    }
+}
+</script>
+
 
 {% endblock %}

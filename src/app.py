@@ -47,6 +47,8 @@ from models.ModelRequisiciones import ModelRequisiciones
 from models.ModelOrden import MyOrdendeCompra
 from models.ModelPDF import ModelPDF
 from models.ModelCompras import ModelCompras
+from models.ModelMonedero import ModelMonedero
+
 
 # Entities
 from models.entities.Empresas import Empresas
@@ -72,6 +74,8 @@ from models.entities.Empleados import Empleados
 from models.entities.Usuarios import User
 from models.entities.Presupuestos import Presupuesto,DetallePresupuesto,PresupuestoBauart,DetalleBauart
 from models.entities.Materiales import Materiales
+from models.entities.Monedero import Monedero
+
 
 
 
@@ -868,7 +872,6 @@ def edit_proyecto(id):
 """
 FIN PROYECTO 
 """
-
 """
 INICIA EMPLEADOS
 """
@@ -931,7 +934,6 @@ def empleados():
     except Exception as ex:
         raise Exception(ex)
 
-#ALTA EMPLEADOS
 @app.route('/Altaempleados', methods=['GET', 'POST'])
 def Altaempleados():
     try:
@@ -942,6 +944,13 @@ def Altaempleados():
         puesto = ModelPuesto.get_all_puestos_no_block(db)
         bancos = ModelBanco.get_all_bancos_no_block(db)
         empresas = ModelEmpresas.get_empresas_not_block(db)
+        registosPatronales = ModelRegistroPatronal.get_all_registros_patronales(db)
+
+        # Imprimir datos obtenidos para depuración
+        print(f"Puestos: {puesto}")
+        print(f"Bancos: {bancos}")
+        print(f"Empresas: {empresas}")
+        print(f"Registros Patronales: {registosPatronales}")
 
         # Validar que los datos no estén vacíos
         if not puesto:
@@ -952,6 +961,9 @@ def Altaempleados():
             return redirect(url_for('empleados'))
         if not empresas:
             print("Error: No se encontraron empresas disponibles")
+            return redirect(url_for('empleados'))
+        if not registosPatronales:
+            print("Error: No se encontraron registros patronales disponibles")
             return redirect(url_for('empleados'))
 
         if request.method == 'POST':
@@ -978,40 +990,23 @@ def Altaempleados():
                     'REGISTRO_PATRONAL', 'CUENTA'
                 ]
 
+                missing_fields = []
                 for field in required_fields:
                     if field not in request.form or not request.form[field].strip():
-                        print(f"Error: El campo requerido '{field}' está vacío o no se envió")
-                        raise KeyError(f"Falta el campo requerido: {field}")
+                        missing_fields.append(field)
+
+                if missing_fields:
+                    print(f"Error: Campos requeridos faltantes: {', '.join(missing_fields)}")
+                    return redirect(url_for('Altaempleados'))
 
                 # Validar campos numéricos
-                sueldo_imss = float(request.form['SUELDO_IMSS'].replace('$', '').replace(',', ''))
-                monedero = float(request.form['MONEDERO'].replace('$', '').replace(',', ''))
-                nomina = float(request.form['NOMINA'].replace('$', '').replace(',', ''))
-
-                # Manejar campos opcionales
-                numero_cuenta = request.form.get('NUM_CUENTA', None)
-                foto_base64 = request.form.get('FOTO_BASE64', '')
-                manzana = request.form.get('MANZANA', '')
-                lote = request.form.get('LOTE', '')
-                numero_exterior = request.form.get('NUMERO_EXTERIOR', '')
-                numero_interior = request.form.get('NUMERO_INTERIOR', '')
-                telefono_domicilio = request.form.get('TELEFONO_DOMICILIO', '')
-                cuenta_correo = request.form.get('CUENTA_CORREO', '')
-                salario_diario_integrado = request.form.get('SALARIO_DIARIO_INTEGRADO', 0.0)
-                numero_credito_infonavit = request.form.get('NUMERO_CREDITO_INFONAVIT', '')
-                tipo_descuento_infonavit = request.form.get('TIPO_DESCUENTO_INFONAVIT', '')
-                factor_infonavit = request.form.get('FACTOR_INFONAVIT', 0.0)
-                fecha_ingreso = request.form.get('FECHA_INGRESO', '')
-                turno = request.form.get('TURNO', '')
-                tipo_contrato = request.form.get('TIPO_CONTRATO', '')
-                contacto_accidente = request.form.get('CONTACTO_ACCIDENTE', '')
-                alergias = request.form.get('ALERGIAS', '')
-                enfermedades_controladas = request.form.get('ENFERMEDADES_CONTROLADAS', '')
-                edificio = request.form.get('EDIFICIO', '')
-                alcaldia = request.form.get('ALCALDIA', '')
-                municipio = request.form.get('MUNICIPIO', '')
-                registro_patronal = request.form.get('REGISTRO_PATRONAL', '')
-                cuenta = request.form.get('CUENTA', '')
+                try:
+                    sueldo_imss = float(request.form['SUELDO_IMSS'].replace('$', '').replace(',', ''))
+                    monedero = float(request.form['MONEDERO'].replace('$', '').replace(',', ''))
+                    nomina = float(request.form['NOMINA'].replace('$', '').replace(',', ''))
+                except ValueError:
+                    print("Error: Datos numéricos inválidos en los campos SUELDO_IMSS, MONEDERO o NOMINA")
+                    return redirect(url_for('Altaempleados'))
 
                 # Crear objeto empleado
                 empleado = Empleados(
@@ -1026,7 +1021,7 @@ def Altaempleados():
                     monedero=monedero,
                     nomina=nomina,
                     banco=request.form['BANCO'],
-                    numero_cuenta=numero_cuenta,
+                    numero_cuenta=request.form.get('NUM_CUENTA', None),
                     clabe=request.form['CLABE'],
                     alta_empleado=request.form.get('ALTA_EMPLEADO', ''),
                     baja_empleado=None,
@@ -1043,35 +1038,35 @@ def Altaempleados():
                     telefono_contacto=request.form['TELEFONO_CONTACTO'],
                     domicilio=request.form['DOMICILIO'],
                     tope_horas_extra=request.form['TOPE_HORAS_EXTRA'],
-                    foto_base64=foto_base64,
+                    foto_base64=request.form.get('FOTO_BASE64', ''),
                     tipo_sangre=request.form['TIPO_SANGRE'],
                     lugar_nacimiento=request.form['LUGAR_NACIMIENTO'],
                     sexo=request.form['SEXO'],
                     calle=request.form['CALLE'],
-                    manzana=manzana,
-                    lote=lote,
-                    numero_exterior=numero_exterior,
-                    numero_interior=numero_interior,
+                    manzana=request.form.get('MANZANA', ''),
+                    lote=request.form.get('LOTE', ''),
+                    numero_exterior=request.form.get('NUMERO_EXTERIOR', ''),
+                    numero_interior=request.form.get('NUMERO_INTERIOR', ''),
                     colonia=request.form['COLONIA'],
                     codigo_postal=request.form['CODIGO_POSTAL'],
                     estado=request.form['ESTADO'],
-                    telefono_domicilio=telefono_domicilio,
-                    cuenta_correo=cuenta_correo,
-                    salario_diario_integrado=salario_diario_integrado,
-                    numero_credito_infonavit=numero_credito_infonavit,
-                    tipo_descuento_infonavit=tipo_descuento_infonavit,
-                    factor_infonavit=factor_infonavit,
-                    fecha_ingreso=fecha_ingreso,
-                    turno=turno,
-                    tipo_contrato=tipo_contrato,
-                    contacto_accidente=contacto_accidente,
-                    alergias=alergias,
-                    enfermedades_controladas=enfermedades_controladas,
-                    edificio=edificio,
-                    alcaldia=alcaldia,
-                    municipio=municipio,
-                    registro_patronal=registro_patronal,
-                    cuenta=cuenta
+                    telefono_domicilio=request.form.get('TELEFONO_DOMICILIO', ''),
+                    cuenta_correo=request.form.get('CUENTA_CORREO', ''),
+                    salario_diario_integrado=request.form.get('SALARIO_DIARIO_INTEGRADO', 0.0),
+                    numero_credito_infonavit=request.form.get('NUMERO_CREDITO_INFONAVIT', ''),
+                    tipo_descuento_infonavit=request.form.get('TIPO_DESCUENTO_INFONAVIT', ''),
+                    factor_infonavit=request.form.get('FACTOR_INFONAVIT', 0.0),
+                    fecha_ingreso=request.form.get('FECHA_INGRESO', ''),
+                    turno=request.form.get('TURNO', ''),
+                    tipo_contrato=request.form.get('TIPO_CONTRATO', ''),
+                    contacto_accidente=request.form.get('CONTACTO_ACCIDENTE', ''),
+                    alergias=request.form.get('ALERGIAS', ''),
+                    enfermedades_controladas=request.form.get('ENFERMEDADES_CONTROLADAS', ''),
+                    edificio=request.form.get('EDIFICIO', ''),
+                    alcaldia=request.form.get('ALCALDIA', ''),
+                    municipio=request.form.get('MUNICIPIO', ''),
+                    registro_patronal=request.form.get('REGISTRO_PATRONAL', ''),
+                    cuenta=request.form.get('CUENTA', '')
                 )
                 print(f"Empleado creado: {vars(empleado)}")
 
@@ -1081,11 +1076,11 @@ def Altaempleados():
                 return redirect(url_for('empleados'))
 
             except KeyError as ke:
-                print(f"Error: {str(ke)}")
+                print(f"Error de campo faltante: {str(ke)}")
                 return redirect(url_for('Altaempleados'))
 
             except ValueError as ve:
-                print(f"Error de validación: {str(ve)}")
+                print(f"Error de valor: {str(ve)}")
                 return redirect(url_for('Altaempleados'))
 
             except Exception as ex:
@@ -1095,13 +1090,13 @@ def Altaempleados():
         else:
             print("Procesando método GET")
             session['token'] = str(uuid.uuid4())
-            return render_template('altaEmpleados.html', empresas=empresas, bancos=bancos, puesto=puesto, token=session['token'])
+            return render_template('altaEmpleados.html', registosPatronales=registosPatronales, empresas=empresas, bancos=bancos, puesto=puesto, token=session['token'])
 
     except Exception as e:
         print(f"Error en la ruta /Altaempleados: {str(e)}")
         return redirect(url_for('empleados'))
-    
-    
+
+
 #BLOQUEAR EMPLEADO
 @app.route('/block_empleado/<int:id>', methods=['POST'])
 def block_empleado(id):
@@ -1126,49 +1121,444 @@ def unblock_empleado(id):
             return jsonify({'error': str(e)}), 500
     
 
-# EDITAR EMPLEADO
 @app.route('/edit_empleado/<int:id>', methods=['GET', 'POST'])
 def edit_empleado(id):
     try:
-        puesto = ModelPuesto.get_all_puestos_no_block(db)   
+        # Obtener datos iniciales
+        puesto = ModelPuesto.get_all_puestos_no_block(db)
         bancos = ModelBanco.get_all_bancos_no_block(db)
         empresas = ModelEmpresas.get_empresas_not_block(db)
-        empleado = ModelEmpleado.get_empleado_by_id(db,id)
+        registosPatronales = ModelRegistroPatronal.get_all_registros_patronales(db)  # Agregado
+        empleado = ModelEmpleado.get_empleado_by_id(db, id)
 
-
-        
         if request.method == 'POST':
-            empleado = Empleados(
-                    id=request.form['ID_EMPLEADO'],
+            try:
+                # Validar campos obligatorios
+                required_fields = [
+                    'NOMBRE', 'APELLIDO', 'EMPRESA', 'PUESTO', 'TIPO_EMPLEADO',
+                    'TIPO_NOMINA', 'SUELDO_IMSS', 'MONEDERO', 'NOMINA', 'BANCO',
+                    'CLABE', 'CATEGORIA', 'NO_IMSS', 'CURP', 'RFC',
+                    'ESTADO_CIVIL', 'FECHA_NACIMIENTO', 'TELEFONO_CONTACTO', 'DOMICILIO',
+                    'TOPE_HORAS_EXTRA', 'TIPO_SANGRE', 'LUGAR_NACIMIENTO', 'SEXO', 'CALLE',
+                    'COLONIA', 'CODIGO_POSTAL', 'ESTADO', 'EDIFICIO', 'ALCALDIA', 'MUNICIPIO',
+                    'REGISTRO_PATRONAL', 'CUENTA'
+                ]
+
+                missing_fields = []
+                for field in required_fields:
+                    if field not in request.form or not request.form[field].strip():
+                        missing_fields.append(field)
+
+                if missing_fields:
+                    print(f"Error: Campos requeridos faltantes: {', '.join(missing_fields)}")
+                    return redirect(url_for('edit_empleado', id=id))
+
+                # Validar campos numéricos
+                try:
+                    sueldo_imss = float(request.form['SUELDO_IMSS'].replace('$', '').replace(',', ''))
+                    monedero = float(request.form['MONEDERO'].replace('$', '').replace(',', ''))
+                    nomina = float(request.form['NOMINA'].replace('$', '').replace(',', ''))
+                except ValueError:
+                    print("Error: Datos numéricos inválidos en los campos SUELDO_IMSS, MONEDERO o NOMINA")
+                    return redirect(url_for('edit_empleado', id=id))
+
+                # Actualizar objeto empleado
+                empleado = Empleados(
+                    id=id,
                     nombre=request.form['NOMBRE'],
-                    apellido= request.form['APELLIDO'],
-                    id_empresa= request.form['EMPRESA'],
-                    puesto= request.form['PUESTO'],
-                    tipo_empleado= request.form['TIPO_EMPLEADO'],
-                    tipo_nomina= request.form['TIPO_NOMINA'],
-                    sueldo_imss=request.form['SUELDO_IMSS'],
-                    monedero=request.form['MONEDERO'],
-                    nomina=request.form['NOMINA'],
+                    apellido=request.form['APELLIDO'],
+                    id_empresa=request.form['EMPRESA'],
+                    puesto=request.form['PUESTO'],
+                    tipo_empleado=request.form['TIPO_EMPLEADO'],
+                    tipo_nomina=request.form['TIPO_NOMINA'],
+                    sueldo_imss=sueldo_imss,
+                    monedero=monedero,
+                    nomina=nomina,
                     banco=request.form['BANCO'],
-                    numero_cuenta=request.form['NUM_CUENTA'],
+                    numero_cuenta=request.form.get('NUM_CUENTA', None),
                     clabe=request.form['CLABE'],
-                    is_blocked=0
-                
+                    alta_empleado=request.form.get('ALTA_EMPLEADO', ''),
+                    baja_empleado=None,
+                    fecha_registro=request.form.get('FECHA_REGISTRO', ''),
+                    is_blocked=0,
+                    categoria=request.form['CATEGORIA'],
+                    no_imss=request.form['NO_IMSS'],
+                    curp=request.form['CURP'],
+                    ine=request.form.get('INE', ''),
+                    rfc=request.form['RFC'],
+                    cedula_profesional=request.form.get('CEDULA_PROFESIONAL', ''),
+                    estado_civil=request.form['ESTADO_CIVIL'],
+                    fecha_nacimiento=request.form['FECHA_NACIMIENTO'],
+                    telefono_contacto=request.form['TELEFONO_CONTACTO'],
+                    domicilio=request.form['DOMICILIO'],
+                    tope_horas_extra=request.form['TOPE_HORAS_EXTRA'],
+                    foto_base64=request.form.get('FOTO_BASE64', ''),
+                    tipo_sangre=request.form['TIPO_SANGRE'],
+                    lugar_nacimiento=request.form['LUGAR_NACIMIENTO'],
+                    sexo=request.form['SEXO'],
+                    calle=request.form['CALLE'],
+                    manzana=request.form.get('MANZANA', ''),
+                    lote=request.form.get('LOTE', ''),
+                    numero_exterior=request.form.get('NUMERO_EXTERIOR', ''),
+                    numero_interior=request.form.get('NUMERO_INTERIOR', ''),
+                    colonia=request.form['COLONIA'],
+                    codigo_postal=request.form['CODIGO_POSTAL'],
+                    estado=request.form['ESTADO'],
+                    telefono_domicilio=request.form.get('TELEFONO_DOMICILIO', ''),
+                    cuenta_correo=request.form.get('CUENTA_CORREO', ''),
+                    salario_diario_integrado=request.form.get('SALARIO_DIARIO_INTEGRADO', 0.0),
+                    numero_credito_infonavit=request.form.get('NUMERO_CREDITO_INFONAVIT', ''),
+                    tipo_descuento_infonavit=request.form.get('TIPO_DESCUENTO_INFONAVIT', ''),
+                    factor_infonavit=request.form.get('FACTOR_INFONAVIT', 0.0),
+                    fecha_ingreso=request.form.get('FECHA_INGRESO', ''),
+                    turno=request.form.get('TURNO', ''),
+                    tipo_contrato=request.form.get('TIPO_CONTRATO', ''),
+                    contacto_accidente=request.form.get('CONTACTO_ACCIDENTE', ''),
+                    alergias=request.form.get('ALERGIAS', ''),
+                    enfermedades_controladas=request.form.get('ENFERMEDADES_CONTROLADAS', ''),
+                    edificio=request.form.get('EDIFICIO', ''),
+                    alcaldia=request.form.get('ALCALDIA', ''),
+                    municipio=request.form.get('MUNICIPIO', ''),
+                    registro_patronal=request.form.get('REGISTRO_PATRONAL', ''),
+                    cuenta=request.form.get('CUENTA', '')
                 )
 
-            ModelEmpleado.update_empleado(db,empleado)
-            return redirect(url_for('empleados'))
+                # Actualizar en la base de datos
+                ModelEmpleado.update_empleado(db, empleado)
+                print("Empleado actualizado con éxito")
+                return redirect(url_for('empleados'))
 
-        return render_template('edit_empleado.html',empleado=empleado, empresas=empresas, bancos=bancos, puesto=puesto)
-        
+            except Exception as ex:
+                print(f"Error procesando el método POST: {str(ex)}")
+                return redirect(url_for('edit_empleado', id=id))
+
+        # Renderizar la plantilla con los registros patronales
+        return render_template(
+            'edit_empleado.html', 
+            empleado=empleado, 
+            empresas=empresas, 
+            bancos=bancos, 
+            puesto=puesto, 
+            registosPatronales=registosPatronales
+        )
+
     except Exception as e:
-        raise e
-
+        print(f"Error en la ruta /edit_empleado: {str(e)}")
+        return redirect(url_for('empleados'))
 
 
 """
 FIN EMPLEADOS
 """
+
+"""
+ALTA MONEDERO
+"""
+
+@app.route('/Monederos', methods=['GET', 'POST'])
+def monederos():
+    try:
+        if request.method == 'POST':
+            # Verifica si el token en la sesión coincide con el del formulario
+            token = request.form.get('token')
+            if token and session.get('token') == token:
+                # Elimina el token de la sesión para evitar reenvíos duplicados
+                session.pop('token', None)
+
+                banco = request.form.get('BANCO', '')
+                estatus = request.form.get('ESTATUS', '')
+
+                # Filtra monederos según los parámetros enviados en el formulario
+                monederos = ModelMonedero.filter_monedero(db, banco, estatus)
+
+                # Imprimir los monederos en la consola
+                for monedero in monederos:
+                    print(monedero)  # Esto invoca automáticamente el método __str__
+
+                # Obtener todos los bancos para pasarlos al formulario
+                bancos = ModelBanco.get_all_bancos_no_block(db)
+
+                # Renderizamos la plantilla pasando la lista de monederos y bancos
+                return render_template('monedero.html', monederos=monederos, bancos=bancos, token=session.get('token'))
+
+            else:
+                return redirect(url_for('monederos'))
+        
+        else:
+            # Genera un token único y lo almacena en la sesión
+            session['token'] = str(uuid.uuid4())
+
+            # Obtener los bancos para pasarlos al formulario
+            bancos = ModelBanco.get_all_bancos_no_block(db)
+
+            # Obtener todos los monederos de la base de datos
+            monederos = ModelMonedero.get_all_monedero(db)
+
+            # Imprimir los monederos en la consola
+            for monedero in monederos:
+                print(monedero)  # Esto invoca automáticamente el método __str__
+
+            # Renderizamos la plantilla pasando la lista de monederos
+            return render_template('monedero.html', monederos=monederos, bancos=bancos, token=session['token'])
+
+    except Exception as ex:
+        print(f"Error en la ruta /Monederos: {str(ex)}")
+        raise Exception(f"Error: {str(ex)}")
+
+
+@app.route('/AltaMonedero', methods=['POST'])
+def alta_monedero():
+    try:
+        # Verifica si el token en la sesión coincide con el del formulario
+        token = request.form.get('token')
+        if token and session.get('token') == token:
+            # Elimina el token de la sesión para evitar reenvíos duplicados
+            session.pop('token', None)
+
+            # Obtener los datos del formulario
+            banco = request.form.get('BANCO_name')
+            id_banco = request.form.get('BANCO')
+            numero_tarjeta = request.form.get('NUMERO_TARJETA', '')
+            estatus = request.form.get('ESTATUS')
+
+            # Crear el objeto Monedero
+            monedero = Monedero(
+                banco=banco,
+                id_banco=id_banco, 
+                numero_tarjeta=numero_tarjeta, 
+                estatus=estatus
+            )
+
+            # Usar el modelo para guardar el monedero en la base de datos
+            ModelMonedero.alta_monedero(db, monedero)
+
+            # Redirigir a la página de Monederos con un mensaje de éxito
+            return redirect(url_for('monederos'))
+        
+        else:
+            return redirect(url_for('monederos'))
+
+    except Exception as ex:
+        return f"Error al procesar el formulario: {str(ex)}"
+
+@app.route('/filtrarMonederos', methods=['GET', 'POST'])
+def filtrar_monedero():
+    try:
+        # Obtener los parámetros de la solicitud
+        banco = request.args.get('banco', None)
+        estatus = request.args.get('estatus', None)
+        numero_tarjeta = request.args.get('numero_tarjeta', None)
+
+        # Llamar al modelo con los filtros proporcionados
+        monederos = ModelMonedero.filter_monedero(
+            db,
+            banco=banco,
+            estatus=estatus,
+            numero_tarjeta=numero_tarjeta
+        )
+
+        # Renderizar la plantilla con los resultados filtrados
+        return render_template(
+            'monedero.html',
+            monederos=monederos,
+            bancos=ModelBanco.get_all_bancos(db)
+        )
+    except Exception as ex:
+        # Manejar errores y devolver un mensaje de error
+        return f"Error al filtrar monederos: {str(ex)}"
+
+
+@app.route('/EditarMonedero', methods=['POST'])
+def editar_monedero():
+    try:
+        print("Datos recibidos:", request.form.to_dict())  # Agrega esto para ver los datos en la consola
+        # Validar el token de la sesión
+        token = request.form.get('token')
+        if not token or session.get('token') != token:
+            return "Token inválido o ausente.", 400
+
+        session.pop('token', None)  # Eliminar el token después de validar
+
+        # Validar y obtener los datos
+        id_monedero = request.form.get('id_monedero')
+        banco = request.form.get('BANCO_name')
+        id_banco = request.form.get('BANCO')
+        numero_tarjeta = request.form.get('NUMERO_TARJETA')
+        estatus = request.form.get('ESTATUS')
+
+        if not all([id_monedero, banco, id_banco, numero_tarjeta, estatus]):
+            print("Error: datos faltantes.")
+            return "Faltan datos obligatorios.", 400
+
+        # Crear el objeto Monedero y actualizar
+        monedero = Monedero(
+            id=id_monedero,
+            banco=banco,
+            id_banco=id_banco,
+            numero_tarjeta=numero_tarjeta,
+            estatus=estatus
+        )
+        ModelMonedero.update_monedero(db, monedero)
+
+        return redirect(url_for('monederos'))
+    except Exception as ex:
+        print("Error al actualizar el monedero:", str(ex))  # Agrega esto para depuración
+        return f"No se pudo actualizar el monedero. Verifica los datos e intenta nuevamente.", 500
+
+@app.route('/BuscarMonederos', methods=['GET'])
+def buscar_monedero():
+    numero_tarjeta = request.args.get('numero_tarjeta', '')
+    try:
+        # Si el input está vacío, devuelve todos los monederos
+        if not numero_tarjeta:
+            monederos = ModelMonedero.get_all_monedero(db)
+        else:
+            # Si hay un número de tarjeta, filtra por ese número
+            monederos = ModelMonedero.filter_monedero(db, numero_tarjeta=numero_tarjeta)
+
+        # Construye la respuesta incluyendo si están asignados o no
+        return jsonify([{
+            'id': monedero.id,
+            'banco': monedero.banco,
+            'numero_tarjeta': monedero.numero_tarjeta,
+            'id_empleado': monedero.id_empleado,  # Indica si está asignado a un empleado
+        } for monedero in monederos])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/BuscarMonederosDisponibles', methods=['GET'])
+def buscar_monedero_disponibles():
+    numero_tarjeta = request.args.get('numero_tarjeta', '')
+    try:
+        # Si el input está vacío, devuelve todos los monederos
+        if not numero_tarjeta:
+            monederos = ModelMonedero.get_monedero_disponibles(db)
+        else:
+            # Si hay un número de tarjeta, filtra por ese número
+            monederos = ModelMonedero.filter_monedero_disponible(db, numero_tarjeta=numero_tarjeta)
+
+        # Construye la respuesta incluyendo si están asignados o no
+        return jsonify([{
+            'id': monedero.id,
+            'banco': monedero.banco,
+            'numero_tarjeta': monedero.numero_tarjeta,
+            'id_empleado': monedero.id_empleado,  # Indica si está asignado a un empleado
+        } for monedero in monederos])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/AsignarMonedero', methods=['POST'])
+def asignar_monedero():
+    empleado_id = request.form.get('empleado_id')
+    monedero_id = request.form.get('monedero_id')
+
+    # Validar datos del formulario
+    if not empleado_id or not monedero_id:
+        app.logger.error("Faltan datos en el formulario: empleado_id=%s, monedero_id=%s", empleado_id, monedero_id)
+        flash('Faltan datos necesarios para asignar el monedero.', 'error')
+        return redirect(url_for('empleados'))
+
+    try:
+        # Verificar que el monedero exista
+        monedero = ModelMonedero.get_monedero_by_id(db, monedero_id)
+        if not monedero:
+            app.logger.error("Monedero no encontrado: monedero_id=%s", monedero_id)
+            flash('Monedero no encontrado.', 'error')
+            return redirect(url_for('empleados'))
+
+        # Verificar si el monedero ya está asignado
+        if monedero.id_empleado:
+            app.logger.warning("Monedero ya asignado: monedero_id=%s, id_empleado=%s", monedero_id, monedero.id_empleado)
+            flash(f'El monedero ya está asignado al empleado con ID {monedero.id_empleado}.', 'error')
+            return redirect(url_for('empleados'))
+
+        # Actualizar el monedero para asociarlo con el empleado
+        ModelMonedero.update_id_empleado(db, monedero_id, empleado_id)
+        app.logger.info("Monedero asignado correctamente: monedero_id=%s, empleado_id=%s", monedero_id, empleado_id)
+
+        # Actualizar el campo id_monedero en la tabla EMPLEADOS
+        ModelEmpleado.update_id_monedero(db, empleado_id, monedero_id)
+        app.logger.info("Empleado actualizado con id_monedero: empleado_id=%s, monedero_id=%s", empleado_id, monedero_id)
+
+        flash('Monedero asignado correctamente y datos actualizados.', 'success')
+
+    except Exception as e:
+        app.logger.error("Error al asignar monedero: %s", str(e))
+        flash(f'Error al asignar el monedero: {str(e)}', 'error')
+
+    return redirect(url_for('empleados'))
+
+@app.route('/DesasignarMonedero', methods=['POST'])
+def desasignar_monedero():
+    empleado_id = request.form.get('empleado_id')
+    monedero_id = request.form.get('monedero_id')
+
+    # Validar los datos del formulario
+    if not empleado_id or not monedero_id:
+        flash('Faltan datos necesarios para desasignar el monedero.', 'error')
+        return redirect(url_for('empleados'))
+
+    try:
+        # Actualizar el monedero para desasociarlo del empleado
+        ModelMonedero.update_id_empleado(db, monedero_id, None)
+        app.logger.info("Monedero desasociado correctamente: monedero_id=%s", monedero_id)
+
+        # Actualizar el empleado para eliminar la referencia al monedero
+        ModelEmpleado.update_id_monedero(db, empleado_id, None)
+        app.logger.info("Empleado actualizado: empleado_id=%s, id_monedero=NULL", empleado_id)
+
+        flash('Monedero desasignado correctamente.', 'success')
+    except Exception as e:
+        app.logger.error("Error al desasignar monedero: %s", str(e))
+        flash(f'Error al desasignar el monedero: {str(e)}', 'error')
+
+    return redirect(url_for('empleados'))
+
+
+
+@app.route('/cambiarEstatus', methods=['POST'])
+def cambiar_estatus():
+    try:
+        # Obtener datos del formulario
+        id_monedero = request.form.get('id_monedero')
+        nuevo_estatus = request.form.get('estatus')
+
+        if not id_monedero or nuevo_estatus is None:
+            return "Faltan datos requeridos", 400
+
+        # Cambiar el estatus del monedero usando el modelo
+        ModelMonedero.change_status(db, id=id_monedero, estatus=nuevo_estatus)
+
+        # Redirigir a la página de Monederos después de actualizar
+        return redirect(url_for('monederos'))
+
+    except Exception as ex:
+        return f"Error al cambiar el estatus del monedero: {str(ex)}"
+
+@app.route('/getMonedero/<int:id>', methods=['GET'])
+def get_monedero_by_id(id):
+    try:
+        monedero = ModelMonedero.get_monedero_by_id(db, id)
+        if not monedero:
+            return "Monedero no encontrado", 404
+
+        # Respuesta con los datos del monedero
+        return jsonify({
+            "id": monedero.id,
+            "banco": monedero.banco,
+            "numero_tarjeta": monedero.numero_tarjeta,  # Verifica este valor
+            "id_banco": monedero.id_banco,
+            "estatus": monedero.estatus,  # Verifica que el estatus sea '0' o '1'
+            "id_empleado": monedero.id_empleado
+        })
+    except Exception as ex:
+        return f"Error al obtener el monedero: {str(ex)}", 500
+
+"""
+fIN MONEDERO
+"""
+
+
 
 """
 INICIA PUESTOS
@@ -2338,6 +2728,7 @@ def edit_presupuesto():
                         estatus=0
                     )
                     
+                    actualizacion_presupuesto = ModelPresupuesto.actualizar_presupuesto(db, presupuesto)
                     
                     ### ACTUALIZAR DETALLE DE PRESUPUESTO
                     
@@ -2359,7 +2750,7 @@ def edit_presupuesto():
                             'presupuesto_contratista': convertir_a_float(presupuesto_proveedor_db[i]),
                             'diferencia': convertir_a_float(diferencia_presupuestos_db[i]),
                             'contrato_firmado': contrato_firmado_partidas_db[i],
-                             'estatus': estatus_db[i],
+                            'estatus': estatus_db[i],
                         }
                         
                         resultado = ModelPresupuesto.actualizar_detalle_presupuesto(db, fila)
@@ -2689,6 +3080,18 @@ def altaPresupuestos():
         session['token'] = str(uuid.uuid4())
         return render_template('altaPresupuestos.html', token=session['token'])
 
+
+# PAGOS SUGERIDOS
+@app.route('/pagos_sugeridos', methods=['GET', 'POST'])
+def pagos_sugeridos():
+    
+    if request.method == 'POST':
+        pass
+    
+    else:
+        presupuestos = ModelPresupuesto.obtener_presupuestos(db)
+        
+        return render_template('presupuestos copy.html',presupuestos=presupuestos)
 
 
 # MATERIALES

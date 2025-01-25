@@ -315,27 +315,43 @@
                             <hr>
                             <div class="form-group row">
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="CONDICION_PAGO" class="form-label">CONDICIÓN DE PAGO</label>
-                                    <select class="form-control" name="CONDICION_PAGO" id="CONDICION_PAGO" required>
-                                        <option value="" style="text-align: center;">SELECCIONA</option>
-                                        <opion value="1">INTERMEDIO</option>
-                                        <option value="2">TRIMESTRAL</option>
-                                        <option value="3">SEMESTRAL</option>
+                                    <label for="FORMA_PAGO" class="form-label">FORMATO DE PAGO:</label>
+                                    <select class="form-control" name="FORMA_PAGO" id="FORMA_PAGO">
+                                        <option value="" style="text-align: center;">SELECIONA UNA OPCION</option>
+                                        <option value="01">01 - Efectivo</option>
+                                        <option value="02">02 - Cheque nominativo</option>
+                                        <option value="03">03 - Transferencia electrónica de fondos</option>
+                                        <option value="04">04 - Tarjeta de crédito</option>
+                                        <option value="05">05 - Monedero electrónico</option>
+                                        <option value="06">06 - Dinero electrónico</option>
+                                        <option value="08">08 - Vales de despensa</option>
+                                        <option value="12">12 - Dación en pago</option>
+                                        <option value="13">13 - Pago por subrogación</option>
+                                        <option value="14">14 - Pago por consignación</option>
+                                        <option value="15">15 - Condonación</option>
+                                        <option value="17">17 - Compensación</option>
+                                        <option value="23">23 - Novación</option>
+                                        <option value="24">24 - Confusión</option>
+                                        <option value="25">25 - Remisión de deuda</option>
+                                        <option value="26">26 - Prescripción o caducidad</option>
+                                        <option value="27">27 - A satisfacción del acreedor</option>
+                                        <option value="28">28 - Tarjeta de débito</option>
+                                        <option value="29">29 - Tarjeta de servicios</option>
+                                        <option value="30">30 - Aplicación de anticipos</option>
+                                        <option value="31">31 - Intermediario pagos</option>
+                                        <option value="99">99 - Por definir</option>
+                                
                                     </select>
                                     <div class="invalid-feedback">
-                                        SELECIONA CONDICION DE PAGO
+                                        SELECIONA UNA FORMA DE PAGO
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="FORMA_PAGO" class="form-label">FORMATO DE PAGO:</label>
-                                    <select class="form-control" name="FORMA_PAGO" id="FORMA_PAGO" required>
-                                        <option value="" style="text-align: center;">SELECCIONA</option>
-                                        <option value="1">CREDITO</option>
-                                        <option value="2">DEBIDTO</option>
-                                        <option value="3">EFECTIVOS</option>
-                                    </select>
+                                    <label for="CONDICION_PAGO" class="form-label">CONDICIÓN DE PAGO</label>
+
+                                    <input type="text" class="form-control" name="CONDICION_PAGO" id="CONDICION_PAGO" required>
                                     <div class="invalid-feedback">
-                                        SELECIONE UNA FORMA DE PAGO
+                                        SELECIONE UNA CONDICION_PAGO
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">

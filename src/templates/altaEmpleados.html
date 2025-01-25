@@ -1,6 +1,6 @@
 <!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Empleado{% endblock %}
+{% block title %}ALTA EMPLEADO{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styele_alta_empresas.css') }}">
@@ -446,16 +446,17 @@
                                 <!-- REGISTRO PATRONAL -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="REGISTRO_PATRONAL" class="form-label">REGISTRO PATRONAL:*</label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        name="REGISTRO_PATRONAL" 
-                                        id="REGISTRO_PATRONAL"
-                                        maxlength="15"
-                                        required
-                                    >
-                                    <div class="invalid-feedback">Completa el Registro Patronal</div>
+                                    <select class="form-control" name="REGISTRO_PATRONAL" id="REGISTRO_PATRONAL" required>
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        {% for registro in registosPatronales %}
+                                        <option value="{{ registro.id_registro }}">
+                                            {{ registro.numero_registro_patronal }} - {{ registro.estado }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona un Registro Patronal</div>
                                 </div>
+
 
                                 <!-- TIPO DE NÓMINA -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -974,36 +975,232 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const sueldoBaseInput = document.getElementById("SUELDO_BASE");
-        const sueldoIMSSInput = document.getElementById("SUELDO_IMSS");
-    
-        // Función para formatear como moneda MXN
-        function formatearMonedaMXN(valor) {
-            const numero = parseFloat(valor.replace(/[^0-9.-]+/g, "")) || 0;
-            return numero.toLocaleString("es-MX", {
-                style: "currency",
-                currency: "MXN",
-            });
+document.addEventListener("DOMContentLoaded", function () {
+    const sueldoBaseInput = document.getElementById("SUELDO_BASE");
+    const sueldoIMSSInput = document.getElementById("SUELDO_IMSS");
+
+    // Función para formatear como moneda MXN
+    function formatearMonedaMXN(valor) {
+        const numero = parseFloat(valor.replace(/[^0-9.-]+/g, "")) || 0;
+        return numero.toLocaleString("es-MX", {
+            style: "currency",
+            currency: "MXN",
+        });
+    }
+
+    // Función para formatear los campos SUELDO BASE y SUELDO IMSS
+    function formatearSueldoInputs() {
+        if (sueldoBaseInput) {
+            sueldoBaseInput.value = formatearMonedaMXN(sueldoBaseInput.value);
         }
-    
-        // Función para formatear los campos SUELDO BASE y SUELDO IMSS
-        function formatearSueldoInputs() {
-            if (sueldoBaseInput) {
-                sueldoBaseInput.value = formatearMonedaMXN(sueldoBaseInput.value);
-            }
-            if (sueldoIMSSInput) {
-                sueldoIMSSInput.value = formatearMonedaMXN(sueldoIMSSInput.value);
-            }
+        if (sueldoIMSSInput) {
+            sueldoIMSSInput.value = formatearMonedaMXN(sueldoIMSSInput.value);
         }
-    
-        // Evento al mostrar la pestaña "INFORMACIÓN DE PAGO"
-        document.querySelector('button[data-bs-target="#nomina-tab-pane"]').addEventListener("shown.bs.tab", function () {
-            formatearSueldoInputs();
+    }
+
+    // Evento al mostrar la pestaña "INFORMACIÓN DE PAGO"
+    document.querySelector('button[data-bs-target="#nomina-tab-pane"]').addEventListener("shown.bs.tab", function () {
+        formatearSueldoInputs();
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const telefonoInputs = document.querySelectorAll("#TELEFONO_DOMICILIO, #TELEFONO_CONTACTO");
+
+    telefonoInputs.forEach((input) => {
+        input.addEventListener("keydown", (event) => {
+            // Permitir: teclas numéricas, retroceso, suprimir, flechas de navegación, tab y enter
+            const teclasPermitidas = [
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Enter",
+            ];
+
+            // Solo permitir números y las teclas permitidas
+            if (!/^\d$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault();
+            }
+        });
+
+        // Limitar el input a un máximo de 10 caracteres
+        input.addEventListener("input", () => {
+            if (input.value.length > 20) {
+                input.value = input.value.slice(0, 20);
+            }
         });
     });
-    </script>
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const direccionInputs = {
+        "CALLE": 150, // Máximo 150 caracteres
+        "MANZANA": 50, // Máximo 50 caracteres
+        "LOTE": 50, // Máximo 50 caracteres
+        "NUMERO_EXTERIOR": 20, // Máximo 20 caracteres
+        "NUMERO_INTERIOR": 20, // Máximo 20 caracteres
+        "COLONIA": 100, // Máximo 100 caracteres
+        "CODIGO_POSTAL": 5, // Solo números, máximo 5 caracteres
+        "ESTADO": 50, // Máximo 50 caracteres
+        "ALCALDIA": 255, // Máximo 255 caracteres
+        "MUNICIPIO": 255, // Máximo 255 caracteres
+        "EDIFICIO": 255 // Máximo 255 caracteres
+    };
+
+    Object.keys(direccionInputs).forEach(id => {
+        const input = document.getElementById(id);
+        const maxLength = direccionInputs[id];
+
+        if (input) {
+            input.addEventListener("input", (event) => {
+                // Limitar el número máximo de caracteres
+                if (input.value.length > maxLength) {
+                    input.value = input.value.slice(0, maxLength);
+                }
+
+                // Si es el campo CODIGO_POSTAL, solo permitir números
+                if (id === "CODIGO_POSTAL") {
+                    input.value = input.value.replace(/[^0-9]/g, ""); // Solo números
+                }
+            });
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+        const rfcInput = document.getElementById("RFC");
+
+        rfcInput.addEventListener("input", (event) => {
+            // Permitir solo letras, números y limitar la longitud máxima a 13
+            let value = event.target.value.replace(/[^a-zA-Z0-9]/g, ""); // Eliminar cualquier carácter no alfanumérico
+            event.target.value = value.slice(0, 13); // Limitar a 13 caracteres
+        });
+
+        rfcInput.addEventListener("keydown", (event) => {
+            // Permitir: retroceso, suprimir, flechas de navegación, tab y enter
+            const teclasPermitidas = [
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Enter",
+            ];
+
+            // Solo permitir letras, números y teclas permitidas
+            if (!/^[a-zA-Z0-9]$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault();
+            }
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const curpInput = document.getElementById("CURP");
+
+        // Limitar la longitud a 18 caracteres
+        curpInput.addEventListener("input", () => {
+            if (curpInput.value.length > 18) {
+                curpInput.value = curpInput.value.slice(0, 18);
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const nssInput = document.getElementById("NO_IMSS");
+
+        // Permitir solo números y teclas esenciales
+        nssInput.addEventListener("keydown", (event) => {
+            const teclasPermitidas = [
+                "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter",
+            ];
+
+            // Verificar que la tecla sea un número o esté en las permitidas
+            if (!/^\d$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault();
+            }
+        });
+
+        // Limitar la longitud máxima a 20 caracteres
+        nssInput.addEventListener("input", () => {
+            if (nssInput.value.length > 20) {
+                nssInput.value = nssInput.value.slice(0, 20);
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const ineInput = document.getElementById("INE");
+
+    // Limitar la longitud del campo INE
+    ineInput.addEventListener("input", function () {
+        const maxLength = 20; // Cambia este valor si necesitas un límite diferente
+        if (ineInput.value.length > maxLength) {
+            ineInput.value = ineInput.value.slice(0, maxLength);
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+        const cedulaInput = document.getElementById("CEDULA_PROFESIONAL");
+
+        // Evento para permitir solo números y limitar el rango
+        cedulaInput.addEventListener("keydown", function (event) {
+            // Permitir teclas de control: backspace, delete, tab, flechas, enter
+            const teclasPermitidas = [
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Enter",
+            ];
+
+            if (!/^\d$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault(); // Bloquear teclas no permitidas
+            }
+        });
+
+        // Limitar a 8 caracteres
+        cedulaInput.addEventListener("input", function () {
+            if (cedulaInput.value.length > 8) {
+                cedulaInput.value = cedulaInput.value.slice(0, 8); // Cortar el valor a 8 caracteres
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const creditoInfonavitInput = document.getElementById("NUMERO_CREDITO_INFONAVIT");
+
+        // Evento para permitir solo números y limitar el rango
+        creditoInfonavitInput.addEventListener("keydown", function (event) {
+            // Permitir teclas de control: backspace, delete, tab, flechas, enter
+            const teclasPermitidas = [
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Enter",
+            ];
+
+            if (!/^\d$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault(); // Bloquear teclas no permitidas
+            }
+        });
+
+        // Limitar a 11 caracteres
+        creditoInfonavitInput.addEventListener("input", function () {
+            if (creditoInfonavitInput.value.length > 11) {
+                creditoInfonavitInput.value = creditoInfonavitInput.value.slice(0, 11); // Cortar el valor a 11 caracteres
+            }
+        });
+    });
+
     
+</script>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

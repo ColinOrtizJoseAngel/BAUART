@@ -1,0 +1,137 @@
+<!--IMPOTRAR LAYOUT-->
+{% extends "layout.html" %}
+{% block title %}PAGOS SUGERIDOS{% endblock %}
+<!--HOJA DE ESTILOS EXTERNA-->
+{% block customCSS %}
+<style>
+
+</style>
+{% endblock %}
+
+<!-- TITULO DE PAGINA -->
+{% block titutlo %}PAGOS SUGERIDOS{% endblock %}
+<!-- FIN DE TITULO -->
+<style>
+    
+
+</style>
+<!--COMIENZA CONTENIDO DE PAGINA-->
+{% block content %}
+<!-- Modal para Filtrar Empresa -->
+
+<div class="container-fluid">
+    <br>
+    <div class="card">
+        <div class="card-body">
+           <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">Proyecto</span>
+                            <input type="text" class="form-control search-input" id="proyecto" placeholder="Buscar..." autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">Cliente:</span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar..." autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1"># PRESUPUESTO:</span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar..." autocomplete="off">
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12" style="text-align: right;">
+                        <button type="button" class="btn botones">BUSCAR</button>
+                    </div>
+                </div>
+           </div>
+            
+        </div>  
+    </div>
+    
+    <br>
+    <div class="table-container">
+        <table class="table table-hover">
+            <colgroup>
+                <col style="width: 30px;"> <!-- Primera columna de 150px -->
+                <col style="width: 250px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 150px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 150px;"> <!-- Primera columna de 150px -->
+                <col style="width: 100px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 100px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 100px;"> <!-- Tercera columna de 100px --> 
+                <col style="width: 100px;"> <!-- Tercera columna de 100px --> 
+                
+
+                <col style="width: 125px;"> <!-- Primera columna de 150px -->
+
+            </colgroup>
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">CLIENTE</th>
+                    <th scope="col">PROYECTO</th>
+                    <th scope="col">EMPRESA</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTLA PRESUPUSTO CLIENTE</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTAL PRESUPUESTO PROVEEDOR</th>
+                    <th scope="col">DIREFENCIA</th>
+                    <th scope="col">ESTATUS</th>
+                    <th scope="col">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in presupuestos %}
+                <tr>
+                    <td>{{ p.id_presupuesto }}</td>
+                    <td>{{ p.cliente }}</td>
+                    <td>{{ p.proyecto }}</td>
+                    <td>{{ p.empresa }}</td>
+                    <td>{{ p.total_cliente_iva }}</td>
+                    <td>{{ p.sub_proveedor}}</td>
+                    {% if p.diferencia_es_negativa %}
+                        <td style="background-color: red; color: white;">{{ p.sub_diferencia}}</td>
+                    {% else %}
+                        <td>{{ p.sub_diferencia}}</td>
+                    {% endif %}
+                    <td>
+                        {% if p.estatus == 0 %}
+                            PRESUPUESTO CARGADO
+                        {% elif p.estatus == 1 %}
+                            PRESUPUESTO APROBADO POR DIRECTOR
+                        {% elif p.estatus == 2 %}
+                            PRESUPUESTO EN PROCESO
+                        {% else %}
+                            ESTATUS DESCONOCIDO
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ p.id_presupuesto }}"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ p.id_presupuesto }}">
+                                <li><a class="dropdown-item"
+                                        href="/edit_presupuesto/?id={{  p.id_presupuesto }}">CARGAR PAGOS</a></li>
+                                <li>
+                                    
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                {% endfor %}
+               
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/funciones_pagos_sugeridos.js') }}"></script>
+
+
+{% endblock %}

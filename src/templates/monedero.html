@@ -1,0 +1,346 @@
+{% extends "layout.html" %}
+
+{% block title %}Monederos{% endblock %}
+
+{% block customCSS %}
+<style>
+    input[type="text"],
+    textarea,
+    select,
+    input[type="search"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"] {
+        text-transform: uppercase;
+    }
+
+    button,
+    input[type="submit"],
+    input[type="button"] {
+        text-transform: uppercase;
+    }
+</style>
+{% endblock %}
+
+{% block titulo %}Monederos{% endblock %}
+
+{% block content %}
+<!-- Modal para Alta de monedero -->
+<div class="modal fade" id="nuevoMonederoModal" tabindex="-1" aria-labelledby="nuevoMonederoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nuevoMonederoModalLabel">Nuevo Monedero</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('alta_monedero') }}" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="token" value="{{ token }}">
+
+                    <!-- Selección de Banco -->
+                    <div class="mb-3">
+                        <label for="BANCO" class="form-label">Banco</label>
+                        <select class="form-control" id="BANCO" name="BANCO" onchange="setBancoName()">
+                            <option value="">Seleccionar Banco</option>
+                            {% for banco in bancos %}
+                                <option value="{{ banco.id }}" data-name="{{ banco.nombre }}">{{ banco.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" id="BANCO_name" name="BANCO_name">
+                    </div>
+
+                    <!-- Número de Tarjeta -->
+                    <div class="mb-3">
+                        <label for="NUMERO_TARJETA" class="form-label">Número de Tarjeta</label>
+                        <input type="text" class="form-control" id="NUMERO_TARJETA" name="NUMERO_TARJETA" placeholder="Número de Tarjeta">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ESTATUS" class="form-label">Estatus</label>
+                        <select class="form-select" id="ESTATUS" name="ESTATUS">
+                            <option value="">Seleccionar Estatus</option>
+                            <option value="0">Activo</option>
+                            <option value="1">Bloqueado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn botones">Guardar Monedero</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Fin del modal de alta de monedero -->
+
+<!-- Modal para Filtrar Monederos -->
+<div class="modal fade" id="filtrarMonederosModal" tabindex="-1" aria-labelledby="filtrarMonederosModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filtrarMonederosModalLabel">Filtrar Monederos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('filtrar_monedero') }}" method="get">
+                <div class="modal-body">
+                    <!-- Campo para filtrar por Banco -->
+                    <div class="mb-3">
+                        <label for="filtroBanco" class="form-label">Banco</label>
+                        <select class="form-select" id="filtroBanco" name="banco">
+                            <option value="">Seleccionar Banco</option>
+                            {% for banco in bancos %}
+                                <option value="{{ banco.nombre }}">{{ banco.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Campo para filtrar por Número de Tarjeta -->
+                    <div class="mb-3">
+                        <label for="filtroNumeroTarjeta" class="form-label">Número de Tarjeta</label>
+                        <input type="text" class="form-control" id="filtroNumeroTarjeta" name="numero_tarjeta" placeholder="Ingresa número de tarjeta">
+                    </div>
+
+                    <!-- Campo para filtrar por Estatus -->
+                    <div class="mb-3">
+                        <label for="filtroEstatus" class="form-label">Estatus</label>
+                        <select class="form-select" id="filtroEstatus" name="estatus">
+                            <option value="">Seleccionar Estatus</option>
+                            <option value="0">Activo</option>
+                            <option value="1">Bloqueado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn botones">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Monedero -->
+<div class="modal fade" id="editarMonederoModal" tabindex="-1" aria-labelledby="editarMonederoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarMonederoModalLabel">Editar Monedero</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('editar_monedero') }}" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <input type="hidden" id="id_monedero" name="id_monedero">
+
+                    <!-- Selección de Banco -->
+                    <!-- Selección de Banco -->
+                    <div class="mb-3">
+                        <label for="edit_BANCO" class="form-label">Banco</label>
+                        <select class="form-control" id="edit_BANCO" name="BANCO" onchange="setBancoNameEdit()">
+                            <option value="">Seleccionar Banco</option>
+                            {% for banco in bancos %}
+                                <option value="{{ banco.id }}" data-name="{{ banco.nombre }}">{{ banco.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" id="edit_BANCO_name" name="BANCO_name">
+                    </div>
+
+
+                    <!-- Número de Tarjeta -->
+                    <div class="mb-3">
+                        <label for="edit_NUMERO_TARJETA" class="form-label">Número de Tarjeta</label>
+                        <input type="text" class="form-control" id="edit_NUMERO_TARJETA" name="NUMERO_TARJETA" placeholder="Número de Tarjeta">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_ESTATUS" class="form-label">Estatus</label>
+                        <select class="form-select" id="edit_ESTATUS" name="ESTATUS">
+                            <option value="">Seleccionar Estatus</option>
+                            <option value="0">Activo</option>
+                            <option value="1">Bloqueado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn botones">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<br>
+<!-- Contenedor para mostrar la tabla de monederos -->
+<div class="container-fluid">
+    <div class="d-grid gap-2 d-md-flex justify-content-start">
+        <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#nuevoMonederoModal">
+            <i class="bi bi-plus-circle"></i> NUEVO MONEDERO
+        </button>
+        <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#filtrarMonederosModal">
+            <i class="bi bi-search"></i> FILTRAR
+        </button>
+        
+        <a class="btn botones" href="/Monederos">
+            <i class="bi bi-eraser"></i> LIMPIAR FILTRO
+        </a>
+    </div>
+    <br>
+    <div class="table-container">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Banco</th>
+                    <th scope="col">Número de Tarjeta</th>
+                    <th scope="col">Estatus</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in monederos %}
+                <tr class="{% if m.estatus == 1 %}table-secondary{% endif %}">
+                    <td>{{ m.id }}</td>
+                    <td>{{ m.banco }}</td>
+                    <td>{{ m.numero_tarjeta }}</td>
+                    <td>
+                        {% if m.estatus == '0' %}
+                            ACTIVO
+                        {% elif m.estatus == '1' %}
+                            BLOQUEADO
+                        {% else %}
+                            DESCONOCIDO
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ m.id }}" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ACCIONES
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ m.id }}">
+                                <li>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editarMonederoModal"
+                                        data-id="{{ m.id }}">
+                                        EDITAR
+                                    </a>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function setBancoName() {
+        var select = document.getElementById('BANCO');
+        var name = select.options[select.selectedIndex].getAttribute('data-name');
+        document.getElementById('BANCO_name').value = name;
+    }
+</script>
+<script>
+    // Cuando se abre el modal de editar
+    document.querySelectorAll('[data-bs-target="#editarMonederoModal"]').forEach(button => {
+        button.addEventListener('click', function () {
+            const monederoId = this.getAttribute('data-id'); // Obtener el ID del monedero seleccionado
+
+            // Hacer una solicitud AJAX para obtener los datos del monedero
+            fetch(`/getMonedero/${monederoId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Error al obtener los datos del monedero.');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Datos recibidos del monedero:", data); // Depuración
+
+                    // Autocompletar los campos del modal con los datos del monedero
+                    document.getElementById('id_monedero').value = data.id;
+                    document.getElementById('edit_NUMERO_TARJETA').value = data.numero_tarjeta;
+
+                    // Seleccionar el banco correcto
+                    const bancoSelect = document.getElementById('edit_BANCO');
+                    bancoSelect.value = data.id_banco; // Asegúrate de que el valor coincide con las opciones del select
+                    console.log("Banco seleccionado:", data.id_banco);
+
+                    // Seleccionar el estatus correcto
+                    const estatusSelect = document.getElementById('edit_ESTATUS');
+                    estatusSelect.value = data.estatus; // Asegúrate de que el valor coincide con las opciones del select
+                    console.log("Estatus seleccionado:", data.estatus);
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('No se pudo cargar la información del monedero.');
+                });
+        });
+    });
+</script>
+<script>
+function setBancoNameEdit() {
+    const select = document.getElementById('edit_BANCO');
+    const bancoName = select.options[select.selectedIndex].getAttribute('data-name'); // Obtener el nombre del banco
+    document.getElementById('edit_BANCO_name').value = bancoName; // Rellenar el campo oculto
+}
+document.querySelectorAll('[data-bs-target="#editarMonederoModal"]').forEach(button => {
+    button.addEventListener('click', function () {
+        const monederoId = this.getAttribute('data-id'); // Obtener el ID del monedero
+
+        // Hacer una solicitud AJAX para obtener los datos del monedero
+        fetch(`/getMonedero/${monederoId}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Error al obtener los datos del monedero.');
+                return response.json();
+            })
+            .then(data => {
+                console.log("Datos recibidos del monedero:", data); // Verifica los datos recibidos en la consola
+
+                // Asegúrate de que cada campo obtiene el valor correcto
+                document.getElementById('id_monedero').value = data.id;
+                document.getElementById('edit_NUMERO_TARJETA').value = data.numero_tarjeta; // Número de tarjeta
+                document.getElementById('edit_BANCO').value = data.id_banco; // Banco
+                document.getElementById('edit_BANCO_name').value = data.banco; // Nombre del banco
+                document.getElementById('edit_ESTATUS').value = data.estatus; // Estatus
+            })
+            .catch(error => {
+                console.error("Error al cargar los datos del monedero:", error);
+                alert("No se pudieron cargar los datos del monedero.");
+            });
+    });
+});
+
+document.querySelector('#editarMonederoModal form').addEventListener('submit', function (e) {
+    e.preventDefault(); // Evita el envío normal del formulario
+
+    const formData = new FormData(this);
+    console.log("Datos enviados al servidor:", Object.fromEntries(formData)); // Verificar en consola
+
+    fetch('/EditarMonedero', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => {
+            if (!response.ok) throw new Error('Error al actualizar el monedero.');
+            return response.text();
+        })
+        .then(() => {
+            // Cerrar el modal y recargar la tabla
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editarMonederoModal'));
+            modal.hide();
+
+            // Opcional: recarga la tabla o la página para reflejar los cambios
+            location.reload();
+        })
+        .catch(error => {
+            console.error("Error al enviar los datos del monedero:", error);
+            alert("No se pudo actualizar el monedero. Verifica los datos e intenta nuevamente.");
+        });
+});
+
+</script>
+
+
+{% endblock %}

@@ -7,12 +7,56 @@
 
 {% endblock %}
 
-{% block titutlo %}ALTA EMPLEADO{% endblock %}
+{% block titutlo %}EDITAR EMPLEADO{% endblock %}
 
 <!--COMIENZA CONTENIDO DE PAGINA-->
 {% block content %}
+<style>
+    select {
+        text-transform: uppercase;
+    }
+
+    select option {
+        text-transform: uppercase;
+    }
+
+    .image-preview {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 100px; /* Mitad del tamaño original */
+        height: 100px; /* Mitad del tamaño original */
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .image-preview-placeholder {
+        font-size: 10px; /* Ajustar el texto para el tamaño reducido */
+        color: #888;
+        text-align: center;
+    }
+</style>
+
+<!-- Loader -->
+<div id="loader" style="display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="text-align: center;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p style="margin-top: 1rem;">Procesando, por favor espera...</p>
+    </div>
+</div>
+
 <br>
-<form class="needs-validation" novalidate accion="/Altacliente" method="post">
+<form class="needs-validation" novalidate action="/edit_empleado/{{ empleado.id }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <div class="container-fluid">
@@ -22,185 +66,563 @@
             </div>
         </div>
     </div>
-    <!--INICIA INFORMACIÓN GENERAL-->
-    <br>    
-    <div class="container" style="display: none;">
-        <div class="form-group row">
-            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                <label for="ID_EMPLEADO" class="form-label">SIGUIENTE EMPLEADO: </label>
-                <input type="text" class="form-control" style="text-align: center;" id="ID_EMPLEADO" name="ID_EMPLEADO"
-                    value="{{ empleado.id }}" readonly>
-            </div>
-        </div>
-    </div>
 
-    <!--INICIA CARD CLIENTES -->
+    <br>
     <div class="container-fluid">
         <div class="card mb-3">
-            <div class="card-header">
-
+            <div class="card-header"></div>
+            <div class="image-preview" id="imagePreview">
+                <div class="image-preview-placeholder">Sin imagen</div>
             </div>
             <div class="card-body">
                 <div class="container-fluid">
                     <br>
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <!-- Existing Tabs -->
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
-                                data-bs-target="#informacion-tab-pane" type="button" role="tab"
-                                aria-controls="informacion-tab-pane" aria-selected="true">EMPLEADO</button>
+                            <button class="nav-link active" id="generales-tab" data-bs-toggle="tab" data-bs-target="#generales-tab-pane" type="button" role="tab" aria-controls="generales-tab-pane" aria-selected="true">GENERALES</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
-                                data-bs-target="#direccion-tab-pane" type="button" role="tab"
-                                aria-controls="direccion-tab-pane" aria-selected="false">NÓMINA</button>
+                            <button class="nav-link" id="direccion-tab" data-bs-toggle="tab" data-bs-target="#direccion-tab-pane" type="button" role="tab" aria-controls="direccion-tab-pane" aria-selected="false">DIRECCIÓN</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contacto-tab" data-bs-toggle="tab" data-bs-target="#contacto-tab-pane" type="button" role="tab" aria-controls="contacto-tab-pane" aria-selected="false">INFORMACIÓN DE CONTACTO</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="fiscal-tab" data-bs-toggle="tab" data-bs-target="#fiscal-tab-pane" type="button" role="tab" aria-controls="fiscal-tab-pane" aria-selected="false">INFORMACIÓN FISCAL</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="infonavit-tab" data-bs-toggle="tab" data-bs-target="#infonavit-tab-pane" type="button" role="tab" aria-controls="infonavit-tab-pane" aria-selected="false">INFORMACIÓN INFONAVIT</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="empleado-tab" data-bs-toggle="tab" data-bs-target="#empleado-tab-pane" type="button" role="tab" aria-controls="empleado-tab-pane" aria-selected="false">PUESTO</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="nomina-tab" data-bs-toggle="tab" data-bs-target="#nomina-tab-pane" type="button" role="tab" aria-controls="nomina-tab-pane" aria-selected="false">INFORMACIÓN DE PAGO</button>
+                        </li>
+                        <!-- New Tab for References -->
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="referencias-tab" data-bs-toggle="tab" data-bs-target="#referencias-tab-pane" type="button" role="tab" aria-controls="referencias-tab-pane" aria-selected="false">REFERENCIAS</button>
                         </li>
                     </ul>
-                    <!--INFORMACIÓN GENERAL-->
                     <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="informacion-tab-pane" role="tabpanel"
-                            aria-labelledby="home-tab" tabindex="0">
+                        <!-- GENERALES -->
+                        <div class="tab-pane fade show active" id="generales-tab-pane" role="tabpanel" aria-labelledby="generales-tab" tabindex="0">
                             <br>
-
                             <div class="form-group row">
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="NOMBRE" class="form-label">NOMBRE*</label>
-                                    <input type="text" class="form-control" name="NOMBRE" id="NOMBRE"
-                                        value="{{ empleado.nombre }}" required>
-                                    <div class="invalid-feedback">
-                                        COMPLETA NOMBRE
-                                    </div>
+                                    <input type="text" class="form-control" name="NOMBRE" id="NOMBRE" value="{{ empleado.nombre }}" required>
+                                    <div class="invalid-feedback">Completar Nombre</div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="RFC" class="form-label">APELLIDO*</label>
-                                    <input type="text" class="form-control" id="APELLIDO" name="APELLIDO"
-                                       value="{{ empleado.apellido }}" required>
-                                    <div class="invalid-feedback">
-                                        COMPLETA APELLIDO
-                                    </div>
+                                    <label for="APELLIDO" class="form-label">APELLIDO *</label>
+                                    <input type="text" class="form-control" id="APELLIDO" name="APELLIDO" value="{{ empleado.apellido }}" required>
+                                    <div class="invalid-feedback">Completar APELLIDO</div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="EMPRESA" class="form-label">EMPRESA:*</label>
-                                    <select class="form-control" name="EMPRESA" id="EMPRESA" required>
-                                        {% for empresa in empresas %}
-                                            <option value="{{ empresa.id }}" {% if empleado.id_empresa == empresa.id %} selected {% endif %}>
-                                                {{ empresa.razon_social }}
-                                            </option>
-                                        {% endfor %}
+                                    <label for="FECHA_NACIMIENTO" class="form-label">FECHA DE NACIMIENTO*</label>
+                                    <input type="date" class="form-control" name="FECHA_NACIMIENTO" id="FECHA_NACIMIENTO" value="{{ empleado.alta_empleado }}" required>
+                                    <div class="invalid-feedback">Completar Fecha de Nacimiento</div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="LUGAR_NACIMIENTO" class="form-label">LUGAR DE NACIMIENTO*</label>
+                                    <input type="text" class="form-control" name="LUGAR_NACIMIENTO" id="LUGAR_NACIMIENTO" value="{{ empleado.lugar_nacimiento }}" required>
+                                    <div class="invalid-feedback">Completar Lugar de Nacimiento</div>
+                                </div>                                
+                                
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="ESTADO_CIVIL" class="form-label">ESTADO CIVIL*</label>
+                                    <select class="form-control" name="ESTADO_CIVIL" id="ESTADO_CIVIL" required>
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        <option value="1" {% if empleado.estado_civil == '1' %}selected{% endif %}>SOLTERO(A)</option>
+                                        <option value="2" {% if empleado.estado_civil == '2' %}selected{% endif %}>CASADO(A)</option>
                                     </select>
-                                    <div class="invalid-feedback"> 
-                                        SELECIONA UNA EMPRESA
-                                    </div>
+                                    <div class="invalid-feedback">Seleccionar Estado Civil</div>
                                 </div>
+
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="PUESTO" class="form-label">PUESTO:*</label>
-                                    <select class="form-control" name="PUESTO" id="PUESTO" required>
-                                        {% for p in puesto  %}
-                                        <option value="{{ p.id }}" {% if empleado.puesto == p.id %} selected {% endif %}>
-                                            {{ p.puesto }}
-                                        </option>
-                                        {% endfor %}
-                                        
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        SELECIONA UN PUESTO
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="TIPO_EMPLEADO" class="form-label">TIPO EMPLEADO:*</label>
-                                    <select class="form-control" name="TIPO_EMPLEADO" id="TIPO_EMPLEADO" required>
-                                        <option style="text-align: center;" value="1" {{ 'selected' if empleado.tipo_empleado == 1 else '' }}>ADMINISTRATIVO</option>
-                                        <option style="text-align: center;" value="2" {{ 'selected' if empleado.tipo_empleado == 2 else '' }}>OBRA</option>
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        SELECIONA UN PUESTO
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!--FIN INFORMACIÓN GENERAL-->
-                        <!-- NOMINA  -->
-                        <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
-                            tabindex="0">
-                            <br>
-                            <div class="container-fluid">
-                                <div class="form-group row">
-                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label for="BANCO" class="form-label">BANCO:*</label>
-                                        <select class="form-control" name="BANCO" id="BANCO" required>
-                                            {% for b in bancos %}
-                                            <option value="{{ b.id }}" {% if empleado.banco == b.id %}selected{% endif %}>{{ b.nombre }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <div class="invalid-feedback">
-                                            SELECIONA UN BANCO
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label for="NUM_CUENTA" class="form-label">NÚMERO DE CUENTA:*</label>
-                                        <input type="text" class="form-control" name="NUM_CUENTA" maxlength="19" value="{{ empleado.numero_cuenta }}" required oninput="formatearCuenta(this)">
-                                        <div class="invalid-feedback">
-                                            COMPLETA NUMERO DE CUENTA
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label for="CLABE" class="form-label">CUENTA CLABE:*</label>
-                                        <input type="text" class="form-control" name="CLABE" maxlength="23" value="{{ empleado.clabe }}" required oninput="formatearCLABE(this)">
-                                        <div class="invalid-feedback">
-                                            COMPLETA CLABE
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label for="EMPRESA" class="form-label">TIPO NOMINA:*</label>
-                                        <select class="form-control" name="TIPO_NOMINA" id="TIPO_NOMINA" required>
-                                            <option style="text-align: center;" value="1" {{ 'selected' if empleado.tipo_nomina == 1 else '' }}>QUINCENAL</option>
-                                            <option style="text-align: center;" value="2" {{ 'selected' if empleado.tipo_nomina == 2 else '' }}>SEMANAL</option>
-                                        </select>
-                                        <div class="invalid-feedback">
-                                            Seleciona un tipo de Nomina 
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                        <label for="ESTADO" class="form-label">SUELDO IMSS*</label>
-                                        <input value="{{ empleado.sueldo_imss }}" type="text" class="form-control moneda" id="SUELDO_IMSS" name="SUELDO_IMSS"
-                                        placeholder="$0"  required>
-                                        <div class="invalid-feedback">
-                                            Completa Sueldo IMSS
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                        <label for="MONEDERO" class="form-label">MONEDERO*</label>
-                                        <input value="{{ empleado.monedero }}" type="text" class="form-control moneda" name="MONEDERO" id="MONEDERO"
-                                        placeholder="$0" required>
-                                        <div class="invalid-feedback">
-                                            Completa pago monedero
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                        <label for="NOMINA" class="form-label">NOMINA*</label>
-                                        <input value="{{ empleado.nomina }}" type="text" class="form-control moneda" name="NOMINA" id="NOMINA"
-                                            placeholder="$0" required>
-                                        <div class="invalid-feedback">
-                                            Completa pago nomina
-                                        </div>
-                                    </div>
-                                    
+                                    <label for="SEXO" class="form-label">SEXO*</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        name="SEXO" 
+                                        id="SEXO" 
+                                        list="sexo-options" 
+                                        value="{{ empleado.sexo or '' }}" 
+                                        required
+                                    >
+                                    <datalist id="sexo-options">
+                                        <option value="Masculino"></option>
+                                        <option value="Femenino"></option>
+                                    </datalist>
+                                    <div class="invalid-feedback">Selecciona el sexo</div>
                                 </div>
                                 
+                                <!-- Agregar botón para subir foto -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="FOTO" class="form-label">FOTO DEL EMPLEADO</label>
+                                    <input type="file" class="form-control" id="FOTO" accept="image/*">
+                                    <input type="hidden" name="FOTO_BASE64" id="FOTO_BASE64">
+                                    <small class="form-text text-muted">Sube una foto del empleado.</small>
+                                </div>
+
+                                <!-- Campo oculto para la imagen guardada en Base64 -->
+                                <input type="hidden" name="IMAGEN_ACTUAL" id="IMAGEN_ACTUAL" value="{{ empleado.foto_base64 or '' }}">
                             </div>
                         </div>
                         
+                        <!-- INFORMACIÓN DE DIRECCIÓN -->
+                        <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="direccion-tab" tabindex="0">
+                            <br>
+                            <div class="form-group row">
+                                <!-- CALLE -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CALLE" class="form-label">CALLE*</label>
+                                    <input type="text" class="form-control" name="CALLE" id="CALLE" 
+                                        value="{{ empleado.calle or '' }}" required>
+                                    <div class="invalid-feedback">Completar Calle</div>
+                                </div>
+                                <!-- MANZANA -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="MANZANA" class="form-label">MANZANA*</label>
+                                    <input type="text" class="form-control" name="MANZANA" id="MANZANA" 
+                                        value="{{ empleado.manzana or '' }}" required>
+                                    <div class="invalid-feedback">Completar Manzana</div>
+                                </div>
+                                <!-- LOTE -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="LOTE" class="form-label">LOTE*</label>
+                                    <input type="text" class="form-control" name="LOTE" id="LOTE" 
+                                        value="{{ empleado.lote or '' }}" required>
+                                    <div class="invalid-feedback">Completar Lote</div>
+                                </div>
+                                <!-- EDIFICIO -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="EDIFICIO" class="form-label">EDIFICIO</label>
+                                    <input type="text" class="form-control" name="EDIFICIO" id="EDIFICIO" 
+                                        value="{{ empleado.edificio or '' }}">
+                                    <div class="invalid-feedback">Completar Edificio</div>
+                                </div>
+                                <!-- NÚMERO EXTERIOR -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="NUMERO_EXTERIOR" class="form-label">NÚMERO EXTERIOR</label>
+                                    <input type="text" class="form-control" name="NUMERO_EXTERIOR" id="NUMERO_EXTERIOR" 
+                                        value="{{ empleado.numero_exterior or '' }}">
+                                    <div class="invalid-feedback">Completar Número Exterior</div>
+                                </div>
+                                <!-- NÚMERO INTERIOR -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="NUMERO_INTERIOR" class="form-label">NÚMERO INTERIOR</label>
+                                    <input type="text" class="form-control" name="NUMERO_INTERIOR" id="NUMERO_INTERIOR" 
+                                        value="{{ empleado.numero_interior or '' }}">
+                                    <div class="invalid-feedback">Completar Número Interior</div>
+                                </div>
+                                <!-- COLONIA -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="COLONIA" class="form-label">COLONIA*</label>
+                                    <input type="text" class="form-control" name="COLONIA" id="COLONIA" 
+                                        value="{{ empleado.colonia or '' }}" required>
+                                    <div class="invalid-feedback">Completar Colonia</div>
+                                </div>
+                                <!-- CÓDIGO POSTAL -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CODIGO_POSTAL" class="form-label">CÓDIGO POSTAL*</label>
+                                    <input type="text" class="form-control" name="CODIGO_POSTAL" id="CODIGO_POSTAL" 
+                                        value="{{ empleado.codigo_postal or '' }}" required>
+                                    <div class="invalid-feedback">Completar Código Postal</div>
+                                </div>
+                                <!-- ALCALDÍA -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="ALCALDIA" class="form-label">ALCALDÍA*</label>
+                                    <input type="text" class="form-control" name="ALCALDIA" id="ALCALDIA" 
+                                        value="{{ empleado.alcaldia or '' }}" required>
+                                    <div class="invalid-feedback">Completar Alcaldía</div>
+                                </div>
+                                <!-- MUNICIPIO -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
+                                    <input type="text" class="form-control" name="MUNICIPIO" id="MUNICIPIO" 
+                                        value="{{ empleado.municipio or '' }}" required>
+                                    <div class="invalid-feedback">Completar Municipio</div>
+                                </div>
+                                <!-- ESTADO -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="ESTADO" class="form-label">ESTADO*</label>
+                                    <input type="text" class="form-control" name="ESTADO" id="ESTADO" 
+                                        value="{{ empleado.estado or '' }}" required>
+                                    <div class="invalid-feedback">Completar Estado</div>
+                                </div>
+                                <!-- DOMICILIO (Oculto) -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" style="display: none;">
+                                    <label for="DOMICILIO" class="form-label">DOMICILIO*</label>
+                                    <input type="text" class="form-control" name="DOMICILIO" id="DOMICILIO" 
+                                        value="{{ empleado.domicilio or '' }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <!-- INFORMACIÓN DE CONTACTO -->
+                        <div class="tab-pane fade" id="contacto-tab-pane" role="tabpanel" aria-labelledby="contacto-tab" tabindex="0">
+                            <br>
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="TELEFONO_DOMICILIO" class="form-label">TELÉFONO DOMICILIO*</label>
+                                    <input type="text" class="form-control" name="TELEFONO_DOMICILIO" id="TELEFONO_DOMICILIO" 
+                                        value="{{ empleado.telefono_domicilio or '' }}" required>
+                                    <div class="invalid-feedback">Completar Teléfono Domicilio</div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="TELEFONO_CONTACTO" class="form-label">TELÉFONO MÓVIL*</label>
+                                    <input type="text" class="form-control" name="TELEFONO_CONTACTO" id="TELEFONO_CONTACTO" 
+                                        value="{{ empleado.telefono_contacto or '' }}" required>
+                                    <div class="invalid-feedback">Completar Teléfono Móvil</div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CUENTA_CORREO" class="form-label">CUENTA DE CORREO*</label>
+                                    <input type="email" class="form-control" name="CUENTA_CORREO" id="CUENTA_CORREO" 
+                                        value="{{ empleado.cuenta_correo or '' }}" required>
+                                    <div class="invalid-feedback">Completar Cuenta de Correo</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- INFORMACIÓN DE FISCAL -->
+                        <div class="tab-pane fade" id="fiscal-tab-pane" role="tabpanel" aria-labelledby="fiscal-tab">
+                            <br>
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="RFC" class="form-label">RFC*</label>
+                                    <input type="text" class="form-control" name="RFC" id="RFC" 
+                                        value="{{ empleado.rfc or '' }}" required>
+                                    <div class="invalid-feedback">Completar RFC</div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CURP" class="form-label">CURP*</label>
+                                    <input type="text" class="form-control" name="CURP" id="CURP" 
+                                        value="{{ empleado.curp or '' }}" required>
+                                    <div class="invalid-feedback">Completar CURP</div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="NO_IMSS" class="form-label">NÚMERO DE SEGURIDAD SOCIAL*</label>
+                                    <input type="text" class="form-control" name="NO_IMSS" id="NO_IMSS" 
+                                        value="{{ empleado.no_imss or '' }}" required>
+                                    <div class="invalid-feedback">Completar Número de Seguridad Social</div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="INE" class="form-label">INE*</label>
+                                    <input type="text" class="form-control" name="INE" id="INE" 
+                                        value="{{ empleado.ine or '' }}" required>
+                                    <div class="invalid-feedback">Completar INE</div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CEDULA_PROFESIONAL" class="form-label">CÉDULA PROFESIONAL</label>
+                                    <input type="text" class="form-control" name="CEDULA_PROFESIONAL" id="CEDULA_PROFESIONAL" 
+                                        value="{{ empleado.cedula_profesional or '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- INFORMACIÓN DE INFONAVIT -->
+                    <div class="tab-pane fade" id="infonavit-tab-pane" role="tabpanel" aria-labelledby="infonavit-tab">
+                        <br>
+                        <div class="form-group row">
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label for="NUMERO_CREDITO" class="form-label">NÚMERO DE CRÉDITO INFONAVIT*</label>
+                                <input type="text" class="form-control" name="NUMERO_CREDITO_INFONAVIT" id="NUMERO_CREDITO_INFONAVIT" 
+                                    value="{{ empleado.numero_credito_infonavit or '' }}" required>
+                                <div class="invalid-feedback">Completar Número de Crédito</div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label for="TIPO_DESCUENTO_INFONAVIT" class="form-label">TIPO DE DESCUENTO INFONAVIT*</label>
+                                <select class="form-control" name="TIPO_DESCUENTO_INFONAVIT" id="TIPO_DESCUENTO_INFONAVIT" required>
+                                    <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                    <option value="1" {% if empleado.tipo_descuento_infonavit == '1' %}selected{% endif %}>FIJO</option>
+                                    <option value="2" {% if empleado.tipo_descuento_infonavit == '2' %}selected{% endif %}>PORCENTAJE</option>
+                                </select>
+                                <div class="invalid-feedback">Seleccionar Tipo de Descuento</div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label for="FACTOR_INFONAVIT" class="form-label">FACTOR INFONAVIT*</label>
+                                <input type="text" class="form-control" name="FACTOR_INFONAVIT" id="FACTOR_INFONAVIT" 
+                                    value="{{ empleado.factor_infonavit or '' }}" required>
+                                <div class="invalid-feedback">Completar Factor INFONAVIT</div>
+                            </div>
+                        </div>
+                    </div>
+                        <!-- EMPLEADO -->
+                        <div class="tab-pane fade" id="empleado-tab-pane" role="tabpanel" aria-labelledby="empleado-tab" tabindex="0">
+                            <br>
+                            <div class="form-group row align-items-center">
+                                <!-- EMPRESA -->
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <label for="EMPRESA" class="form-label">EMPRESA:*</label>
+                                    <select class="form-control" name="EMPRESA" id="EMPRESA" required>
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        {% for empresa in empresas %}
+                                        <option value="{{ empresa.id }}" {% if empleado.id_empresa == empresa.id %}selected{% endif %}>
+                                            {{ empresa.razon_social }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona una empresa</div>
+                                </div>
+                        
+                                <!-- PUESTO -->
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <label for="PUESTO" class="form-label">PUESTO*</label>
+                                    <select class="form-control" name="PUESTO" id="PUESTO" required>
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        {% for p in puesto %}
+                                        <option 
+                                            value="{{ p.id }}" 
+                                            data-sueldo="{{ p.sueldo_base }}" 
+                                            data-sueldo-tarjeta="{{ p.sueldo_tarjeta }}" 
+                                            data-categoria="{{ p.categoria.nombre }}" 
+                                            {% if empleado.puesto == p.id %}selected{% endif %}>
+                                            {{ p.puesto }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona un Puesto</div>
+                                </div>
+                        
+                                <!-- CATEGORÍA -->
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <label for="CATEGORIA" class="form-label">CATEGORÍA*</label>
+                                    <input type="text" class="form-control" name="CATEGORIA" id="CATEGORIA" 
+                                        value="{{ empleado.categoria or '' }}" readonly>
+                                </div>
+                        
+                                <!-- TIPO DE EMPLEADO -->
+<div class="col-lg-4 col-md-6 col-sm-12">
+    <label for="TIPO_EMPLEADO" class="form-label">TIPO EMPLEADO*</label>
+    <select class="form-control" name="TIPO_EMPLEADO" id="TIPO_EMPLEADO" required>
+        <option value="" style="text-align: center;">- SELECCIONE -</option>
+        <option value="1" {% if empleado.tipo_empleado|string == '1' %}selected{% endif %}>OBRA</option>
+        <option value="2" {% if empleado.tipo_empleado|string == '2' %}selected{% endif %}>PERSONAL BAUART</option>
+    </select>
+    <div class="invalid-feedback">Selecciona un Tipo de Empleado</div>
+</div>
+
+                        
+                                <!-- TURNO -->
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <label for="TURNO" class="form-label">TURNO</label>
+                                    <select class="form-control" name="TURNO" id="TURNO">
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        <option value="M" {% if empleado.turno == 'M' %}selected{% endif %}>Matutino</option>
+                                        <option value="V" {% if empleado.turno == 'V' %}selected{% endif %}>Vespertino</option>
+                                        <option value="N" {% if empleado.turno == 'N' %}selected{% endif %}>Nocturno</option>
+                                    </select>
+                                    <small class="form-text text-muted">Selecciona el turno asignado</small>
+                                </div>
+                        
+                                <!-- TIPO DE CONTRATO -->
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <label for="TIPO_CONTRATO" class="form-label">TIPO DE CONTRATO</label>
+                                    <select class="form-control" name="TIPO_CONTRATO" id="TIPO_CONTRATO">
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        <option value="TEMPORAL" {% if empleado.tipo_contrato == 'TEMPORAL' %}selected{% endif %}>Temporal</option>
+                                        <option value="INDEFINIDO" {% if empleado.tipo_contrato == 'INDEFINIDO' %}selected{% endif %}>Indefinido</option>
+                                    </select>
+                                    <small class="form-text text-muted">Selecciona el tipo de contrato del empleado</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <!-- NÓMINA -->
+                        <div class="tab-pane fade" id="nomina-tab-pane" role="tabpanel" aria-labelledby="nomina-tab" tabindex="0">
+                            <br>
+                            <div class="form-group row">
+                                <!-- BANCO -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="BANCO" class="form-label">BANCO:*</label>
+                                    <select class="form-control" name="BANCO" id="BANCO" required>
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        {% for b in bancos %}
+                                        <option value="{{ b.id }}" {% if empleado.banco == b.id %}selected{% endif %}>{{ b.nombre|upper }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona un Banco</div>
+                                </div>
+
+                                <!-- CUENTA -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CUENTA" class="form-label">CUENTA BANCARIA:*</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        name="CUENTA" 
+                                        id="CUENTA" 
+                                        value="{{ empleado.cuenta or '' }}"
+                                        maxlength="20"
+                                        required
+                                    >
+                                    <div class="invalid-feedback">Completa la Cuenta Bancaria</div>
+                                </div>
+
+                                <!-- CLABE -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CLABE" class="form-label">CLABE INTERBANCARIA:*</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        name="CLABE" 
+                                        id="CLABE" 
+                                        value="{{ empleado.clabe or '' }}"
+                                        maxlength="23"
+                                        required
+                                    >
+                                    <div class="invalid-feedback">Completa Clabe</div>
+                                </div>
+
+                                <!-- REGISTRO PATRONAL -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="REGISTRO_PATRONAL" class="form-label">REGISTRO PATRONAL:*</label>
+                                    <select class="form-control" name="REGISTRO_PATRONAL" id="REGISTRO_PATRONAL" required>
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        {% for registro in registosPatronales %}
+                                        <option value="{{ registro.id_registro }}" 
+                                            {% if empleado.registro_patronal|string == registro.id_registro|string %}selected{% endif %}>
+                                            {{ registro.numero_registro_patronal }} - {{ registro.estado }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona un Registro Patronal</div>
+                                </div>
+
+
+
+                                <!-- TIPO DE NÓMINA -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="TIPO_NOMINA" class="form-label">TIPO NÓMINA:*</label>
+                                    <select class="form-control" name="TIPO_NOMINA" id="TIPO_NOMINA" required>
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        <option value="1" {% if empleado.tipo_nomina|string == '1' %}selected{% endif %}>QUINCENAL</option>
+                                        <option value="2" {% if empleado.tipo_nomina|string == '2' %}selected{% endif %}>SEMANAL</option>
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona un Tipo de Nómina</div>
+                                </div>
+
+
+                                <!-- SUELDO BASE -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="SUELDO_BASE" class="form-label">SUELDO BASE:*</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="SUELDO_BASE" 
+                                        name="SUELDO_BASE" 
+                                        value="{{ empleado.sueldo_base|string if empleado.sueldo_base else '' }}" 
+                                        readonly
+                                    >
+                                    <div class="invalid-feedback">Completa Sueldo Base</div>
+                                </div>
+
+
+                                <!-- SUELDO IMSS -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="SUELDO_IMSS" class="form-label">SUELDO IMSS:*</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="SUELDO_IMSS" 
+                                        name="SUELDO_IMSS" 
+                                        value="{{ empleado.sueldo_imss or '' }}" 
+                                        readonly
+                                    >
+                                    <div class="invalid-feedback">Completa Sueldo IMSS</div>
+                                </div>
+
+                                <!-- MONEDERO -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="MONEDERO" class="form-label">MONEDERO ELECTRÓNICO:*</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="MONEDERO" 
+                                        name="MONEDERO" 
+                                        value="{{ empleado.monedero or '' }}" 
+                                        readonly
+                                    >
+                                    <div class="invalid-feedback">Completa Monedero</div>
+                                </div>
+
+                                <!-- NOMINA (Oculto) -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" style="display: none;">
+                                    <label for="NOMINA" class="form-label">PAGO NÓMINA*</label>
+                                    <input type="text" class="form-control moneda" id="NOMINA" name="NOMINA" value="{{ empleado.nominaA }}" readonly>
+                                    <div class="invalid-feedback">El Pago de Nómina se calcula automáticamente</div>
+                                </div>
+
+                                <!-- TOPE HORAS EXTRA -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="TOPE_HORAS_EXTRA" class="form-label">TOPE HORAS EXTRA:*</label>
+                                    <input 
+                                        type="number" 
+                                        class="form-control" 
+                                        name="TOPE_HORAS_EXTRA" 
+                                        id="TOPE_HORAS_EXTRA" 
+                                        value="{{ empleado.tope_horas_extra or 0 }}" 
+                                        required
+                                    >
+                                    <div class="invalid-feedback">Completa el Tope de Horas Extra</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- REFERENCIAS -->
+                        <div class="tab-pane fade" id="referencias-tab-pane" role="tabpanel" aria-labelledby="referencias-tab">
+                            <br>
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CONTACTO_ACCIDENTE" class="form-label">CONTACTO EN CASO DE ACCIDENTE*</label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        name="CONTACTO_ACCIDENTE" 
+                                        id="CONTACTO_ACCIDENTE" 
+                                        value="{{ empleado.contacto_accidente or '' }}" 
+                                        required
+                                    >
+                                    <div class="invalid-feedback">Completa el Contacto en Caso de Accidente</div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="TIPO_SANGRE" class="form-label">TIPO DE SANGRE*</label>
+                                    <select class="form-control" name="TIPO_SANGRE" id="TIPO_SANGRE" required>
+                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
+                                        <option value="O+" {% if empleado.tipo_sangre == 'O+' %}selected{% endif %}>O+</option>
+                                        <option value="O-" {% if empleado.tipo_sangre == 'O-' %}selected{% endif %}>O-</option>
+                                        <option value="A+" {% if empleado.tipo_sangre == 'A+' %}selected{% endif %}>A+</option>
+                                        <option value="A-" {% if empleado.tipo_sangre == 'A-' %}selected{% endif %}>A-</option>
+                                        <option value="B+" {% if empleado.tipo_sangre == 'B+' %}selected{% endif %}>B+</option>
+                                        <option value="B-" {% if empleado.tipo_sangre == 'B-' %}selected{% endif %}>B-</option>
+                                        <option value="AB+" {% if empleado.tipo_sangre == 'AB+' %}selected{% endif %}>AB+</option>
+                                        <option value="AB-" {% if empleado.tipo_sangre == 'AB-' %}selected{% endif %}>AB-</option>
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona un Tipo de Sangre</div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="ALERGIAS" class="form-label">ALERGIAS</label>
+                                    <textarea class="form-control" name="ALERGIAS" id="ALERGIAS" rows="3">{{ empleado.alergias or '' }}</textarea>
+                                    <small class="form-text text-muted">Lista cualquier alergia del empleado</small>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="ENFERMEDADES_CONTROLADAS" class="form-label">ENFERMEDADES CONTROLADAS</label>
+                                    <textarea class="form-control" name="ENFERMEDADES_CONTROLADAS" id="ENFERMEDADES_CONTROLADAS" rows="3">{{ empleado.enfermedades_controladas or '' }}</textarea>
+                                    <small class="form-text text-muted">Especifica las enfermedades controladas</small>
+                                </div>
+                            </div>
+                        </div>                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-    <!-- FIN CARD CLIENTE -->
-
-
 </form>
 </div>
 <br>
@@ -284,8 +706,646 @@
                 event.target.value = valor;
             });
         });
+
+        
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const puestoSelect = document.getElementById("PUESTO");
+        const sueldoBaseInput = document.getElementById("SUELDO_BASE");
+        const sueldoIMSSInput = document.getElementById("SUELDO_IMSS");
+        const monederoInput = document.getElementById("MONEDERO");
+    
+        // Función para formatear valores como moneda MXN
+        function formatearMonedaMXN(valor) {
+            const numero = parseFloat(valor.replace(/[^0-9.-]+/g, "")) || 0;
+            return numero.toLocaleString("es-MX", {
+                style: "currency",
+                currency: "MXN",
+            });
+        }
+    
+        // Función para actualizar y formatear un campo
+        function actualizarCampoYFormatear(input, valor) {
+            input.value = formatearMonedaMXN(valor || "0");
+        }
+    
+        // Función para calcular el MONEDERO
+        function calcularMonedero() {
+            const sueldoBase = parseFloat(sueldoBaseInput.value.replace(/[^0-9.-]+/g, "")) || 0;
+            const sueldoIMSS = parseFloat(sueldoIMSSInput.value.replace(/[^0-9.-]+/g, "")) || 0;
+            const monedero = sueldoBase - sueldoIMSS;
+            monederoInput.value = formatearMonedaMXN(monedero);
+        }
+    
+        // Evento para actualizar los valores cuando cambia el puesto
+        puestoSelect.addEventListener("change", function () {
+            const selectedOption = puestoSelect.options[puestoSelect.selectedIndex];
+            const sueldoBase = selectedOption.getAttribute("data-sueldo") || "0";
+            const sueldoIMSS = selectedOption.getAttribute("data-sueldo-tarjeta") || "0";
+    
+            // Actualizar campos de SUELDO BASE y SUELDO IMSS
+            actualizarCampoYFormatear(sueldoBaseInput, sueldoBase);
+            actualizarCampoYFormatear(sueldoIMSSInput, sueldoIMSS);
+    
+            // Calcular y actualizar el MONEDERO
+            calcularMonedero();
+        });
+    
+        // Inicialización al cargar la página
+        if (puestoSelect.value) {
+            const selectedOption = puestoSelect.options[puestoSelect.selectedIndex];
+            const sueldoBase = selectedOption.getAttribute("data-sueldo") || "0";
+            const sueldoIMSS = selectedOption.getAttribute("data-sueldo-tarjeta") || "0";
+    
+            actualizarCampoYFormatear(sueldoBaseInput, sueldoBase);
+            actualizarCampoYFormatear(sueldoIMSSInput, sueldoIMSS);
+            calcularMonedero();
+        }
+    });
+    </script>
+    
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const sueldoBaseInput = document.getElementById("SUELDO_BASE");
+    const sueldoIMSSInput = document.getElementById("SUELDO_IMSS");
+    const monederoInput = document.getElementById("MONEDERO");
+    const nominaInput = document.getElementById("NOMINA");
+
+    // Función para calcular Monedero
+    function calcularMonedero() {
+        const sueldoBase = parseFloat(sueldoBaseInput.value.replace(/[^0-9.-]+/g, '')) || 0;
+        const sueldoIMSS = parseFloat(sueldoIMSSInput.value.replace(/[^0-9.-]+/g, '')) || 0;
+
+        const monedero = sueldoBase - sueldoIMSS;
+        monederoInput.value = formatearMonedaMXN(monedero);
+    }
+
+    // Función para calcular Pago Nómina
+    function calcularNomina() {
+        const sueldoBase = parseFloat(sueldoBaseInput.value.replace(/[^0-9.-]+/g, '')) || 0;
+        const sueldoIMSS = parseFloat(sueldoIMSSInput.value.replace(/[^0-9.-]+/g, '')) || 0;
+
+        const nominaTotal = sueldoBase + sueldoIMSS;
+        nominaInput.value = formatearMonedaMXN(nominaTotal);
+    }
+
+    // Función para formatear como moneda MXN
+    function formatearMonedaMXN(valor) {
+        return valor.toLocaleString('es-MX', {
+            style: 'currency',
+            currency: 'MXN'
+        });
+    }
+
+    // Eventos para actualizar Monedero y Nómina al cambiar Sueldo Base o Sueldo IMSS
+    sueldoBaseInput.addEventListener("blur", () => {
+        calcularMonedero();
+        calcularNomina();
+    });
+
+    sueldoIMSSInput.addEventListener("blur", () => {
+        calcularMonedero();
+        calcularNomina();
+    });
+
+    // Actualizar valores al cambiar el puesto
+    const puestoSelect = document.getElementById("PUESTO");
+    puestoSelect.addEventListener("change", function () {
+        const sueldoBase = puestoSelect.options[puestoSelect.selectedIndex].getAttribute("data-sueldo");
+        const sueldoIMSS = puestoSelect.options[puestoSelect.selectedIndex].getAttribute("data-sueldo-tarjeta");
+
+        if (sueldoBase) {
+            sueldoBaseInput.value = formatearMonedaMXN(sueldoBase);
+        } else {
+            sueldoBaseInput.value = "";
+        }
+
+        if (sueldoIMSS) {
+            sueldoIMSSInput.value = formatearMonedaMXN(sueldoIMSS);
+        } else {
+            sueldoIMSSInput.value = "";
+        }
+
+        calcularMonedero();
+        calcularNomina();
+    });
+});
+
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const fotoInput = document.getElementById("FOTO");
+        const fotoBase64Input = document.getElementById("FOTO_BASE64");
+
+        fotoInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    // Asigna el resultado en Base64 al campo oculto
+                    fotoBase64Input.value = e.target.result;
+                    console.log("Foto convertida a Base64: ", e.target.result);
+                };
+
+                reader.onerror = function (e) {
+                    console.error("Error al cargar la imagen: ", e);
+                    alert("Error al cargar la imagen. Intenta nuevamente.");
+                };
+
+                // Leer el archivo como una URL Base64
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const fotoInput = document.getElementById("FOTO");
+        const imagePreview = document.getElementById("imagePreview");
+
+        fotoInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    // Actualiza el contenedor de vista previa con la imagen cargada
+                    imagePreview.style.backgroundImage = `url(${e.target.result})`;
+                    imagePreview.innerHTML = ""; // Elimina el texto de "Sin imagen"
+                };
+
+                reader.onerror = function () {
+                    alert("Error al cargar la imagen. Intenta nuevamente.");
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                // Restaura el estado inicial si no se seleccionó ninguna imagen
+                imagePreview.style.backgroundImage = "";
+                imagePreview.innerHTML = '<div class="image-preview-placeholder">Sin imagen</div>';
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const inputs = ["CALLE", "MANZANA", "LOTE", "NUMERO_EXTERIOR", "NUMERO_INTERIOR", "COLONIA", "CODIGO_POSTAL", "ESTADO"];
+    const domicilioInput = document.getElementById("DOMICILIO");
+
+    function actualizarDomicilio() {
+        const valores = inputs.map(fieldId => {
+            const input = document.getElementById(fieldId);
+            return input && input.value.trim() ? input.value.trim() : null; // Validar que exista y no esté vacío
+        }).filter(valor => valor !== null); // Filtrar valores nulos o vacíos
+
+        domicilioInput.value = valores.join(", ");
+    }
+
+    // Agregar evento de escucha a cada campo
+    inputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener("input", actualizarDomicilio);
+        }
+    });
+
+    // Inicializar DOMICILIO al cargar la página (por si ya hay valores cargados)
+    actualizarDomicilio();
+});
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const clabeInput = document.getElementById("CLABE");
+
+    // Función para formatear la CLABE con guiones
+    function formatCLABE(value) {
+        // Eliminar cualquier carácter que no sea un número
+        value = value.replace(/[^0-9]/g, "");
+
+        // Insertar guiones después de los grupos 3-3-11-1
+        return value
+            .replace(/(\d{3})(?=\d)/g, "$1-")  // Guiones después de cada 3 dígitos
+            .replace(/-{2,}/g, "-")           // Evitar múltiples guiones
+            .substring(0, 23);                // Máximo 23 caracteres (incluyendo guiones)
+    }
+
+    // Evento para formatear mientras se escribe
+    clabeInput.addEventListener("input", (event) => {
+        const formattedValue = formatCLABE(event.target.value);
+        clabeInput.value = formattedValue;
+    });
+
+    // Evento antes de enviar el formulario
+    clabeInput.form.addEventListener("submit", (event) => {
+        // Remover los guiones antes de enviar
+        clabeInput.value = clabeInput.value.replace(/-/g, "");
+    });
+});
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form"); // Selecciona tu formulario
+    const loader = document.getElementById("loader"); // Referencia al loader
+
+    form.addEventListener("submit", function (event) {
+        // Verifica la validez del formulario
+        if (!form.checkValidity()) {
+            event.preventDefault(); // Evita el envío del formulario
+            event.stopPropagation(); // Detiene la propagación del evento
+
+            // Asegúrate de ocultar el loader si hay errores de validación
+            loader.style.display = "none";
+
+            // Agrega la clase de validación al formulario
+            form.classList.add("was-validated");
+        } else {
+            // Si el formulario es válido, muestra el loader
+            loader.style.display = "flex";
+
+            // Deshabilitar el botón para evitar envíos múltiples
+            const submitButton = form.querySelector("[type='submit']");
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = "Enviando...";
+            }
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const puestoSelect = document.getElementById("PUESTO");
+    const categoriaInput = document.getElementById("CATEGORIA");
+
+    puestoSelect.addEventListener("change", function () {
+        const selectedOption = puestoSelect.options[puestoSelect.selectedIndex];
+        const categoria = selectedOption.getAttribute("data-categoria") || "";
+
+        // Actualizar el campo de categoría
+        categoriaInput.value = categoria;
+    });
+
+    // Opcional: Inicializar la categoría al cargar la página si ya hay un puesto seleccionado
+    if (puestoSelect.value) {
+        const selectedOption = puestoSelect.options[puestoSelect.selectedIndex];
+        const categoria = selectedOption.getAttribute("data-categoria") || "";
+        categoriaInput.value = categoria;
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const telefonoInputs = document.querySelectorAll("#TELEFONO_CONTACTO, #TELEFONO_DOMICILIO");
+
+    telefonoInputs.forEach((input) => {
+        input.addEventListener("input", (event) => {
+            let value = event.target.value.replace(/[^0-9]/g, ""); // Solo números
+            value = value.substring(0, 10); // Máximo 10 dígitos
+            if (value.length >= 7) {
+                event.target.value = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+            } else if (value.length >= 4) {
+                event.target.value = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+            } else if (value.length > 0) {
+                event.target.value = `(${value}`;
+            }
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function () {
+    const codigoPostalInput = document.getElementById("CODIGO_POSTAL");
+
+    codigoPostalInput.addEventListener("input", (event) => {
+        let value = event.target.value.replace(/[^0-9]/g, ""); // Solo números
+        event.target.value = value.substring(0, 5); // Máximo 5 dígitos
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const cuentaInput = document.getElementById("CUENTA");
+
+    // Función para formatear la cuenta bancaria con guiones
+    function formatCuenta(value) {
+        // Eliminar caracteres que no sean números
+        value = value.replace(/[^0-9]/g, "");
+
+        // Insertar guiones después de cada grupo de 4 dígitos
+        return value.replace(/(\d{4})(?=\d)/g, "$1-").substring(0, 23); // Máximo 23 caracteres (incluyendo guiones)
+    }
+
+    // Evento para formatear la cuenta bancaria mientras se escribe
+    cuentaInput.addEventListener("input", (event) => {
+        const formattedValue = formatCuenta(event.target.value);
+        cuentaInput.value = formattedValue;
+    });
+
+    // Evento antes de enviar el formulario
+    cuentaInput.form.addEventListener("submit", (event) => {
+        // Eliminar los guiones antes de enviar el formulario
+        cuentaInput.value = cuentaInput.value.replace(/-/g, "");
+    });
+});
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const sueldoBaseInput = document.getElementById("SUELDO_BASE");
+    const sueldoIMSSInput = document.getElementById("SUELDO_IMSS");
+
+    // Función para formatear como moneda MXN
+    function formatearMonedaMXN(valor) {
+        const numero = parseFloat(valor.replace(/[^0-9.-]+/g, "")) || 0;
+        return numero.toLocaleString("es-MX", {
+            style: "currency",
+            currency: "MXN",
+        });
+    }
+
+    // Función para formatear los campos SUELDO BASE y SUELDO IMSS
+    function formatearSueldoInputs() {
+        if (sueldoBaseInput) {
+            sueldoBaseInput.value = formatearMonedaMXN(sueldoBaseInput.value);
+        }
+        if (sueldoIMSSInput) {
+            sueldoIMSSInput.value = formatearMonedaMXN(sueldoIMSSInput.value);
+        }
+    }
+
+    // Evento al mostrar la pestaña "INFORMACIÓN DE PAGO"
+    document.querySelector('button[data-bs-target="#nomina-tab-pane"]').addEventListener("shown.bs.tab", function () {
+        formatearSueldoInputs();
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const telefonoInputs = document.querySelectorAll("#TELEFONO_DOMICILIO, #TELEFONO_CONTACTO");
+
+    telefonoInputs.forEach((input) => {
+        input.addEventListener("keydown", (event) => {
+            // Permitir: teclas numéricas, retroceso, suprimir, flechas de navegación, tab y enter
+            const teclasPermitidas = [
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Enter",
+            ];
+
+            // Solo permitir números y las teclas permitidas
+            if (!/^\d$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault();
+            }
+        });
+
+        // Limitar el input a un máximo de 10 caracteres
+        input.addEventListener("input", () => {
+            if (input.value.length > 20) {
+                input.value = input.value.slice(0, 20);
+            }
+        });
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const direccionInputs = {
+        "CALLE": 150, // Máximo 150 caracteres
+        "MANZANA": 50, // Máximo 50 caracteres
+        "LOTE": 50, // Máximo 50 caracteres
+        "NUMERO_EXTERIOR": 20, // Máximo 20 caracteres
+        "NUMERO_INTERIOR": 20, // Máximo 20 caracteres
+        "COLONIA": 100, // Máximo 100 caracteres
+        "CODIGO_POSTAL": 5, // Solo números, máximo 5 caracteres
+        "ESTADO": 50, // Máximo 50 caracteres
+        "ALCALDIA": 255, // Máximo 255 caracteres
+        "MUNICIPIO": 255, // Máximo 255 caracteres
+        "EDIFICIO": 255 // Máximo 255 caracteres
+    };
+
+    Object.keys(direccionInputs).forEach(id => {
+        const input = document.getElementById(id);
+        const maxLength = direccionInputs[id];
+
+        if (input) {
+            input.addEventListener("input", (event) => {
+                // Limitar el número máximo de caracteres
+                if (input.value.length > maxLength) {
+                    input.value = input.value.slice(0, maxLength);
+                }
+
+                // Si es el campo CODIGO_POSTAL, solo permitir números
+                if (id === "CODIGO_POSTAL") {
+                    input.value = input.value.replace(/[^0-9]/g, ""); // Solo números
+                }
+            });
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+        const rfcInput = document.getElementById("RFC");
+
+        rfcInput.addEventListener("input", (event) => {
+            // Permitir solo letras, números y limitar la longitud máxima a 13
+            let value = event.target.value.replace(/[^a-zA-Z0-9]/g, ""); // Eliminar cualquier carácter no alfanumérico
+            event.target.value = value.slice(0, 13); // Limitar a 13 caracteres
+        });
+
+        rfcInput.addEventListener("keydown", (event) => {
+            // Permitir: retroceso, suprimir, flechas de navegación, tab y enter
+            const teclasPermitidas = [
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Enter",
+            ];
+
+            // Solo permitir letras, números y teclas permitidas
+            if (!/^[a-zA-Z0-9]$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault();
+            }
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const curpInput = document.getElementById("CURP");
+
+        // Limitar la longitud a 18 caracteres
+        curpInput.addEventListener("input", () => {
+            if (curpInput.value.length > 18) {
+                curpInput.value = curpInput.value.slice(0, 18);
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const nssInput = document.getElementById("NO_IMSS");
+
+        // Permitir solo números y teclas esenciales
+        nssInput.addEventListener("keydown", (event) => {
+            const teclasPermitidas = [
+                "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter",
+            ];
+
+            // Verificar que la tecla sea un número o esté en las permitidas
+            if (!/^\d$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault();
+            }
+        });
+
+        // Limitar la longitud máxima a 20 caracteres
+        nssInput.addEventListener("input", () => {
+            if (nssInput.value.length > 20) {
+                nssInput.value = nssInput.value.slice(0, 20);
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const ineInput = document.getElementById("INE");
+
+    // Limitar la longitud del campo INE
+    ineInput.addEventListener("input", function () {
+        const maxLength = 20; // Cambia este valor si necesitas un límite diferente
+        if (ineInput.value.length > maxLength) {
+            ineInput.value = ineInput.value.slice(0, maxLength);
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+        const cedulaInput = document.getElementById("CEDULA_PROFESIONAL");
+
+        // Evento para permitir solo números y limitar el rango
+        cedulaInput.addEventListener("keydown", function (event) {
+            // Permitir teclas de control: backspace, delete, tab, flechas, enter
+            const teclasPermitidas = [
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Enter",
+            ];
+
+            if (!/^\d$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault(); // Bloquear teclas no permitidas
+            }
+        });
+
+        // Limitar a 8 caracteres
+        cedulaInput.addEventListener("input", function () {
+            if (cedulaInput.value.length > 8) {
+                cedulaInput.value = cedulaInput.value.slice(0, 8); // Cortar el valor a 8 caracteres
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const creditoInfonavitInput = document.getElementById("NUMERO_CREDITO_INFONAVIT");
+
+        // Evento para permitir solo números y limitar el rango
+        creditoInfonavitInput.addEventListener("keydown", function (event) {
+            // Permitir teclas de control: backspace, delete, tab, flechas, enter
+            const teclasPermitidas = [
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab",
+                "Enter",
+            ];
+
+            if (!/^\d$/.test(event.key) && !teclasPermitidas.includes(event.key)) {
+                event.preventDefault(); // Bloquear teclas no permitidas
+            }
+        });
+
+        // Limitar a 11 caracteres
+        creditoInfonavitInput.addEventListener("input", function () {
+            if (creditoInfonavitInput.value.length > 11) {
+                creditoInfonavitInput.value = creditoInfonavitInput.value.slice(0, 11); // Cortar el valor a 11 caracteres
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const fotoInput = document.getElementById("FOTO");
+    const fotoBase64Input = document.getElementById("FOTO_BASE64");
+    const imagenActualInput = document.getElementById("IMAGEN_ACTUAL");
+    const imagePreview = document.getElementById("imagePreview");
+
+    // Reconstruir la vista previa de la imagen al cargar la página
+    const imagenGuardada = imagenActualInput.value;
+    if (imagenGuardada) {
+        imagePreview.style.backgroundImage = `url(${imagenGuardada})`;
+        imagePreview.innerHTML = ""; // Elimina el texto de "Sin imagen"
+    }
+
+    // Manejar cambios en la selección de archivo
+    fotoInput.addEventListener("change", function (event) {
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                // Actualiza la vista previa con la nueva imagen seleccionada
+                imagePreview.style.backgroundImage = `url(${e.target.result})`;
+                imagePreview.innerHTML = ""; // Elimina el texto de "Sin imagen"
+
+                // Actualiza el campo oculto para enviar la nueva imagen en base64
+                fotoBase64Input.value = e.target.result;
+            };
+
+            reader.onerror = function () {
+                alert("Error al cargar la imagen. Intenta nuevamente.");
+            };
+
+            reader.readAsDataURL(file);
+        } else {
+            // Si se elimina la selección, restablece la vista previa a la imagen guardada
+            if (imagenGuardada) {
+                imagePreview.style.backgroundImage = `url(${imagenGuardada})`;
+                imagePreview.innerHTML = ""; // Elimina el texto de "Sin imagen"
+            } else {
+                imagePreview.style.backgroundImage = "";
+                imagePreview.innerHTML = '<div class="image-preview-placeholder">Sin imagen</div>';
+            }
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sueldoBaseInput = document.getElementById("SUELDO_BASE");
+    const sueldoIMSSInput = document.getElementById("SUELDO_IMSS");
+    const nominaInput = document.getElementById("NOMINA");
+
+    // Función para calcular el valor de NOMINA
+    function calcularNomina() {
+        const sueldoBase = parseFloat(sueldoBaseInput.value.replace(/[^0-9.-]+/g, "")) || 0;
+        const sueldoIMSS = parseFloat(sueldoIMSSInput.value.replace(/[^0-9.-]+/g, "")) || 0;
+
+        const nominaTotal = sueldoBase + sueldoIMSS;
+        nominaInput.value = nominaTotal.toFixed(2); // Valor numérico para enviar al backend
+    }
+
+    // Recalcula NOMINA si SUELDO_BASE o SUELDO_IMSS cambian
+    sueldoBaseInput.addEventListener("input", calcularNomina);
+    sueldoIMSSInput.addEventListener("input", calcularNomina);
+
+    // Asegúrate de que NOMINA esté actualizado al enviar el formulario
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function () {
+        calcularNomina(); // Recalcula NOMINA antes del envío
+    });
+});
+
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
