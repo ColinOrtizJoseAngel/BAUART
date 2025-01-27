@@ -9,14 +9,15 @@ class ModelProyectoObra:
                         ID_CLIENTE, ID_EMPRESA, NOMBRE_PROYECTO, TIPO_ID, FECHA_INICIO, FECHA_CONTRATO, FECHA_FIN, 
                         PAIS, ESTADO, MUNICIPIO, COLONIA, CALLE, NUMERO_EXTERIOR, NUMERO_INTERIOR,
                         CENTRO_COMERCIAL, DIRECTOR_PROYECTO, LIDER_PROYECTO, GERENTE_PROYECTO, LIDER1, LIDER2,
-                        FECHA_REGISTRO, USUARIO_ID, IS_BLOCKED, CP
-                    ) VALUES (?, ?, ?, ?, ?, GETDATE(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, ?,?);
+                        CP, HORA_ENTRADA, HORA_SALIDA, LONGITUD, LATITUD, DIRECCION_OBRA, FECHA_REGISTRO, USUARIO_ID, IS_BLOCKED
+                    ) VALUES (?, ?, ?, ?, ?, ?,GETDATE(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, ?);
                 """
                 cursor.execute(query, (
                     proyecto.id_cliente, proyecto.id_empresa, proyecto.nombre_proyecto, proyecto.tipo_id, proyecto.fecha_inicio, proyecto.fecha_fin,
                     proyecto.pais, proyecto.estado, proyecto.municipio, proyecto.colonia, proyecto.calle, proyecto.numero_exterior, proyecto.numero_interior, 
                     proyecto.centro_comercial, proyecto.director_proyecto, proyecto.lider_proyecto, proyecto.gerente_proyecto, proyecto.lider1, 
-                    proyecto.lider2, 3, proyecto.is_blocked, proyecto.cp
+                    proyecto.lider2, proyecto.cp, proyecto.hora_entrada, proyecto.hora_salida, proyecto.logitud, proyecto.latitud, proyecto.direcion_obra, 
+                    proyecto.usuario_id, proyecto.is_blocked
                 ))
                 db.commit()
         except Exception as ex:
@@ -55,7 +56,12 @@ class ModelProyectoObra:
                         P.[USUARIO_ID],
                         P.[IS_BLOCKED],
                         P.[CP],
-                        C.[RAZON_SOCIAL]
+                        C.[RAZON_SOCIAL],
+                        P.[HORA_ENTRADA],
+                        P.[HORA_SALIDA],
+                        P.[LONGITUD],
+                        P.[LATITUD],
+                        P.[DIRECCION_OBRA]
                     FROM 
                         [PROYECTOS] P
                     INNER JOIN 
@@ -83,8 +89,15 @@ class ModelProyectoObra:
                     gerente_proyecto=row[18], lider1=row[19], 
                     lider2=row[20],
                     fecha_registro=row[21], 
-                    usuario_id=row[22], is_blocked=row[23],
-                    cp=row[24]
+                    usuario_id=row[22], 
+                    is_blocked=row[23],
+                    cp=row[24],
+                    hora_entrada=row[25],
+                    hora_salida=row[26],
+                    logitud=row[27],
+                    latitud=row[28],
+                    direcion_obra=row[29]
+                    
 
                 ))
             return proyectos
@@ -126,7 +139,15 @@ class ModelProyectoObra:
                     lider2=row[20],
                     fecha_registro=row[21], 
                     usuario_id=row[22],
-                    is_blocked=row[23]
+                    is_blocked=row[23],
+                    cp=row[24],
+                    hora_entrada=row[25],
+                    hora_salida=row[26],
+                    direcion_obra=row[27],
+                    logitud=row[28],
+                    latitud=row[29]
+                    
+                    
                 ))
             return proyectos
         except Exception as ex:
@@ -159,7 +180,12 @@ class ModelProyectoObra:
                     lider2=row[20],
                     fecha_registro=row[21], 
                     usuario_id=row[22], is_blocked=row[23],
-                    cp=row[24]
+                    cp=row[24],
+                    hora_entrada=row[25],
+                    hora_salida=row[26],
+                    direcion_obra=row[27],
+                    logitud=row[28],
+                    latitud=row[29]
                 ))
             return proyectos
         except Exception as ex:
@@ -192,7 +218,12 @@ class ModelProyectoObra:
                     lider2=row[20],
                     fecha_registro=row[21], 
                     usuario_id=row[22], is_blocked=row[23],
-                    cp=row[24]
+                    cp=row[24],
+                    hora_entrada=row[25],
+                    hora_salida=row[26],
+                    direcion_obra=row[27],
+                    logitud=row[28],
+                    latitud=row[29]
                 )
                 return None
         except Exception as ex:

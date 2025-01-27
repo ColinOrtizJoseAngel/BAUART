@@ -75,27 +75,27 @@
                                 <label for="BANCO" class="form-label">SUELDO BASE:</label>
                                 <input type="text" class="form-control moneda" id="SUELDO_BASE" name="SUELDO_BASE" required>
                                 <div class="invalid-feedback">
-                                    Completa Sueldo base
+                                    COMPLETA SUELDO BASE
                                 </div>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                <label for="BANCO" class="form-label">SUELDO TARJETA:</label>
+                                <label for="BANCO" class="form-label">SUELDO MONEDERO:</label>
                                 <input type="text" class="form-control moneda" id="SUELDO_TARJETA" name="SUELDO_TARJETA" required>
                                 <div class="invalid-feedback">
-                                    Completa Sueldo TARJETA
+                                   COMPLETA SUELDO TARJETA
                                 </div>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                 <label for="BANCO" class="form-label">HORA EXTRA:</label>
                                 <input type="text" class="form-control moneda" id="HORA_EXTRA" name="HORA_EXTRA" required>
                                 <div class="invalid-feedback">
-                                    Completa Sueldo TARJETA
+                                    COMPLETA HORA EXTRA
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <label for="CATEGORIA" class="form-label">CATEGORIA:*</label>
                                 <select class="form-control" name="CATEGORIA" id="CATEGORIA" required>
-                                    <option value="" style="text-align: center;">------Selecciona------</option>
+                                    <option value="" style="text-align: center;">SELECCIONA</option>
                                     {% for c in categorias %}
                                         <option value="{{ c.idCategoria }}">{{ c.categoria}}</option>
                                     {% endfor%}

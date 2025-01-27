@@ -1,5 +1,6 @@
 class Empleados:
-    def __init__(self, id, nombre, apellido, id_empresa, puesto,
+    
+    def _init_(self, id, nombre, apellido, id_empresa, puesto,
                  tipo_empleado, tipo_nomina, sueldo_imss, monedero, nomina, banco,
                  numero_cuenta, clabe, alta_empleado="", baja_empleado="", fecha_registro="", is_blocked=False,
                  categoria="", no_imss="", curp="", ine="", rfc="", cedula_profesional="",
@@ -10,7 +11,7 @@ class Empleados:
                  salario_diario_integrado=0.0, numero_credito_infonavit="", tipo_descuento_infonavit="",
                  factor_infonavit=0.0, fecha_ingreso="", turno="", tipo_contrato="", contacto_accidente="",
                  alergias="", enfermedades_controladas="", edificio="", alcaldia="", municipio="",
-                 registro_patronal="", cuenta="") -> None:
+                 registro_patronal="", cuenta="", motivo_baja="", id_monedero="") -> None:
 
         self.id = id
         self.nombre = nombre
@@ -69,3 +70,5 @@ class Empleados:
         self.municipio = municipio
         self.registro_patronal = registro_patronal
         self.cuenta = cuenta
+        self.motivo_baja = motivo_baja
+        self.id_monedero = id_monedero

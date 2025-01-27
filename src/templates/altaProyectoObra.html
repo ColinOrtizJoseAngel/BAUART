@@ -138,103 +138,64 @@
                             aria-labelledby="direccion-tab" tabindex="0">
                             <br>
                             <!--Direccion de proyecto/obra-->
-                            <div class="form-group row">
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <label for="CP" class="form-label">CP*</label>
-                                    <input type="text" class="form-control" id="CP" name="CP" ma
-                                        placeholder="Código Postal" required>
-                                    <div class="invalid-feedback">
-                                        COMPLETA CODIGO POSTAL
+
+                            <div class="" id="contendorLugarEntrega">
+                                <div class="form-group row">
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="LUGAR_ENTREGA" class="form-label">DIRECION DE OBRA: </label>
+                                        <input type="text" class="form-control" id="inputDirecionObra" name="DIRECCION_OBRA" required>
+                                        <div class="invalid-feedback">
+                                            DIRECION DE OBRA
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="ESTADO" class="form-label">ESTADO*</label>
-                                    <input type="text" class="form-control" id="ESTADO" name="ESTADO"
-                                        placeholder="Estado" required>
-                                    <div class="invalid-feedback">
-                                        COMPLETA ESTADO
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label for="CALLE" class="form-label">CALLE: </label>
+                                        <input type="text" class="form-control read_only" id="inputCalle" name="CALLE" readonly>
                                     </div>
-                                </div>
-                                
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
-                                    <select id="MUNICIPIO" class="form-control" name="MUNICIPIO" required>
-                                        <option value="" style="text-align: center;">SELECIONA</option>
-                                        <option value="AGUASCALIENTES">AGUASCALIENTES</option>
-                                        <option value="BAJA CALIFORNIA">BAJA CALIFORNIA</option>
-                                        <option value="BAJA CALIFORNIA SUR">BAJA CALIFORNIA SUR</option>
-                                        <option value="CHIAPAS">CHIAPAS</option>
-                                        <option value="CHIHUAHUA">CHIHUAHUA</option>
-                                        <option value="CIUDAD DE MÉXICO">CIUDAD DE MÉXICO</option>
-                                        <option value="COAHUILA">COAHUILA</option>
-                                        <option value="COLIMA">COLIMA</option>
-                                        <option value="DURANGO">DURANGO</option>
-                                        <option value="ESTADO DE MÉXICO">ESTADO DE MÉXICO</option>
-                                        <option value="GUANAJUATO">GUANAJUATO</option>
-                                        <option value="GUERRERO">GUERRERO</option>
-                                        <option value="HIDALGO">HIDALGO</option>
-                                        <option value="JALISCO">JALISCO</option>
-                                        <option value="MICHOACÁN">MICHOACÁN</option>
-                                        <option value="MORELOS">MORELOS</option>
-                                        <option value="NAYARIT">NAYARIT</option>
-                                        <option value="NUEVO LEÓN">NUEVO LEÓN</option>
-                                        <option value="OAXACA">OAXACA</option>
-                                        <option value="PUEBLA">PUEBLA</option>
-                                        <option value="QUERÉTARO">QUERÉTARO</option>
-                                        <option value="QUINTANA ROO">QUINTANA ROO</option>
-                                        <option value="SAN LUIS POTOSÍ">SAN LUIS POTOSÍ</option>
-                                        <option value="SIN LOCALIDAD">SIN LOCALIDAD</option>
-                                        <option value="SINALOA">SINALOA</option>
-                                        <option value="SONORA">SONORA</option>
-                                        <option value="TABASCO">TABASCO</option>
-                                        <option value="TAMAULIPAS">TAMAULIPAS</option>
-                                        <option value="TLAXCALA">TLAXCALA</option>
-                                        <option value="VERACRUZ">VERACRUZ</option>
-                                        <option value="YUCATÁN">YUCATÁN</option>
-                                        <option value="ZACATECAS">ZACATECAS</option>
-                                      </select>
-                                      <div class="invalid-feedback">
-                                        SELECIONA UN ESTADO
-                                      </div>
-                                </div>
-                                <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                    <label for="PAIS" class="form-label">PAÍS*</label>
-                                    <input type="text" class="form-control" name="PAIS" id="PAIS" value="MÉXICO"
-                                        required>
-                                    <div class="invalid-feedback">
-                                        COMPLETA PAÍS
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="inputNumeroExterior" class="form-label">NUMERO INTERIOR: </label>
+                                        <input type="text" class="form-control text-center read_only" id="inputNumeroInterior"  name="NUMERO_INTERIOR" readonly>
                                     </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="inputNumeroExterior" class="form-label">NUMERO EXTERIOR: </label>
+                                        <input type="text" class="form-control text-center read_only" id="inputNumeroExterior" name="NUMERO_EXTERIOR">
+                                    </div>
+                                </div> 
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <label for="inputColonia" class="form-label">COLONIA: </label>
+                                            <input type="text" class="form-control read_only" id="inputColonia" name="COLONIA"
+                                                style="text-align: center;" required>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="ESTADO" class="form-label">ESTADO: </label>
+                                        <input type="text" class="form-control read_only" id="inputEstado" name="ESTADO">
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="CIUDAD" class="form-label">MUNICIPIO: </label>
+                                        <input type="text" class="form-control read_only" id="inputCiudad" name="MUNICIPIO">
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <label for="CALLE" class="form-label">CP: </label>
+                                        <input type="text" class="form-control read_only" id="inputCp" name="CP">
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <label for="centro_comercial" class="form-label">CENTRO COMERCIAL</label>
+                                        <input type="text" class="form-control" value="" name="centro_comercial" id="centro_comercial" placeholder="Enter value">
+                                    </div>
+                                </div> 
+                                 
+                                <div class="row">
+                                    <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+                                    <input class="oculto" id="id_latitud" name="LATITUD">
+                                    <input class="oculto" id="id_longitud" name="LONGITUD">
+    
+    
+    
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                    <label for="CALLE" class="form-label">CALLE*</label>
-                                    <input type="text" class="form-control" id="CALLE" name="CALLE" maxlength="50"
-                                        placeholder="Calle" required>
-                                    <div class="invalid-feedback">
-                                        COMPLETA CALLE
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                    <label for="NO_EXTERIOR" class="form-label">NO. EXTERIOR</label>
-                                    <input type="text" class="form-control" name="NO_EXTERIOR" id="NO_EXTERIOR"
-                                        placeholder="Numero Exterior" required>
-                                    <div class="invalid-feedback">
-                                        COMPLETA NÚMERO EXTERIOR
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                    <label for="NO_EXTERIOR" class="form-label">NO. INTERIOR</label>
-                                    <input type="text" class="form-control" name="NO_INTERIOR" id="NO_INTERIOR"
-                                        placeholder="Numero Interior">
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                    <label for="centro_comercial" class="form-label">CENTRO COMERCIAL</label>
-                                    <input type="text" class="form-control" name="centro_comercial"
-                                        id="centro_comercial" placeholder="Enter value">
-                                </div>
-                            </div>
-                            <!--Fin de direccion proyecto/obra-->
+
+                            <!--Fin direccion de proyecto/obra-->
                         </div>
                         <div class="tab-pane fade" id="ejecutiva-tab-pane" role="tabpanel"
                             aria-labelledby="ejecutiva-tab" tabindex="0">
@@ -244,7 +205,7 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="nombre_director" class="form-label">Director</label>
                                     <select class="form-control" name="nombre_director" id="nombre_director" required>
-                                        <option value="" style="text-align: center;">------Selecciona------</option>
+                                        <option value="" style="text-align: center;">SLECIONA UN DIRECTOR</option>
                                         <option value=0>Catalogo de DIRECTORES</option>
                                     </select>
                                     <div class="invalid-feedback">
@@ -254,7 +215,7 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="nombre_gerente" class="form-label">GERENTE</label>
                                     <select class="form-control" name="nombre_gerente" id="nombre_gerente">
-                                        <option value="" style="text-align: center;">------Selecciona------</option>
+                                        <option value="" style="text-align: center;">SELECIONA UN GERENTE</option>
                                         <option value=0>Catalogo de GERENTES</option>
                                     </select>
                                 </div>
@@ -263,17 +224,17 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="lider1_proyecto" class="form-label">LIDER DE PROYECTO 1*</label>
                                     <select class="form-control" name="lider1_proyecto" id="lider1_proyecto" required>
-                                        <option value="">------SELECIONA------</option>
+                                        <option value="">SELECIONA UN LIDER</option>
                                         <option value=0>Catalogo de LIDER </option>
                                     </select>
                                     <div class="invalid-feedback">
-                                        Selecciona un Lider de Proyecto 1
+                                        SELECIONA UN LIDER DEL PROYECTO
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="lider2_proyecto" class="form-label">LIDER DE PROYECYO 2</label>
                                     <select class="form-control" name="lider2_proyecto" id="lider2_proyecto">
-                                        <option value="">------SELECIONA------</option>
+                                        <option value="">SELECIONA UN LIDER</option>
                                         <option value=0>Catalogo de LIDER</option>
                                     </select>
                                 </div>
@@ -346,7 +307,7 @@
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5d1sYQrIOy1ZYlN-pgQkZsEIuZWTRNfI&libraries=places&callback=initMap" async defer></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 <script src="{{ url_for('static', filename='JS/funciones_AltaProyectoObra.js') }}"></script>
 

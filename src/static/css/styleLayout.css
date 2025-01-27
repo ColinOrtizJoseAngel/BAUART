@@ -397,3 +397,13 @@ a.link {
   margin: 0 auto;
 }
 
+.read_only{
+  text-align: center;
+  background-color: #e9ecef; 
+
+
+}
+
+.oculto{
+  display: none;
+}

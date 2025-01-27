@@ -741,20 +741,26 @@ def alta_proyecto():
                         fecha_fin=request.form['fecha_fin'],
                         nombre_proyecto=request.form['nombre_proyecto'],
                         centro_comercial=request.form.get('centro_comercial', ''),
-                        pais=request.form['PAIS'],
+                        pais='MÉXICO',
                         estado=request.form['ESTADO'],
                         municipio=request.form['MUNICIPIO'],
                         colonia=request.form.get('COLONIA', ''),
                         calle=request.form['CALLE'],
-                        numero_exterior=request.form['NO_EXTERIOR'],
-                        numero_interior=request.form.get('NO_INTERIOR', ''),
+                        numero_exterior=request.form['NUMERO_EXTERIOR'],
+                        numero_interior=request.form.get('NUMERO_INTERIOR', ''),
                         director_proyecto=request.form['nombre_director'],
                         lider_proyecto=request.form['lider1_proyecto'],
                         gerente_proyecto=request.form.get('nombre_gerente', ''),  # Ajuste en caso de que no haya un campo gerente
                         lider1=request.form['lider1_proyecto'],
                         lider2=request.form.get('lider2_proyecto', ''),
                         cp = request.form['CP'],
-                        tipo_id = request.form.get('probra', '')
+                        tipo_id = request.form.get('probra', ''),
+                        hora_entrada = request.form.get('HORA_ENTRADA', ''),
+                        hora_salida = request.form.get('HORA_SALIDA', ''),
+                        latitud=request.form.get('LATITUD', ''),
+                        logitud=request.form.get('LONGITUD', ''),
+                        direcion_obra=request.form.get('DIRECCION_OBRA', ''),
+                        usuario_id=current_user.id
             )
             
             ModelProyectoObra.crear_ProyectoObra(db, nuevo_proyecto)
@@ -1066,6 +1072,7 @@ def Altaempleados():
                     municipio=request.form.get('MUNICIPIO', ''),
                     registro_patronal=request.form.get('REGISTRO_PATRONAL', ''),
                     cuenta=request.form.get('CUENTA', '')
+
                 )
                 print(f"Empleado creado: {vars(empleado)}")
 
@@ -2909,22 +2916,18 @@ def edit_presupuesto():
 
                             
               
-                    # Aquí deberías tener la lógica para actualizar el presupuesto en la base de datos
+                
                     
-                    return "Presupuesto actualizado correctamente"
                 
                 except BadRequestKeyError as e:
-                    print(f"Error al acceder a una clave en request.form: {e}")
                     return jsonify({"error": f"Clave faltante en el formulario: {e}"}), 400
                 
                 except Exception as e:
-                    print(f"Error al crear el presupuesto: {e}")
                     return jsonify({"error": f"Ocurrió un error al actualizar el presupuesto: {e}"}), 500
                 
             else:
                 return redirect(url_for('prespuestos'))
         else:
-            print("SE EJECUTA METODO GET")
             session['token'] = str(uuid.uuid4())
             proveedores = ModelProveedores.get_all_proveedores_not_blocked(db)
             puestos = ModelPuesto.get_all_puestos_no_block(db)
@@ -2933,7 +2936,6 @@ def edit_presupuesto():
     
     except Exception as e:
         db.rollback()
-        print(f"Error en edit_presupuesto: {e}")
         return jsonify({"error": f"Ocurrió un error en edit_presupuesto: {e}"}), 500
 
 
