@@ -679,7 +679,6 @@ def edit_cliente():
         uso_cfdi = ModelCFDI.get_all_usoCFDI(db)
         cuentas = ModelCuentasClientes.get_all_cuentas_cliente(db,id)
         bancos = ModelBanco.get_all_bancos(db)
-        print(bancos)
         return render_template('edit_cliente.html', cliente=cliente, empresas = empresas,contactos=contactos, empresa_selecionada=empresa_selecionada,uso_cfdi=uso_cfdi,cuentas=cuentas,bancos=bancos,token=session['token'])
 
 
@@ -2700,13 +2699,12 @@ def edit_presupuesto():
     id = request.args.get('id')
     try:
         if request.method == 'POST':
-            print("SE EJECUTA METODO POST")
             # Verifica si el token en la sesión coincide con el del formulario
             token = request.form.get('token')
             if token and session.get('token') == token:
                 # Elimina el token de la sesión para evitar reenvíos duplicados
                 session.pop('token', None)
-                print("Token validado y eliminado de la sesión")
+         
                 
                 try:
                     # 1- ACTUALIZAR CABECERA DE PRESUPUESTO

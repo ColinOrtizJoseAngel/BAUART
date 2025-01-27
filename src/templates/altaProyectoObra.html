@@ -1,6 +1,6 @@
 <!--IMPORTAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Alta proyecto{% endblock %}
+{% block title %}ALTA OBRA{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='CSS/styele_alta_empresas.css') }}">
@@ -117,8 +117,7 @@
 
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="monto" class="form-label">HORA ENTRA</label>
-                                    <input type="time" class="form-control" name="HORA_ENTRADA" id="HORA_ENTRADA" placeholder="Enter value"
-                                        required>
+                                    <input type="time" class="form-control" name="HORA_ENTRADA" id="HORA_ENTRADA" placeholder="Enter value" style="text-align: center;" required>
                                     <div class="invalid-feedback">
                                         DEFINE NUNA HORA DE ENTRA AL PROYECTO
                                     </div>
@@ -126,7 +125,7 @@
 
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="monto" class="form-label">HORA SALIDA</label>
-                                    <input type="time" class="form-control" name="HORA_SALIDA" id="HORA_SALIDA" placeholder="Enter value"
+                                    <input type="time" class="form-control" name="HORA_SALIDA" id="HORA_SALIDA" placeholder="Enter value" style="text-align: center;"
                                         required>
                                     <div class="invalid-feedback">
                                         DEFINE NUNA HORA DE SALIDA AL PROYECTO
