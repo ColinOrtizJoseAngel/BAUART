@@ -1,5 +1,15 @@
 from .entities.ProyectoObra import ProyectoObra
+from datetime import datetime, timedelta,date
+
 class ModelProyectoObra:
+    
+    def format_time(value):
+        try:
+            return datetime.strptime(value[:8], '%H:%M:%S').strftime('%H:%M')
+        except ValueError:
+            return None  # Manejo de errores si el formato no es válido
+        
+    
     @classmethod 
     def crear_ProyectoObra(cls, db, proyecto):
         try:
@@ -16,7 +26,7 @@ class ModelProyectoObra:
                     proyecto.id_cliente, proyecto.id_empresa, proyecto.nombre_proyecto, proyecto.tipo_id, proyecto.fecha_inicio, proyecto.fecha_fin,
                     proyecto.pais, proyecto.estado, proyecto.municipio, proyecto.colonia, proyecto.calle, proyecto.numero_exterior, proyecto.numero_interior, 
                     proyecto.centro_comercial, proyecto.director_proyecto, proyecto.lider_proyecto, proyecto.gerente_proyecto, proyecto.lider1, 
-                    proyecto.lider2, proyecto.cp, proyecto.hora_entrada, proyecto.hora_salida, proyecto.logitud, proyecto.latitud, proyecto.direcion_obra, 
+                    proyecto.lider2, proyecto.cp, proyecto.hora_entrada, proyecto.hora_salida, proyecto.longitud, proyecto.latitud, proyecto.direcion_obra, 
                     proyecto.usuario_id, proyecto.is_blocked
                 ))
                 db.commit()
@@ -94,7 +104,7 @@ class ModelProyectoObra:
                     cp=row[24],
                     hora_entrada=row[25],
                     hora_salida=row[26],
-                    logitud=row[27],
+                    longitud=row[27],
                     latitud=row[28],
                     direcion_obra=row[29]
                     
@@ -144,7 +154,7 @@ class ModelProyectoObra:
                     hora_entrada=row[25],
                     hora_salida=row[26],
                     direcion_obra=row[27],
-                    logitud=row[28],
+                    longitud=row[28],
                     latitud=row[29]
                     
                     
@@ -184,7 +194,7 @@ class ModelProyectoObra:
                     hora_entrada=row[25],
                     hora_salida=row[26],
                     direcion_obra=row[27],
-                    logitud=row[28],
+                    longitud=row[28],
                     latitud=row[29]
                 ))
             return proyectos
@@ -219,10 +229,10 @@ class ModelProyectoObra:
                     fecha_registro=row[21], 
                     usuario_id=row[22], is_blocked=row[23],
                     cp=row[24],
-                    hora_entrada=row[25],
-                    hora_salida=row[26],
+                    hora_entrada=cls.format_time(row[25]),
+                    hora_salida=cls.format_time(row[26]),
                     direcion_obra=row[27],
-                    logitud=row[28],
+                    longitud=row[28],
                     latitud=row[29]
                 )
                 return None

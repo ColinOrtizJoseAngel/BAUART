@@ -9,13 +9,13 @@ class Modelclientes:
                 query = """
                     INSERT INTO CLIENTES (
                         ID_EMPRESA, RAZON_SOCIAL, RFC, CP, ESTADO, CIUDAD, MUNICIPIO, PAIS, CALLE, NO_EXTERIOR,
-                        REGIMEN_FISCAL_ID, USO_CFDI_ID, CONDICION_PAGO_ID, FORMA_PAGO_ID, FECHA_REGISTRO, IS_BLOCKED
+                        REGIMEN_FISCAL_ID, USO_CFDI_ID, CONDICION_PAGO, FORMA_PAGO_ID, FECHA_REGISTRO, IS_BLOCKED
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """
                 cursor.execute(query, (
                     cliente.id_empresa, cliente.razon_social, cliente.rfc, cliente.cp, cliente.estado, cliente.ciudad, 
                     cliente.municipio, cliente.pais, cliente.calle, cliente.no_exterior, cliente.regimen_fiscal_id,
-                    cliente.uso_cfdi_id, cliente.condicion_pago_id, cliente.forma_pago_id, cliente.fecha_registro,
+                    cliente.uso_cfdi_id, cliente.condicion_pago, cliente.forma_pago_id, cliente.fecha_registro,
                     cliente.is_blocked
                 ))
 
@@ -37,7 +37,7 @@ class Modelclientes:
                     clientes.append(Clientes(
                         id=row[0], id_empresa=row[1], razon_social=row[2], rfc=row[3], cp=row[4], estado=row[5], 
                         ciudad=row[6], municipio=row[7], pais=row[8], calle=row[9], no_exterior=row[10], 
-                        regimen_fiscal_id=row[11], uso_cfdi_id=row[12], condicion_pago_id=row[13], forma_pago_id=row[14],
+                        regimen_fiscal_id=row[11], uso_cfdi_id=row[12], condicion_pago=row[13], forma_pago_id=row[14],
                         fecha_registro=row[15], usuario=row[16], is_blocked=row[17]
                     ))
                 return clientes
@@ -56,7 +56,7 @@ class Modelclientes:
                     clientes.append(Clientes(
                         id=row[0], id_empresa=row[1], razon_social=row[2], rfc=row[3], cp=row[4], estado=row[5], 
                         ciudad=row[6], municipio=row[7], pais=row[8], calle=row[9], no_exterior=row[10], 
-                        regimen_fiscal_id=row[11], uso_cfdi_id=row[12], condicion_pago_id=row[13], forma_pago_id=row[14],
+                        regimen_fiscal_id=row[11], uso_cfdi_id=row[12], condicion_pago=row[13], forma_pago_id=row[14],
                         fecha_registro=row[15], usuario=row[16], is_blocked=row[17]
                     ))
                 return clientes
@@ -74,7 +74,7 @@ class Modelclientes:
                     return Clientes(
                         id=row[0], id_empresa=row[1], razon_social=row[2], rfc=row[3], cp=row[4], estado=row[5], 
                         ciudad=row[6], municipio=row[7], pais=row[8], calle=row[9], no_exterior=row[10], 
-                        regimen_fiscal_id=row[11], uso_cfdi_id=row[12], condicion_pago_id=row[13], forma_pago_id=row[14],
+                        regimen_fiscal_id=row[11], uso_cfdi_id=row[12], condicion_pago=row[13], forma_pago_id=row[14],
                         fecha_registro=row[15], usuario=row[16], is_blocked=row[17]
                     )
                 return None
@@ -101,14 +101,14 @@ class Modelclientes:
                 query = """
                     UPDATE CLIENTES
                     SET ID_EMPRESA = ?, RAZON_SOCIAL = ?, RFC = ?, CP = ?, ESTADO = ?, CIUDAD = ?, MUNICIPIO = ?, PAIS = ?, CALLE = ?, 
-                        NO_EXTERIOR = ?, REGIMEN_FISCAL_ID = ?, USO_CFDI_ID = ?, CONDICION_PAGO_ID = ?, FORMA_PAGO_ID = ?, FECHA_REGISTRO = ?, 
+                        NO_EXTERIOR = ?, REGIMEN_FISCAL_ID = ?, USO_CFDI_ID = ?, condicion_pago = ?, FORMA_PAGO_ID = ?, FECHA_REGISTRO = ?, 
                         USUARIO_ID = ?, IS_BLOCKED = ?
                     WHERE ID = ?;
                 """
                 cursor.execute(query, (
                     cliente.id_empresa, cliente.razon_social, cliente.rfc, cliente.cp, cliente.estado, cliente.ciudad, 
                     cliente.municipio, cliente.pais, cliente.calle, cliente.no_exterior, cliente.regimen_fiscal_id,
-                    cliente.uso_cfdi_id, cliente.condicion_pago_id, cliente.forma_pago_id, cliente.fecha_registro,
+                    cliente.uso_cfdi_id, cliente.condicion_pago, cliente.forma_pago_id, cliente.fecha_registro,
                     cliente.usuario, cliente.is_blocked, cliente.id
                 ))
                 db.commit()
@@ -157,7 +157,7 @@ class Modelclientes:
                     clientes.append(Clientes(
                         id=row[0], id_empresa=row[1], razon_social=row[2], rfc=row[3], cp=row[4], estado=row[5], 
                         ciudad=row[6], municipio=row[7], pais=row[8], calle=row[9], no_exterior=row[10], 
-                        regimen_fiscal_id=row[11], uso_cfdi_id=row[12], condicion_pago_id=row[13], forma_pago_id=row[14],
+                        regimen_fiscal_id=row[11], uso_cfdi_id=row[12], condicion_pago=row[13], forma_pago_id=row[14],
                         fecha_registro=row[15], usuario=row[16], is_blocked=row[17]
                     ))
                 cursor.close()

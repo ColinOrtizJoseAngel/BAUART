@@ -2,7 +2,7 @@ class ProyectoObra:
     def __init__(self,id,  id_empresa, id_cliente, fecha_inicio, fecha_contrato, fecha_fin, nombre_proyecto, centro_comercial, 
                  pais, estado, municipio, colonia, calle, numero_exterior, numero_interior,
                  director_proyecto, lider_proyecto,gerente_proyecto,lider1, lider2,tipo_id,
-                cp,hora_entrada, hora_salida,logitud, latitud, direcion_obra, fecha_registro=None,usuario_id=None,is_blocked=False ) -> None:
+                cp,hora_entrada, hora_salida,longitud, latitud, direcion_obra, fecha_registro=None,usuario_id=None,is_blocked=False ) -> None:
 
         self.id = id
         self.id_empresa = id_empresa
@@ -31,7 +31,7 @@ class ProyectoObra:
         self.tipo_id = tipo_id
         self.hora_entrada = hora_entrada
         self.hora_salida = hora_salida
-        self.logitud = logitud
+        self.longitud = longitud
         self.latitud = latitud
         self.direcion_obra = direcion_obra
        

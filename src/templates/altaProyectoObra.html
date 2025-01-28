@@ -143,41 +143,62 @@
                                 <div class="form-group row">
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                         <label for="LUGAR_ENTREGA" class="form-label">DIRECION DE OBRA: </label>
-                                        <input type="text" class="form-control" id="inputDirecionObra" name="DIRECCION_OBRA" required>
+                                        <input type="text" class="form-control" placeholder="BUSCAR DIRECCION" id="inputDirecionObra" name="DIRECCION_OBRA" autocomplete="off" required>
                                         <div class="invalid-feedback">
                                             DIRECION DE OBRA
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                         <label for="CALLE" class="form-label">CALLE: </label>
-                                        <input type="text" class="form-control read_only" id="inputCalle" name="CALLE" readonly>
+                                        <input type="text" class="form-control read_only" id="inputCalle" name="CALLE" readonly required>
+                                        <div class="invalid-feedback">
+                                            FALTA CALLE
+                                        </div>
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="inputNumeroExterior" class="form-label">NUMERO INTERIOR: </label>
-                                        <input type="text" class="form-control text-center read_only" id="inputNumeroInterior"  name="NUMERO_INTERIOR" readonly>
+                                        <input type="text" class="form-control text-center
+                                        " id="inputNumeroInterior"  name="NUMERO_INTERIOR">
+                                        
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="inputNumeroExterior" class="form-label">NUMERO EXTERIOR: </label>
-                                        <input type="text" class="form-control text-center read_only" id="inputNumeroExterior" name="NUMERO_EXTERIOR">
+                                        <input type="text" class="form-control text-center read_only" id="inputNumeroExterior" name="NUMERO_EXTERIOR" readonly required>
+                                        <div class="invalid-feedback">
+                                            FALTA NUMERO EXTERIOR
+                                        </div>
                                     </div>
                                 </div> 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                         <label for="inputColonia" class="form-label">COLONIA: </label>
                                             <input type="text" class="form-control read_only" id="inputColonia" name="COLONIA"
-                                                style="text-align: center;" required>
+                                                style="text-align: center;" required readonly>
+                                            <div class="invalid-feedback">
+                                                FALTA COLONIA
+                                            </div>
                                     </div>
+                                    
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="ESTADO" class="form-label">ESTADO: </label>
-                                        <input type="text" class="form-control read_only" id="inputEstado" name="ESTADO">
+                                        <input type="text" class="form-control read_only" id="inputEstado" name="ESTADO" readonly required>
+                                        <div class="invalid-feedback">
+                                            FALTA ESTADO
+                                        </div>
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="CIUDAD" class="form-label">MUNICIPIO: </label>
-                                        <input type="text" class="form-control read_only" id="inputCiudad" name="MUNICIPIO">
+                                        <input type="text" class="form-control read_only" id="inputCiudad" name="MUNICIPIO" readonly required>
+                                        <div class="invalid-feedback">
+                                            FALTA MUNICIPIO
+                                        </div>
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="CALLE" class="form-label">CP: </label>
-                                        <input type="text" class="form-control read_only" id="inputCp" name="CP">
+                                        <input type="text" class="form-control read_only" id="inputCp" name="CP" required readonly>
+                                        <div class="invalid-feedback">
+                                            FALTA CP
+                                        </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                         <label for="centro_comercial" class="form-label">CENTRO COMERCIAL</label>
@@ -189,9 +210,6 @@
                                     <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
                                     <input class="oculto" id="id_latitud" name="LATITUD">
                                     <input class="oculto" id="id_longitud" name="LONGITUD">
-    
-    
-    
                                 </div>
                             </div>
 
@@ -206,17 +224,21 @@
                                     <label for="nombre_director" class="form-label">Director</label>
                                     <select class="form-control" name="nombre_director" id="nombre_director" required>
                                         <option value="" style="text-align: center;">SLECIONA UN DIRECTOR</option>
-                                        <option value=0>Catalogo de DIRECTORES</option>
+                                        {% for director in directores %}
+                                        <option value="{{ director.id }}" style="text-align: center;">{{ director.nombre }} {{ director.apellido }}</option>
+                                        {% endfor %}
                                     </select>
                                     <div class="invalid-feedback">
-                                        Selecciona un Director
+                                        SELECIONE UN DIRECTOR
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="nombre_gerente" class="form-label">GERENTE</label>
                                     <select class="form-control" name="nombre_gerente" id="nombre_gerente">
                                         <option value="" style="text-align: center;">SELECIONA UN GERENTE</option>
-                                        <option value=0>Catalogo de GERENTES</option>
+                                        {% for gerente in gerentes %}
+                                        <option value="{{ gerente.id }}" style="text-align: center;">{{ gerente.nombre }} {{ gerente.apellido }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </div>
@@ -224,8 +246,10 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="lider1_proyecto" class="form-label">LIDER DE PROYECTO 1*</label>
                                     <select class="form-control" name="lider1_proyecto" id="lider1_proyecto" required>
-                                        <option value="">SELECIONA UN LIDER</option>
-                                        <option value=0>Catalogo de LIDER </option>
+                                        <option value="" style="text-align: center;">SELECIONA UN LIDER</option>
+                                        {% for lider in lideres %}
+                                        <option value="{{ lider.id }}" style="text-align: center;">{{ lider.nombre }} {{ lider.apellido }}</option>
+                                        {% endfor %}
                                     </select>
                                     <div class="invalid-feedback">
                                         SELECIONA UN LIDER DEL PROYECTO
@@ -234,8 +258,10 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="lider2_proyecto" class="form-label">LIDER DE PROYECYO 2</label>
                                     <select class="form-control" name="lider2_proyecto" id="lider2_proyecto">
-                                        <option value="">SELECIONA UN LIDER</option>
-                                        <option value=0>Catalogo de LIDER</option>
+                                        <option value="" style="text-align: center;">SELECIONA UN LIDER</option>
+                                        {% for lider in lideres %}
+                                        <option value="{{ lider.id }}" style="text-align: center;">{{ lider.nombre }} {{ lider.apellido }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </div>

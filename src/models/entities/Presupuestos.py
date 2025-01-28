@@ -1,5 +1,5 @@
 class Presupuesto:
-    def __init__(self, id:int, proyecto:str, id_proyecto=None, id_cliente=None, id_empresa=None, 
+    def __init__(self, id:int, proyecto:str, id_proyecto=None,id_director=0, id_cliente=None, id_empresa=None, 
                  director_obra=None, presupuesto_cliente=0.0, estatus_proyecto="", pagado_cliente=0.0, 
                  porcentaje_pagado_cliente=0.0, gastado_real=0.0, falta_por_cobrar=0.0, 
                  falta_por_gastar=0.0, porcentaje_por_gastar=0.0, subtotal_cliente=0.0, 
@@ -37,6 +37,7 @@ class Presupuesto:
         self.id = id
         self.proyecto = proyecto
         self.id_proyecto = id_proyecto
+        self.id_director = id_director
         self.id_cliente = id_cliente
         self.id_empresa = id_empresa
         self.presupuesto_cliente = presupuesto_cliente

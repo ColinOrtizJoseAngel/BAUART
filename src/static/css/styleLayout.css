@@ -262,12 +262,10 @@ td {
   overflow-x: auto;
 }
 
-.table th,
-.table td {
-  vertical-align: middle;
+.table td:not(:has(button)), .table th:not(:has(button)) {
   white-space: nowrap;
-  font-family: arial;
-
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
@@ -404,6 +402,28 @@ a.link {
 
 }
 
+.readonly-select {
+  pointer-events: none;
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
 .oculto{
   display: none;
+}
+
+
+/* Estilo para los resizers */
+.resizable-table th {
+  position: relative;
+}
+
+.resizable-table th .resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
 }

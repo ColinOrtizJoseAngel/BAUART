@@ -330,33 +330,48 @@
                             <hr>
                             <div class="form-group row">
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="CONDICION_PAGO" class="form-label">Condición de pago</label>
-                                    <select class="form-control" name="CONDICION_PAGO" id="CONDICION_PAGO" required>
-                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>INMEDIATO</option>
-                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>TRIMESTRAL</option>
-                                        <option value="3" {{ 'selected' if cliente.condicion_pago_id == 3 else '' }}>SEMESTRAL</option>
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        Selecciona una condición de pago
-                                    </div>
-                                </div>
-                                
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="FORMA_PAGO" class="form-label">Forma de pago:</label>
                                     <select class="form-control" name="FORMA_PAGO" id="FORMA_PAGO" required>
-                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>CREDÍTO</option>
-                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>DEBÍTO</option>
-                                        <option value="3" {{ 'selected' if cliente.condicion_pago_id == 3 else '' }}>EFECTIVO</option>
+                                        <option value="01" {{ 'selected' if cliente.forma_pago_id == 1 else '' }}>01 - EFECTIVO</option>
+                                        <option value="02" {{ 'selected' if cliente.forma_pago_id == 2 else '' }}>02 - CHEQUE NOMINATIVO</option>
+                                        <option value="03" {{ 'selected' if cliente.forma_pago_id == 3 else '' }}>03 - TRANSFERENCIA ELECTRÓNICA DE FONDOS</option>
+                                        <option value="04" {{ 'selected' if cliente.forma_pago_id == 4 else '' }}>04 - TARJETA DE CRÉDITO</option>
+                                        <option value="05" {{ 'selected' if cliente.forma_pago_id == 5 else '' }}>05 - MONEDERO ELECTRÓNICO</option>
+                                        <option value="06" {{ 'selected' if cliente.forma_pago_id == 6 else '' }}>06 - DINERO ELECTRÓNICO</option>
+                                        <option value="08" {{ 'selected' if cliente.forma_pago_id == 8 else '' }}>08 - VALES DE DESPENSA</option>
+                                        <option value="12" {{ 'selected' if cliente.forma_pago_id == 12 else '' }}>12 - DACIÓN EN PAGO</option>
+                                        <option value="13" {{ 'selected' if cliente.forma_pago_id == 13 else '' }}>13 - PAGO POR SUBROGACIÓN</option>
+                                        <option value="14" {{ 'selected' if cliente.forma_pago_id == 14 else '' }}>14 - PAGO POR CONSIGNACIÓN</option>
+                                        <option value="15" {{ 'selected' if cliente.forma_pago_id == 15 else '' }}>15 - CONDONACIÓN</option>
+                                        <option value="17" {{ 'selected' if cliente.forma_pago_id == 17 else '' }}>17 - COMPENSACIÓN</option>
+                                        <option value="23" {{ 'selected' if cliente.forma_pago_id == 23 else '' }}>23 - NOVACIÓN</option>
+                                        <option value="24" {{ 'selected' if cliente.forma_pago_id == 24 else '' }}>24 - CONFUSIÓN</option>
+                                        <option value="25" {{ 'selected' if cliente.forma_pago_id == 25 else '' }}>25 - REMISIÓN DE DEUDA</option>
+                                        <option value="26" {{ 'selected' if cliente.forma_pago_id == 26 else '' }}>26 - PRESCRIPCIÓN O CADUCIDAD</option>
+                                        <option value="27" {{ 'selected' if cliente.forma_pago_id == 27 else '' }}>27 - A SATISFACCIÓN DEL ACREEDOR</option>
+                                        <option value="28" {{ 'selected' if cliente.forma_pago_id == 28 else '' }}>28 - TARJETA DE DÉBITO</option>
+                                        <option value="29" {{ 'selected' if cliente.forma_pago_id == 29 else '' }}>29 - TARJETA DE SERVICIOS</option>
+                                        <option value="30" {{ 'selected' if cliente.forma_pago_id == 30 else '' }}>30 - APLICACIÓN DE ANTICIPOS</option>
+                                        <option value="31" {{ 'selected' if cliente.forma_pago_id == 31 else '' }}>31 - INTERMEDIARIO PAGOS</option>
+                                        <option value="99" {{ 'selected' if cliente.forma_pago_id == 99 else '' }}>99 - POR DEFINIR</option>
                                     </select>
                                     <div class="invalid-feedback">
                                         Selecciona una Forma de pago
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CONDICION_PAGO" class="form-label">Condición de pago</label>
+                                    <input type="text" class="form-control" name="CONDICION_PAGO" id="CONDICION_PAGO"
+                                        value="{{ cliente.condicion_pago }}" required>
+                                    <div class="invalid-feedback">
+                                        Selecciona una condición de pago
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="METODO_PAGO" class="form-label">Metodo de Pago:</label>
                                     <select class="form-control" name="METODO_PAGO" id="METODO_PAGO" required>
-                                        <option value="1" {{ 'selected' if cliente.condicion_pago_id == 1 else '' }}>PUE</option>
-                                        <option value="2" {{ 'selected' if cliente.condicion_pago_id == 2 else '' }}>PPD</option>
+                                        <option value="1" {{ 'selected' if cliente.forma_pago_id_id == 1 else '' }}>PUE</option>
+                                        <option value="2" {{ 'selected' if cliente.forma_pago_id_id == 2 else '' }}>PPD</option>
                                        
                                     </select>
                                     <div class="invalid-feedback">

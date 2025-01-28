@@ -1,6 +1,6 @@
 <!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Alta cliente{% endblock %}
+{% block title %}CLIENTES{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 
@@ -67,7 +67,7 @@
     </div>
     <br>
     <div class="table-container">
-        <table class="table table-hover">
+        <table class="table table-hover resizable-table">
             <colgroup>
                 <col style="width: 30px;"> <!-- Primera columna de 150px -->
                 <col style="width: 250px;"> <!-- Segunda columna de 200px -->
@@ -101,15 +101,7 @@
                     <td>{{ cliente.id_empresa }}</td>
                     <td>{{ cliente.cp }}</td>
 
-                    {% if cliente.forma_pago_id == 1 %}
-                    <td>Credito</td>
-                    {% elif cliente.forma_pago_id == 2 %}
-                    <td>Debito</td>
-                    {% elif cliente.forma_pago_id == 3 %}
-                    <td>Efectivo</td>
-                    {% else %}
-                    <td>""</td>
-                    {% endif %}
+                    <td>{{ cliente.condicion_pago}}</td>
 
                     <td>
                         BLOQUEADO
@@ -140,15 +132,7 @@
                     <td>{{ cliente.id_empresa }}</td>
                     <td>{{ cliente.cp }}</td>
 
-                    {% if cliente.forma_pago_id == 1 %}
-                    <td>Credito</td>
-                    {% elif cliente.forma_pago_id == 2 %}
-                    <td>Debito</td>
-                    {% elif cliente.forma_pago_id == 3 %}
-                    <td>Efectivo</td>
-                    {% else %}
-                    <td>""</td>
-                    {% endif %}
+                    <td>{{ cliente.condicion_pago}}</td>
 
                     <td>
                         ACTIVO

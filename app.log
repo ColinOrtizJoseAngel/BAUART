@@ -1,0 +1,1105 @@
+2024-10-03 08:44:03,119 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-03 08:44:03,120 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-03 08:44:09,381 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:44:09] "GET /Presupuestos HTTP/1.1" 200 -
+2024-10-03 08:44:09,651 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:44:09] "GET /static/css/styleLayout.css HTTP/1.1" 200 -
+2024-10-03 08:44:09,728 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:44:09] "GET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1" 200 -
+2024-10-03 08:44:09,761 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:44:09] "GET /static/JS/funciones_Presupuestos.js HTTP/1.1" 200 -
+2024-10-03 08:44:13,588 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:44:13] "GET /Empresas HTTP/1.1" 200 -
+2024-10-03 08:44:13,621 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:44:13] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-03 08:44:13,623 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:44:13] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-03 08:44:16,186 - app - ERROR - Exception on /edit_empresa/8 [GET]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelRegistroPatronal.py", line 63, in get_RegistroPatronal_empresa
+    cursor.execute(query, (id_empresa,))
+pyodbc.ProgrammingError: ('42S22', "[42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Invalid column name 'USUARIO'. (207) (SQLExecDirectW); [42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Statement(s) could not be prepared. (8180)")
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 258, in edit_empresa
+    registrosPatronales = ModelRegistroPatronal.get_RegistroPatronal_empresa(db,empresa.id)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\models\ModelRegistroPatronal.py", line 78, in get_RegistroPatronal_empresa
+    raise Exception(ex)
+Exception: ('42S22', "[42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Invalid column name 'USUARIO'. (207) (SQLExecDirectW); [42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Statement(s) could not be prepared. (8180)")
+2024-10-03 08:44:16,193 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:44:16] "[35m[1mGET /edit_empresa/8 HTTP/1.1[0m" 500 -
+2024-10-03 08:45:26,420 - app - ERROR - Exception on /edit_empresa/8 [GET]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelRegistroPatronal.py", line 63, in get_RegistroPatronal_empresa
+    cursor.execute(query, (id_empresa,))
+pyodbc.ProgrammingError: ('42S22', "[42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Invalid column name 'USUARIO'. (207) (SQLExecDirectW); [42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Statement(s) could not be prepared. (8180)")
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 258, in edit_empresa
+    registrosPatronales = ModelRegistroPatronal.get_RegistroPatronal_empresa(db,empresa.id)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\models\ModelRegistroPatronal.py", line 78, in get_RegistroPatronal_empresa
+    raise Exception(ex)
+Exception: ('42S22', "[42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Invalid column name 'USUARIO'. (207) (SQLExecDirectW); [42S22] [Microsoft][ODBC SQL Server Driver][SQL Server]Statement(s) could not be prepared. (8180)")
+2024-10-03 08:45:26,426 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:45:26] "[35m[1mGET /edit_empresa/8 HTTP/1.1[0m" 500 -
+2024-10-03 08:46:36,886 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-03 08:46:36,887 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-03 08:46:54,427 - app - ERROR - Exception on /edit_empresa/8 [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 259, in edit_empresa
+    cuentas = ModelCuentasEmpresas.get_cuenta_empresa_by_id(db,id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'ModelCuentasEmpresas' has no attribute 'get_cuenta_empresa_by_id'
+2024-10-03 08:46:54,448 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:46:54] "[35m[1mGET /edit_empresa/8 HTTP/1.1[0m" 500 -
+2024-10-03 08:49:11,897 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-03 08:49:11,899 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-03 08:49:35,830 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:49:35] "GET /edit_empresa/8 HTTP/1.1" 200 -
+2024-10-03 08:49:36,022 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:49:36] "GET /static/css/styele_alta_empresas.css HTTP/1.1" 200 -
+2024-10-03 08:49:36,028 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:49:36] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-03 08:49:36,060 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:49:36] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-03 08:49:36,069 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 08:49:36] "GET /static/JS/validar_formulario.js HTTP/1.1" 200 -
+2024-10-03 12:35:58,530 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-03 12:35:58,531 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-03 12:36:01,437 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:01] "GET /Presupuestos HTTP/1.1" 200 -
+2024-10-03 12:36:01,605 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:01] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-03 12:36:01,651 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:01] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-03 12:36:01,724 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:01] "[36mGET /static/JS/funciones_Presupuestos.js HTTP/1.1[0m" 304 -
+2024-10-03 12:36:09,975 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:09] "GET /api/obtener_especialidades/?query=a HTTP/1.1" 200 -
+2024-10-03 12:36:11,424 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:11] "GET /api/llenar_contratistas/?id_especialidad=1 HTTP/1.1" 200 -
+2024-10-03 12:36:32,955 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:32] "GET /api/obtener_especialidades/?query=d HTTP/1.1" 200 -
+2024-10-03 12:36:42,344 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:42] "GET /api/obtener_especialidades/?query=L HTTP/1.1" 200 -
+2024-10-03 12:36:44,656 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:44] "GET /api/obtener_especialidades/?query=LI HTTP/1.1" 200 -
+2024-10-03 12:36:44,757 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:44] "GET /api/obtener_especialidades/?query=LIM HTTP/1.1" 200 -
+2024-10-03 12:36:47,078 - werkzeug - INFO - 127.0.0.1 - - [03/Oct/2024 12:36:47] "GET /api/llenar_contratistas/?id_especialidad=254 HTTP/1.1" 200 -
+2024-10-04 07:47:26,324 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:47:26] "GET /Empresas HTTP/1.1" 200 -
+2024-10-04 07:47:26,377 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:47:26] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-04 07:47:26,388 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:47:26] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-04 07:47:37,339 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:47:37] "GET /edit_empresa/8 HTTP/1.1" 200 -
+2024-10-04 07:47:37,370 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:47:37] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-04 07:47:37,381 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:47:37] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-04 07:47:37,385 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:47:37] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-04 07:47:37,428 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:47:37] "[36mGET /static/JS/validar_formulario.js HTTP/1.1[0m" 304 -
+2024-10-04 07:50:09,184 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:09] "GET /edit_empresa/8 HTTP/1.1" 200 -
+2024-10-04 07:50:09,218 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:09] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:09,224 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:09] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:09,232 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:09] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-04 07:50:09,238 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:09] "[36mGET /static/JS/validar_formulario.js HTTP/1.1[0m" 304 -
+2024-10-04 07:50:10,921 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:10] "GET /edit_empresa/8 HTTP/1.1" 200 -
+2024-10-04 07:50:10,958 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:10] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:10,966 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:10] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:10,974 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:10] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-04 07:50:10,983 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:10] "[36mGET /static/JS/validar_formulario.js HTTP/1.1[0m" 304 -
+2024-10-04 07:50:19,124 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "GET /edit_empresa/8 HTTP/1.1" 200 -
+2024-10-04 07:50:19,158 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:19,165 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:19,170 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-04 07:50:19,178 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "[36mGET /static/JS/validar_formulario.js HTTP/1.1[0m" 304 -
+2024-10-04 07:50:19,333 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "GET /edit_empresa/8 HTTP/1.1" 200 -
+2024-10-04 07:50:19,361 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:19,366 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:19,378 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-04 07:50:19,383 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:19] "[36mGET /static/JS/validar_formulario.js HTTP/1.1[0m" 304 -
+2024-10-04 07:50:23,953 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:23] "GET /edit_empresa/8 HTTP/1.1" 200 -
+2024-10-04 07:50:23,990 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:23] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:24,001 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:24] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-04 07:50:24,007 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:24] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-04 07:50:24,011 - werkzeug - INFO - 127.0.0.1 - - [04/Oct/2024 07:50:24] "[36mGET /static/JS/validar_formulario.js HTTP/1.1[0m" 304 -
+2024-10-21 11:31:59,383 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-21 11:31:59,384 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-21 11:32:11,059 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:32:11] "GET /Empresas HTTP/1.1" 200 -
+2024-10-21 11:32:11,203 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:32:11] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:32:11,230 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:32:11] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:32:16,693 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:32:16] "GET /edit_empresa/1 HTTP/1.1" 200 -
+2024-10-21 11:32:16,729 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:32:16] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:32:16,735 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:32:16] "GET /static/css/styele_alta_empresas.css HTTP/1.1" 200 -
+2024-10-21 11:32:16,737 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:32:16] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:32:16,771 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:32:16] "GET /static/JS/validar_formulario.js HTTP/1.1" 200 -
+2024-10-21 11:33:19,697 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-21 11:33:19,698 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-21 11:33:23,581 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:23] "GET /edit_empresa/1 HTTP/1.1" 200 -
+2024-10-21 11:33:23,742 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:23] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:33:23,773 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:23] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:33:23,816 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:23] "[36mGET /static/JS/validar_formulario.js HTTP/1.1[0m" 304 -
+2024-10-21 11:33:23,842 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:23] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-21 11:33:34,668 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:34] "GET /Empresas HTTP/1.1" 200 -
+2024-10-21 11:33:34,704 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:34] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:33:34,707 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:34] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:33:37,213 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:37] "GET /Altaempresas HTTP/1.1" 200 -
+2024-10-21 11:33:37,275 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:37] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:33:37,276 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:33:37] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:34:32,892 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:34:32] "GET /Altaempresas HTTP/1.1" 200 -
+2024-10-21 11:34:32,918 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:34:32] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:34:32,919 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:34:32] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:34:43,326 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-21 11:34:43,327 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-21 11:34:53,119 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:34:53] "GET /Altaempresas HTTP/1.1" 200 -
+2024-10-21 11:34:53,274 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:34:53] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:34:53,276 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:34:53] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:35:15,307 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:15] "GET /Altaempresas HTTP/1.1" 200 -
+2024-10-21 11:35:15,328 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:15] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:35:15,330 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:15] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:35:26,855 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-21 11:35:26,856 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-21 11:35:49,267 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:49] "GET /Empresas HTTP/1.1" 200 -
+2024-10-21 11:35:49,382 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:49] "GET /Altaempresas HTTP/1.1" 200 -
+2024-10-21 11:35:49,446 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:49] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:35:49,456 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:49] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:35:51,883 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:51] "GET /Altaempresas HTTP/1.1" 200 -
+2024-10-21 11:35:51,912 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:51] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:35:51,917 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:51] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-21 11:35:51,925 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:51] "[36mGET /static/JS/validar_formulario.js HTTP/1.1[0m" 304 -
+2024-10-21 11:35:51,926 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:51] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:35:51,929 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:35:51] "GET /static/JS/funciones_altra_empresa.js HTTP/1.1" 200 -
+2024-10-21 11:40:04,231 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:04] "GET /Empresas HTTP/1.1" 200 -
+2024-10-21 11:40:04,272 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:04] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:40:04,292 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:04] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:40:08,466 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:08] "GET /Clientes HTTP/1.1" 200 -
+2024-10-21 11:40:08,532 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:08] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:40:08,533 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:08] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:40:09,338 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:09] "GET /Altacliente HTTP/1.1" 200 -
+2024-10-21 11:40:09,388 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:09] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-21 11:40:09,392 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:09] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:40:09,396 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:09] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:40:09,397 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:09] "GET /static/JS/funciones_Clientes.js HTTP/1.1" 200 -
+2024-10-21 11:40:09,425 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:09] "GET /api/obtener_cfdi/ HTTP/1.1" 200 -
+2024-10-21 11:40:23,117 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:23] "GET /Puestos HTTP/1.1" 200 -
+2024-10-21 11:40:23,152 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:23] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:40:23,153 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:23] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:40:35,179 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:35] "GET /Empleados HTTP/1.1" 200 -
+2024-10-21 11:40:35,212 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:35] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:40:35,214 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:35] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:40:36,379 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:36] "GET /Altaempleados HTTP/1.1" 200 -
+2024-10-21 11:40:36,415 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:36] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:40:36,426 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:36] "[36mGET /static/css/styele_alta_empresas.css HTTP/1.1[0m" 304 -
+2024-10-21 11:40:36,427 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:36] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:40:36,429 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:36] "[36mGET /static/JS/funciones_Clientes.js HTTP/1.1[0m" 304 -
+2024-10-21 11:40:36,459 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:40:36] "GET /api/obtener_cfdi/ HTTP/1.1" 200 -
+2024-10-21 11:42:57,359 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:42:57] "GET /Puestos HTTP/1.1" 200 -
+2024-10-21 11:42:57,379 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:42:57] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-21 11:42:57,382 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:42:57] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-21 11:43:08,210 - app - ERROR - Exception on /Categorias [GET]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelCategoria.py", line 28, in get_all_categorias
+    cursor.execute(query)
+pyodbc.ProgrammingError: ('42S02', "[42S02] [Microsoft][ODBC SQL Server Driver][SQL Server]Invalid object name 'CATEGORI'. (208) (SQLExecDirectW)")
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 1157, in categorias
+    categorias = ModelCategoria.get_all_categorias(db)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\models\ModelCategoria.py", line 37, in get_all_categorias
+    raise Exception(ex)
+Exception: ('42S02', "[42S02] [Microsoft][ODBC SQL Server Driver][SQL Server]Invalid object name 'CATEGORI'. (208) (SQLExecDirectW)")
+2024-10-21 11:43:08,217 - werkzeug - INFO - 127.0.0.1 - - [21/Oct/2024 11:43:08] "[35m[1mGET /Categorias HTTP/1.1[0m" 500 -
+2024-10-22 09:27:46,346 - app - ERROR - Exception on /Altaproveedores [POST]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelEspecialidadesProveerdor.py", line 14, in crear_especialidad_proveedor
+    cursor.execute(query, (
+pyodbc.IntegrityError: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__ESPECIALI__ID_PR__7B5B524B". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 631, in altaproveedores
+    ModelEspecialidadesProveedor.crear_especialidad_proveedor(db,nueva_especialida)
+  File "C:\websites\BAUART\models\ModelEspecialidadesProveerdor.py", line 26, in crear_especialidad_proveedor
+    raise Exception(ex)
+Exception: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__ESPECIALI__ID_PR__7B5B524B". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+2024-10-22 09:30:29,663 - app - ERROR - Exception on /Altaproveedores [POST]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelContactoProveedor.py", line 14, in new_contacto_proveedor
+    cursor.execute(query, (
+pyodbc.IntegrityError: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__CONTACTOS__ID_PR__75A278F5". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 651, in altaproveedores
+    ModelContactosProveedor.new_contacto_proveedor(db,nuevo_contacto)
+  File "C:\websites\BAUART\models\ModelContactoProveedor.py", line 29, in new_contacto_proveedor
+    raise Exception(ex)
+Exception: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__CONTACTOS__ID_PR__75A278F5". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+2024-10-22 09:42:41,908 - app - ERROR - Exception on /Altaproveedores [POST]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelEspecialidadesProveerdor.py", line 14, in crear_especialidad_proveedor
+    cursor.execute(query, (
+pyodbc.IntegrityError: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__ESPECIALI__ID_PR__7B5B524B". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 631, in altaproveedores
+    ModelEspecialidadesProveedor.crear_especialidad_proveedor(db,nueva_especialida)
+  File "C:\websites\BAUART\models\ModelEspecialidadesProveerdor.py", line 26, in crear_especialidad_proveedor
+    raise Exception(ex)
+Exception: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__ESPECIALI__ID_PR__7B5B524B". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+2024-10-22 09:43:34,184 - app - ERROR - Exception on /Altaproveedores [POST]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelContactoProveedor.py", line 14, in new_contacto_proveedor
+    cursor.execute(query, (
+pyodbc.IntegrityError: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__CONTACTOS__ID_PR__75A278F5". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 651, in altaproveedores
+    ModelContactosProveedor.new_contacto_proveedor(db,nuevo_contacto)
+  File "C:\websites\BAUART\models\ModelContactoProveedor.py", line 29, in new_contacto_proveedor
+    raise Exception(ex)
+Exception: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__CONTACTOS__ID_PR__75A278F5". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+2024-10-22 13:58:53,386 - app - ERROR - Exception on /Proveedores [POST]
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 693, in proveedores
+    empresas = ModelEmpresas.filter_empresas(db, repse, razon_social, rfc, noregis1, cp,estado)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ModelEmpresas.filter_empresas() takes 7 positional arguments but 8 were given
+2024-10-23 14:22:53,297 - app - ERROR - Exception on /Altaproveedores [POST]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelProveedores.py", line 18, in crear_proveedor
+    cursor.execute(query, (
+pyodbc.ProgrammingError: ('42000', "[42000] [Microsoft][ODBC SQL Server Driver][SQL Server]String or binary data would be truncated in table 'BAUART.dbo.PROVEEDORES', column 'RFC'. Truncated value: 'SOAA 860721 E'. (2628) (SQLExecDirectW); [42000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)")
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 621, in altaproveedores
+    ModelProveedores.crear_proveedor(db,new_proveedor)
+  File "C:\websites\BAUART\models\ModelProveedores.py", line 41, in crear_proveedor
+    raise Exception(ex)
+Exception: ('42000', "[42000] [Microsoft][ODBC SQL Server Driver][SQL Server]String or binary data would be truncated in table 'BAUART.dbo.PROVEEDORES', column 'RFC'. Truncated value: 'SOAA 860721 E'. (2628) (SQLExecDirectW); [42000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)")
+2024-10-23 14:23:22,453 - app - ERROR - Exception on /Altaproveedores [POST]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelProveedores.py", line 18, in crear_proveedor
+    cursor.execute(query, (
+pyodbc.ProgrammingError: ('42000', "[42000] [Microsoft][ODBC SQL Server Driver][SQL Server]String or binary data would be truncated in table 'BAUART.dbo.PROVEEDORES', column 'RFC'. Truncated value: 'SOAA 860721 E'. (2628) (SQLExecDirectW); [42000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)")
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 621, in altaproveedores
+    ModelProveedores.crear_proveedor(db,new_proveedor)
+  File "C:\websites\BAUART\models\ModelProveedores.py", line 41, in crear_proveedor
+    raise Exception(ex)
+Exception: ('42000', "[42000] [Microsoft][ODBC SQL Server Driver][SQL Server]String or binary data would be truncated in table 'BAUART.dbo.PROVEEDORES', column 'RFC'. Truncated value: 'SOAA 860721 E'. (2628) (SQLExecDirectW); [42000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)")
+2024-10-23 16:05:32,499 - app - ERROR - Exception on /Proveedores [POST]
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 778, in proveedores
+    empresas = ModelEmpresas.filter_empresas(db, repse, razon_social, rfc, noregis1, cp,estado)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ModelEmpresas.filter_empresas() takes 7 positional arguments but 8 were given
+2024-10-24 08:42:31,620 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "C:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint '' with values ['id']. Did you mean 'edit_empresa' instead?
+2024-10-24 08:42:36,929 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "C:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint '' with values ['id']. Did you mean 'edit_empresa' instead?
+2024-10-24 08:45:39,639 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "C:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('unblock_proveedores', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'unblock_proveedores' with values ['id']. Did you mean 'unblock_proyecto' instead?
+2024-10-24 08:49:06,508 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "C:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('unblock_proveedores', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'unblock_proveedores' with values ['id']. Did you mean 'unblock_proyecto' instead?
+2024-10-24 08:51:13,922 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-24 08:51:13,923 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-24 08:51:20,957 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:51:20] "GET /Altaproveedores HTTP/1.1" 200 -
+2024-10-24 08:51:21,012 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:51:21] "[33mGET /static/JS/funciones_layout.js HTTP/1.1[0m" 404 -
+2024-10-24 08:51:21,091 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:51:21] "GET /static/css/styleLayout.css HTTP/1.1" 200 -
+2024-10-24 08:51:21,152 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:51:21] "GET /static/JS/funciones_altaProveedor.js HTTP/1.1" 200 -
+2024-10-24 08:51:21,185 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:51:21] "GET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1" 200 -
+2024-10-24 08:51:26,132 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('unblock_proveedores', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'unblock_proveedores' with values ['id']. Did you mean 'unblock_proyecto' instead?
+2024-10-24 08:51:26,145 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:51:26] "[35m[1mGET /Proveedores HTTP/1.1[0m" 500 -
+2024-10-24 08:52:10,064 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('unblock_proveedores', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'unblock_proveedores' with values ['id']. Did you mean 'unblock_proyecto' instead?
+2024-10-24 08:52:10,076 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:52:10] "[35m[1mGET /Proveedores HTTP/1.1[0m" 500 -
+2024-10-24 08:53:11,131 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-24 08:53:11,132 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-24 08:53:23,419 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('unblock_proveedores', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'unblock_proveedores' with values ['id']. Did you mean 'unblock_proyecto' instead?
+2024-10-24 08:53:23,437 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:53:23] "[35m[1mGET /Proveedores HTTP/1.1[0m" 500 -
+2024-10-24 08:54:32,407 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-24 08:54:32,407 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-24 08:55:18,612 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint '' with values ['id']. Did you mean 'edit_empresa' instead?
+2024-10-24 08:55:18,618 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint '' with values ['id']. Did you mean 'edit_empresa' instead?
+2024-10-24 08:55:18,626 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:55:18] "[35m[1mGET /Proveedores HTTP/1.1[0m" 500 -
+2024-10-24 08:55:18,629 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:55:18] "[35m[1mGET /Proveedores HTTP/1.1[0m" 500 -
+2024-10-24 08:55:24,679 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-24 08:55:24,680 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-24 08:55:45,473 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint '' with values ['id']. Did you mean 'edit_empresa' instead?
+2024-10-24 08:55:45,488 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:55:45] "[35m[1mGET /Proveedores HTTP/1.1[0m" 500 -
+2024-10-24 08:57:43,788 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-24 08:57:43,789 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-24 08:57:58,526 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('unblock_proveedores', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'unblock_proveedores' with values ['id']. Did you mean 'unblock_proyecto' instead?
+2024-10-24 08:57:58,546 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:57:58] "[35m[1mGET /Proveedores HTTP/1.1[0m" 500 -
+2024-10-24 08:59:33,442 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('unblock_proveedores', id= p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'unblock_proveedores' with values ['id']. Did you mean 'unblock_proyecto' instead?
+2024-10-24 08:59:33,448 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 08:59:33] "[35m[1mGET /Proveedores HTTP/1.1[0m" 500 -
+2024-10-24 09:01:07,381 - app - ERROR - Exception on /Proveedores [GET]
+Traceback (most recent call last):
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 786, in proveedores
+    return render_template('proveedores.html', proveedores=proveedores)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "c:\Python312\Lib\site-packages\jinja2\environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\websites\BAUART\templates\proveedores.html", line 2, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\templates\layout.html", line 191, in top-level template code
+    {% block content %}
+  File "C:\websites\BAUART\templates\proveedores.html", line 118, in block 'content'
+    <form action="{{ url_for('unblock_proveedores',id=p.id) }}" method="post"
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\flask\app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Python312\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'unblock_proveedores' with values ['id']. Did you mean 'unblock_proyecto' instead?
+2024-10-24 09:01:07,390 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:01:07] "[35m[1mGET /Proveedores HTTP/1.1[0m" 500 -
+2024-10-24 09:02:30,305 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-24 09:02:30,306 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-10-24 09:02:40,349 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:02:40] "GET /Proveedores HTTP/1.1" 200 -
+2024-10-24 09:02:40,473 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:02:40] "[33mGET /static/JS/funciones_layout.js HTTP/1.1[0m" 404 -
+2024-10-24 09:02:40,487 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:02:40] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-24 09:02:40,529 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:02:40] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-24 09:02:46,608 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:02:46] "[32mPOST /unblock_proveedores/1036 HTTP/1.1[0m" 302 -
+2024-10-24 09:02:55,822 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:02:55] "GET /Proveedores HTTP/1.1" 200 -
+2024-10-24 09:02:55,852 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:02:55] "[36mGET /static/css/styleLayout.css HTTP/1.1[0m" 304 -
+2024-10-24 09:02:55,854 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:02:55] "[33mGET /static/JS/funciones_layout.js HTTP/1.1[0m" 404 -
+2024-10-24 09:02:55,855 - werkzeug - INFO - 127.0.0.1 - - [24/Oct/2024 09:02:55] "[36mGET /static/img/Bauart-Logo-Pantalla-RGB.MED.JPG HTTP/1.1[0m" 304 -
+2024-10-24 15:32:12,580 - app - ERROR - Exception on /Altaproveedores [POST]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelEspecialidadesProveerdor.py", line 14, in crear_especialidad_proveedor
+    cursor.execute(query, (
+pyodbc.IntegrityError: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__ESPECIALI__ID_PR__7B5B524B". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 696, in altaproveedores
+    ModelEspecialidadesProveedor.crear_especialidad_proveedor(db,nueva_especialida)
+  File "C:\websites\BAUART\models\ModelEspecialidadesProveerdor.py", line 26, in crear_especialidad_proveedor
+    raise Exception(ex)
+Exception: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__ESPECIALI__ID_PR__7B5B524B". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+2024-10-24 15:33:40,164 - app - ERROR - Exception on /Altaproveedores [POST]
+Traceback (most recent call last):
+  File "C:\websites\BAUART\models\ModelEspecialidadesProveerdor.py", line 14, in crear_especialidad_proveedor
+    cursor.execute(query, (
+pyodbc.IntegrityError: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__ESPECIALI__ID_PR__7B5B524B". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\websites\BAUART\app.py", line 696, in altaproveedores
+    ModelEspecialidadesProveedor.crear_especialidad_proveedor(db,nueva_especialida)
+  File "C:\websites\BAUART\models\ModelEspecialidadesProveerdor.py", line 26, in crear_especialidad_proveedor
+    raise Exception(ex)
+Exception: ('23000', '[23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The INSERT statement conflicted with the FOREIGN KEY constraint "FK__ESPECIALI__ID_PR__7B5B524B". The conflict occurred in database "BAUART", table "dbo.PROVEEDORES", column \'ID\'. (547) (SQLExecDirectW); [23000] [Microsoft][ODBC SQL Server Driver][SQL Server]The statement has been terminated. (3621)')

@@ -287,7 +287,7 @@
                     <thead></thead>
                     <tbody>
                         <tr>
-                            <th scope="row" style="text-align: left;">NOMBRE PROYECTO:</th>
+                            <th scope="row" style="text-align: right;">NOMBRE PROYECTO:</th>
                             <td>
                                 <div class="position-relative">
                                     <input type="text" class="form-control form-control-sm" id="PROYECTO" name="PROYECTO"  autocomplete="off" required>
@@ -342,9 +342,8 @@
                         <tr>
                             <th scope="row">DIRECTOR DE OBRA:</th>
                             <td>
-                                <select  class="form-control" id="DIRECTOR" name="DIRECTOR">
-                                    <option value=1>SELECIONA UN DIRECTOR</option>
-                                </select>
+                                <input type="text" class="form-control read_only" id="DIRECTOR" name="DIRECTOR" readonly>
+                                <input type="text" style="display: none;" class="form-control form-control-sm" id="ID_DIRECTOR" name="ID_DIRECTOR">
                             </td>
                             <th scope="row" style="text-align: right;">GASTADO REAL:</th>
                             <td>

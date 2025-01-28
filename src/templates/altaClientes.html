@@ -87,7 +87,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="RFC" class="form-label">RFC*</label>
-                                    <input type="text" class="form-control" onchange="validar_rfc(this)" id="RFC" name="RFC" placeholder="RFC"
+                                    <input type="text" class="form-control" maxlength="13" onchange="validar_rfc(this)" id="RFC" name="RFC" placeholder="RFC"
                                         required>
                                     <div class="invalid-feedback">
                                         COMPLETA RFC
@@ -134,7 +134,7 @@
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="CP" class="form-label">CP*</label>
-                                        <input type="text" class="form-control" id="CP" name="CP" ma
+                                        <input type="text" class="form-control" id="CP" maxlength="5" name="CP" ma
                                             placeholder="CODIGO POSTAL" required>
                                         <div class="invalid-feedback">
                                             COMPLETA CODIGO POSTAL
@@ -317,30 +317,29 @@
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="FORMA_PAGO" class="form-label">FORMATO DE PAGO:</label>
                                     <select class="form-control" name="FORMA_PAGO" id="FORMA_PAGO">
-                                        <option value="" style="text-align: center;">SELECIONA UNA OPCION</option>
-                                        <option value="01">01 - Efectivo</option>
-                                        <option value="02">02 - Cheque nominativo</option>
-                                        <option value="03">03 - Transferencia electrónica de fondos</option>
-                                        <option value="04">04 - Tarjeta de crédito</option>
-                                        <option value="05">05 - Monedero electrónico</option>
-                                        <option value="06">06 - Dinero electrónico</option>
-                                        <option value="08">08 - Vales de despensa</option>
-                                        <option value="12">12 - Dación en pago</option>
-                                        <option value="13">13 - Pago por subrogación</option>
-                                        <option value="14">14 - Pago por consignación</option>
-                                        <option value="15">15 - Condonación</option>
-                                        <option value="17">17 - Compensación</option>
-                                        <option value="23">23 - Novación</option>
-                                        <option value="24">24 - Confusión</option>
-                                        <option value="25">25 - Remisión de deuda</option>
-                                        <option value="26">26 - Prescripción o caducidad</option>
-                                        <option value="27">27 - A satisfacción del acreedor</option>
-                                        <option value="28">28 - Tarjeta de débito</option>
-                                        <option value="29">29 - Tarjeta de servicios</option>
-                                        <option value="30">30 - Aplicación de anticipos</option>
-                                        <option value="31">31 - Intermediario pagos</option>
-                                        <option value="99">99 - Por definir</option>
-                                
+                                        <option value="" style="text-align: center;">SELECIONA</option>
+                                        <option value="01">01 - EFECTIVO</option>
+                                        <option value="02">02 - CHEQUE NOMINATIVO</option>
+                                        <option value="03">03 - TRANSFERENCIA ELECTRÓNICA DE FONDOS</option>
+                                        <option value="04">04 - TARJETA DE CRÉDITO</option>
+                                        <option value="05">05 - MONEDERO ELECTRÓNICO</option>
+                                        <option value="06">06 - DINERO ELECTRÓNICO</option>
+                                        <option value="08">08 - VALES DE DESPENSA</option>
+                                        <option value="12">12 - DACIÓN EN PAGO</option>
+                                        <option value="13">13 - PAGO POR SUBROGACIÓN</option>
+                                        <option value="14">14 - PAGO POR CONSIGNACIÓN</option>
+                                        <option value="15">15 - CONDONACIÓN</option>
+                                        <option value="17">17 - COMPENSACIÓN</option>
+                                        <option value="23">23 - NOVACIÓN</option>
+                                        <option value="24">24 - CONFUSIÓN</option>
+                                        <option value="25">25 - REMISIÓN DE DEUDA</option>
+                                        <option value="26">26 - PRESCRIPCIÓN O CADUCIDAD</option>
+                                        <option value="27">27 - A SATISFACCIÓN DEL ACREEDOR</option>
+                                        <option value="28">28 - TARJETA DE DÉBITO</option>
+                                        <option value="29">29 - TARJETA DE SERVICIOS</option>
+                                        <option value="30">30 - APLICACIÓN DE ANTICIPOS</option>
+                                        <option value="31">31 - INTERMEDIARIO PAGOS</option>
+                                        <option value="99">99 - POR DEFINIR</option>
                                     </select>
                                     <div class="invalid-feedback">
                                         SELECIONA UNA FORMA DE PAGO
@@ -348,10 +347,9 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="CONDICION_PAGO" class="form-label">CONDICIÓN DE PAGO</label>
-
-                                    <input type="text" class="form-control" name="CONDICION_PAGO" id="CONDICION_PAGO" required>
+                                    <input type="text" class="form-control" name="CONDICION_PAGO" id="CONDICION_PAGO" placeholder="CONDICIÓN PAGO" required>
                                     <div class="invalid-feedback">
-                                        SELECIONE UNA CONDICION_PAGO
+                                        COMPLETA CONDICIÓN DE PAGO    
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">

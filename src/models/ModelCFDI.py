@@ -14,7 +14,7 @@ class ModelCFDI:
                 uso_CFDI.append(UsoCFDI(
                         id=row[0],
                         clave=row[1],
-                        descripcion=row[2],
+                        descripcion=row[2].upper(),
                         aplicacion=row[3]
                     ))
             return uso_CFDI

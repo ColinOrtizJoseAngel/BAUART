@@ -46,7 +46,7 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
                                 data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
-                                aria-selected="true">INFORMACION GENERAL</button>
+                                aria-selected="true">INFORMACIÓN GENERAL</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="direccion-tab" data-bs-toggle="tab"
@@ -71,7 +71,7 @@
                             <div class="form-group row">
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="cliente" class="form-label">CLIENTE*:</label>
-                                    <input class="form-control" name="cliente" id="cliente" value="{{ cliente.razon_social }}" disabled>
+                                    <input class="form-control" name="cliente" id="cliente" style="text-align: center;" value="{{ cliente.razon_social }}" disabled>
                                     <input class="form-control" name="cliente_id" value="{{proyecto.id_cliente}}" id="cliente_id" style="display: none;" 
                                         required>
                                     <div class="invalid-feedback">BUSCA UN CLIENTE</div>
@@ -91,20 +91,20 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="nombre_proyecto" class="form-label">NOMBRE DEL PROYECTO U OBRA</label>
-                                    <input type="tel" class="form-control" name="nombre_proyecto" value="{{ proyecto.nombre_proyecto }}" id="nombre_proyecto"
-                                        placeholder="Enter value" required>
+                                    <input type="tel" class="form-control read_only" name="nombre_proyecto" value="{{ proyecto.nombre_proyecto }}" id="nombre_proyecto"
+                                        placeholder="Enter value" required readonly>
                                     <div class="invalid-feedback">
                                         COMPLETA NOMBRE DEL PROYECTO
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="probra" class="form-label">SELECIONA UN PROYECTO U OBRA</label>
-                                    <select class="form-control" name="probra" id="probra" required>
+                                    <select class="form-control readonly-select" style="text-align: center;" name="probra" id="probra" required>
                                         <option value="1" {{ 'selected' if proyecto.tipo_id == '1' else '' }}>PROYECTO</option>
                                         <option value="2" {{ 'selected' if proyecto.tipo_id == '2 ' else '' }}>OBRA</option>
                                     </select>
                                     <div class="invalid-feedback">
-                                        Seleccione que tipo sera
+                                        SELECIONA UN TIPO 
                                     </div>
                                 </div>
                             </div>
@@ -112,20 +112,35 @@
                                 
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="fecha_inicio" class="form-label">FECHA INICIO</label>
-                                    <input type="date" class="form-control"  value="{{ proyecto.fecha_inicio }}" name="fecha_inicio" id="fecha_inicio"
-                                        placeholder="Enter value" required>
+                                    <input type="date" class="form-control read_only"  value="{{ proyecto.fecha_inicio }}" name="fecha_inicio" id="fecha_inicio"
+                                        placeholder="Enter value" required readonly>
                                     <div class="invalid-feedback">
                                         SELECIONE LA FECHA DE INICIO
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="fecha_fin" class="form-label">FECHA FIN</label>
-                                    <input type="date" class="form-control" value="{{ proyecto.fecha_fin }}" name="fecha_fin" id="fecha_fin"
-                                        placeholder="Enter value" required>
+                                    <input type="date" class="form-control read_only"  value="{{ proyecto.fecha_fin }}" name="fecha_fin" id="fecha_fin"
+                                        placeholder="Enter value" required readonly>
                                     <div class="invalid-feedback">
                                         SELECIONE LA FECHA FIN
                                     </div>
                                 </div>
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="monto" class="form-label">HORA ENTRA</label>
+                                    <input type="time" class="form-control read_only" style="text-align: center;" value="{{ proyecto.hora_entrada }}" name="HORA_ENTRADA" id="HORA_ENTRADA" placeholder="Enter value" style="text-align: center;" required readonly>
+                                    <div class="invalid-feedback">
+                                        DEFINE UNA HORA DE ENTRA AL PROYECTO
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                    <label for="monto" class="form-label">HORA SALIDA</label>
+                                    <input type="time" class="form-control read_only" style="text-align: center;" value="{{ proyecto.hora_salida }}" name="HORA_SALIDA" id="HORA_SALIDA" placeholder="Enter value" style="text-align: center;" required readonly>
+                                    <div class="invalid-feedback">
+                                        DEFINE NUNA HORA DE SALIDA AL PROYECTO
+                                    </div>
+                                </div>
+
                             </div>
                             <!--Fin info general-->
                         </div>
@@ -135,55 +150,55 @@
                             <div class="form-group row">
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="LUGAR_ENTREGA" class="form-label">DIRECION DE OBRA: </label>
-                                    <input type="text" class="form-control" id="inputDirecionObra" name="DIRECCION_OBRA" required>
+                                    <input type="text" class="form-control read_only" value="{{ proyecto.direcion_obra }}" id="inputDirecionObra" name="DIRECCION_OBRA" required readonly>
                                     <div class="invalid-feedback">
                                         DIRECION DE OBRA
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="CALLE" class="form-label">CALLE: </label>
-                                    <input type="text" class="form-control read_only" id="inputCalle" name="CALLE" readonly>
+                                    <input type="text" class="form-control read_only" value="{{ proyecto.calle }}" id="inputCalle" name="CALLE" readonly>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <label for="inputNumeroExterior" class="form-label">NUMERO INTERIOR: </label>
-                                    <input type="text" class="form-control text-center read_only" id="inputNumeroInterior"  name="NUMERO_INTERIOR" readonly>
+                                    <input type="text" class="form-control text-center read_only" value="{{ proyecto.numero_interior }}" id="inputNumeroInterior"  name="NUMERO_INTERIOR" readonly>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <label for="inputNumeroExterior" class="form-label">NUMERO EXTERIOR: </label>
-                                    <input type="text" class="form-control text-center read_only" id="inputNumeroExterior" name="NUMERO_EXTERIOR">
+                                    <input type="text" class="form-control text-center read_only" value="{{ proyecto.numero_exterior }}" id="inputNumeroExterior" name="NUMERO_EXTERIOR">
                                 </div>
                             </div> 
                             <div class="row">
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="inputColonia" class="form-label">COLONIA: </label>
-                                        <input type="text" class="form-control read_only" id="inputColonia" name="COLONIA"
-                                            style="text-align: center;" required>
+                                        <input type="text" class="form-control read_only" value="{{ proyecto.colonia }}" id="inputColonia" name="COLONIA"
+                                            style="text-align: center;" required readonly>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <label for="ESTADO" class="form-label">ESTADO: </label>
-                                    <input type="text" class="form-control read_only" id="inputEstado" name="ESTADO">
+                                    <input type="text" class="form-control read_only" value="{{ proyecto.estado }}" id="inputEstado" name="ESTADO" readonly>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <label for="CIUDAD" class="form-label">MUNICIPIO: </label>
-                                    <input type="text" class="form-control read_only" id="inputCiudad" name="MUNICIPIO">
+                                    <input type="text" class="form-control read_only" value="{{ proyecto.municipio}}" id="inputCiudad" name="MUNICIPIO" readonly>
                                 </div>
                                 <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                     <label for="CALLE" class="form-label">CP: </label>
-                                    <input type="text" class="form-control read_only" id="inputCp" name="CP">
+                                    <input type="text" class="form-control read_only" value="{{ proyecto.cp }}" id="inputCp" name="CP" autocomplete="off" required readonly>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="centro_comercial" class="form-label">CENTRO COMERCIAL</label>
-                                    <input type="text" class="form-control" value="" name="centro_comercial" id="centro_comercial" placeholder="Enter value">
+                                    <input type="text" class="form-control" value="{{ proyecto.centro_comercial}}" name="centro_comercial" id="centro_comercial" autocomplete="off" placeholder="Enter value">
                                 </div>
                             </div> 
                             <div class="row">
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="LATITUD" class="form-label">LATITUD: </label>
-                                    <input class="form-control" name="LATITUD" id="LATITUD" value="{{ proyecto.latitud }}" required>
+                                    <input class="form-control read_only" style="text-align: center;" name="LATITUD" id="LATITUD" value="{{ proyecto.latitud }}" autocomplete="off" required readonly>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="LONGITUD" class="form-label">LONGITUD: </label>
-                                    <input class="form-control" name="LONGITUD" id="LONGITUD" value="{{ proyecto.longitud }}" required>
+                                    <input class="form-control read_only" style="text-align: center;" name="LONGITUD" id="LONGITUD" value="{{ proyecto.longitud }}" autocomplete="off" required readonly>
                                 </div>
                             </div>
                            
@@ -194,10 +209,11 @@
                             <!--Direccion Ejecutiva-->
                             <div class="form-group row">
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <label for="nombre_director" class="form-label">Director</label>
+                                    <label for="nombre_director" class="form-label">DIRECTOR OBRA</label>
                                     <select class="form-control" name="nombre_director" id="nombre_director" required>
-                                        <option value="" style="text-align: center;">------Selecciona------</option>
-                                        <option value=0>Catalogo de DIRECTORES</option>
+                                        {% for director in directores %}
+                                            <option value="{{ director.id }}" {{ 'selected' if director.id == proyecto.id_director else '' }}>{{ director.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                     <div class="invalid-feedback">
                                         Selecciona un Director
@@ -206,8 +222,9 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="nombre_gerente" class="form-label">GERENTE</label>
                                     <select class="form-control" name="nombre_gerente" id="nombre_gerente">
-                                        <option value="" style="text-align: center;">------Selecciona------</option>
-                                        <option value=0>Catalogo de GERENTES</option>
+                                        {% for gerente in gerentes %}
+                                            <option value="{{ gerente.id }}" {{ 'selected' if gerente.id == proyecto.id_gerente else '' }}>{{ gerente.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </div>
@@ -215,18 +232,20 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="lider1_proyecto" class="form-label">LIDER DE PROYECTO 1*</label>
                                     <select class="form-control" name="lider1_proyecto" id="lider1_proyecto" required>
-                                        <option value="">------SELECIONA------</option>
-                                        <option value=0>Catalogo de LIDER </option>
+                                        {% for lider in lideres %}
+                                            <option value="{{ lider.id }}" {{ 'selected' if lider.id == proyecto.id_lider1 else '' }}>{{ lider.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                     <div class="invalid-feedback">
-                                        Selecciona un Lider de Proyecto 1
+                                        SELECIONA UN LIDER DE OBRA
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <label for="lider2_proyecto" class="form-label">LIDER DE PROYECYO 2</label>
                                     <select class="form-control" name="lider2_proyecto" id="lider2_proyecto">
-                                        <option value="">------SELECIONA------</option>
-                                        <option value=0>Catalogo de LIDER</option>
+                                        {% for lider in lideres %}
+                                            <option value="{{ lider.id }}" {{ 'selected' if lider.id == proyecto.id_lider2 else '' }}>{{ lider.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </div>

@@ -1,6 +1,5 @@
 class Empleados:
-    
-    def _init_(self, id, nombre, apellido, id_empresa, puesto,
+    def __init__(self, id, nombre, apellido, id_empresa, puesto,
                  tipo_empleado, tipo_nomina, sueldo_imss, monedero, nomina, banco,
                  numero_cuenta, clabe, alta_empleado="", baja_empleado="", fecha_registro="", is_blocked=False,
                  categoria="", no_imss="", curp="", ine="", rfc="", cedula_profesional="",

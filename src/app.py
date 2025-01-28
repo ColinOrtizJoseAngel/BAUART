@@ -512,7 +512,7 @@ def altaclientes():
                             no_exterior=request.form.get('NO_EXTERIOR', ""),
                             regimen_fiscal_id=request.form['REGIMEN_FISCAL'],
                             uso_cfdi_id=request.form['USO_CFDI'],
-                            condicion_pago_id=request.form['CONDICION_PAGO'],
+                            condicion_pago=request.form['CONDICION_PAGO'],
                             forma_pago_id= request.form['FORMA_PAGO']             
             )
                             
@@ -606,7 +606,7 @@ def edit_cliente():
             # Elimina el token de la sesión para evitar reenvíos duplicados
             session.pop('token', None)
             
-            cliente = Clientes(id = request.form['ID_CLIENTE'],
+            cliente = Clientes(id = id,
                             id_empresa=request.form['EMPRESA'],
                             razon_social=request.form['RAZON_SOCIAL'],
                             rfc=request.form['RFC'],
@@ -619,7 +619,7 @@ def edit_cliente():
                             no_exterior=request.form.get('NO_EXTERIOR', ""),
                             regimen_fiscal_id=request.form['REGIMEN_FISCAL'],
                             uso_cfdi_id=request.form['USO_CFDI'],
-                            condicion_pago_id=request.form['CONDICION_PAGO'],
+                            condicion_pago=request.form['CONDICION_PAGO'],
                             forma_pago_id= request.form['FORMA_PAGO']             
             )
             
@@ -758,7 +758,7 @@ def alta_proyecto():
                         hora_entrada = request.form.get('HORA_ENTRADA', ''),
                         hora_salida = request.form.get('HORA_SALIDA', ''),
                         latitud=request.form.get('LATITUD', ''),
-                        logitud=request.form.get('LONGITUD', ''),
+                        longitud=request.form.get('LONGITUD', ''),
                         direcion_obra=request.form.get('DIRECCION_OBRA', ''),
                         usuario_id=current_user.id
             )
@@ -772,8 +772,11 @@ def alta_proyecto():
     else:  
         # Genera un token único y lo almacena en la sesión            
         session['token'] = str(uuid.uuid4())
-
-        return render_template('altaProyectoObra.html',token=session['token'])
+        directores = ModelEmpleado.obtener_directores(db)
+        lideres = ModelEmpleado.obtener_lideres(db)
+        gerentes = ModelEmpleado.obtener_gerentes(db)
+        
+        return render_template('altaProyectoObra.html',token=session['token'],directores=directores,lideres=lideres,gerentes=gerentes)
 
 
 #PROYECTO
@@ -825,7 +828,9 @@ def unblock_proyecto(id):
             return redirect(url_for('proyectos'))
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
+
+
 # EDITAR PROYECTO
 @app.route('/edit_proyecto/<int:id>', methods=['GET', 'POST'])
 def edit_proyecto(id):
@@ -845,34 +850,45 @@ def edit_proyecto(id):
                         fecha_fin=request.form['fecha_fin'],
                         nombre_proyecto=request.form['nombre_proyecto'],
                         centro_comercial=request.form.get('centro_comercial', ''),
-                        pais=request.form['PAIS'],
+                        pais='MÉXICO',
                         estado=request.form['ESTADO'],
                         municipio=request.form['MUNICIPIO'],
                         colonia=request.form.get('COLONIA', ''),
                         calle=request.form['CALLE'],
-                        numero_exterior=request.form['NO_EXTERIOR'],
-                        numero_interior=request.form.get('NO_INTERIOR', ''),
+                        numero_exterior=request.form['NUMERO_INTERIOR'],
+                        numero_interior=request.form.get('NUMERO_EXTERIOR', ''),
                         director_proyecto=request.form['nombre_director'],
                         lider_proyecto=request.form['lider1_proyecto'],
                         gerente_proyecto=request.form.get('nombre_gerente', ''),  # Ajuste en caso de que no haya un campo gerente
                         lider1=request.form['lider1_proyecto'],
                         lider2=request.form.get('lider2_proyecto', ''),
                         cp = request.form['CP'],
-                        tipo_id = request.form.get('probra', '')
+                        tipo_id = request.form.get('probra', ''),
+                        hora_entrada = request.form.get('HORA_ENTRADA', ''),
+                        hora_salida = request.form.get('HORA_SALIDA', ''),
+                        latitud=request.form.get('LATITUD', ''),
+                        longitud=request.form.get('LONGITUD', ''),
+                        direcion_obra=request.form.get('DIRECCION_OBRA', ''),
+                        usuario_id=current_user.id
             )
             
             ModelProyectoObra.update_proyecto(db, nuevo_proyecto)
             return redirect(url_for('proyectos'))
         
-        else: 
+        else:
             return redirect(url_for('proyectos'))
     else:
-        
+        directores = ModelEmpleado.obtener_directores(db)
+        lideres = ModelEmpleado.obtener_lideres(db)
+        gerentes = ModelEmpleado.obtener_gerentes(db)
         # Genera un token único y lo almacena en la sesión
         session['token'] = str(uuid.uuid4())      
-        proyecto = ModelProyectoObra.get_proyecto_by_id(db,id)
+        proyecto = ModelProyectoObra.get_proyecto_by_id(db,id)   
         cleinte = Modelclientes.get_cliente_by_id(db,proyecto.id_cliente)
-        return render_template('edit_proyecto.html', proyecto=proyecto,cliente=cleinte,token=session['token'])
+        return render_template('edit_proyecto.html', proyecto=proyecto,cliente=cleinte,token=session['token'],directores=directores,lideres=lideres,gerentes=gerentes)
+
+
+    
 
 """
 FIN PROYECTO 
@@ -2011,6 +2027,7 @@ def buscar_proyecto():
     try:
         query = request.args.get('query', '')
         proyectos = ModelProyectoObra.get_proyectos_not_block(db)
+        
         proyectos_filtradas = []
 
         for p in proyectos:
@@ -2028,6 +2045,8 @@ def buscar_proyecto():
                     direccion += f" Int. {p.numero_interior}"
                 direccion += f", {p.colonia}, {p.municipio}, {p.estado}, {p.pais}"
                 
+                director = ModelEmpleado.obtener_director_por_id(db,p.director_proyecto)
+                
                 proyectos_filtradas.append({
                     'id': p.id,
                     'id_cliente': p.id_cliente,
@@ -2035,7 +2054,8 @@ def buscar_proyecto():
                     'fecha_inicio': p.fecha_inicio,
                     'fecha_fin': p.fecha_fin,
                     'semanas': semanas,
-                    'director_proyecto': p.director_proyecto,
+                    'director_proyecto': director.nombre + ' ' + director.apellido,
+                    'id_director': director.id,
                     'direccion': direccion
                 })
         
@@ -2270,7 +2290,7 @@ def buscar_cliente():
                     'no_exterior': e.no_exterior,
                     'regimen_fiscal_id': e.regimen_fiscal_id,
                     'uso_cfdi_id': e.uso_cfdi_id,
-                    'condicion_pago_id': e.condicion_pago_id,
+                    'condicion_pago': e.condicion_pago,
                     'forma_pago_id': e.forma_pago_id,
                     'fecha_registro': e.fecha_registro,
                     'usuario_id': 0,
@@ -2342,7 +2362,7 @@ def obtener_clientes():
                     'no_exterior': e.no_exterior,
                     'regimen_fiscal_id': e.regimen_fiscal_id,
                     'uso_cfdi_id': e.uso_cfdi_id,
-                    'condicion_pago_id': e.condicion_pago_id,
+                    'condicion_pago': e.condicion_pago,
                     'forma_pago_id': e.forma_pago_id,
                     'fecha_registro': e.fecha_registro,
                     'usuario_id': 0,
@@ -2968,6 +2988,7 @@ def altaPresupuestos():
                 id=0,
                 proyecto=request.form['PROYECTO'],
                 id_proyecto = int(request.form['PROYECTO_ID']),
+                id_director=int(request.form['ID_DIRECTOR']),
                 id_cliente=int(request.form['CLIENTE_ID']),
                 id_empresa=current_user.id_empresa,
                 presupuesto_cliente=convertir_a_float(request.form['PRESUPUESTO_CLIENTE']),
@@ -2980,7 +3001,7 @@ def altaPresupuestos():
                 falta_por_gastar=convertir_a_float(request.form['FALTA_POR_GASTAR']),
                 porcentaje_por_gastar=float(request.form['PORCENTAJE_POR_GASTAR']),
                 fecha_fin=request.form['FECHA_FIN'],
-                director_obra=int(request.form['DIRECTOR']),
+                director_obra=request.form['DIRECTOR'],
                 gastado_real=convertir_a_float(request.form['GASTADO_REAL']),
                 porcetaje_gastado_real=float(request.form['PORCENTAJE_GASTADO_REAL']),
                 estatus_proyecto=convertir_a_float(request.form['ESTATUS_OBRA']),
@@ -3078,7 +3099,8 @@ def altaPresupuestos():
 
     else:
         session['token'] = str(uuid.uuid4())
-        return render_template('altaPresupuestos.html', token=session['token'])
+        directores = ModelEmpleado.obtener_directores(db)
+        return render_template('altaPresupuestos.html', token=session['token'],directores=directores)
 
 
 # PAGOS SUGERIDOS

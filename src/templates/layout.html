@@ -61,7 +61,7 @@
                             <a href="/Clientes"><i class="bi bi-people-fill"></i> CLIENTES</a>
                         </li>
                         <li>
-                            <a href="/Proyectos"><i class="bi bi-tools"></i> OBRA/POYECTOS</a>
+                            <a href="/Proyectos"><i class="bi bi-tools"></i> OBRA/PROYECTOS</a>
                         </li>
                         <li>
                             <a href="/Empleados"><i class="bi bi-person-raised-hand"></i> EMPLEADOS</a>
@@ -82,7 +82,7 @@
                             <a href="/Bancos"><i class="bi bi-piggy-bank"></i> BANCOS</a>
                         </li>
                         <li>
-                            <a href="#"><i class="bi bi-cash"></i> EFECTIVOS</a>
+                            <a href="/Monederos"><i class="bi bi-cash"></i> MONEDEROS</a>
                         </li>
                         <li>
                             <a href="#"><i class="bi bi-cash-coin"></i> REEMBOLSOS</a>
@@ -228,6 +228,46 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const table = document.querySelector('.resizable-table');
+            const cols = table.querySelectorAll('col');
+            const ths = table.querySelectorAll('th');
+     
+            ths.forEach((th, index) => {
+                const resizer = document.createElement('div');
+                resizer.classList.add('resizer');
+                th.appendChild(resizer);
+     
+                resizer.addEventListener('mousedown', initResize);
+     
+                function initResize(e) {
+                    window.addEventListener('mousemove', resize);
+                    window.addEventListener('mouseup', stopResize);
+                }
+     
+            function resize(e) {
+                const col = cols[index];
+                    const newWidth = e.pageX - th.getBoundingClientRect().left;
+                    th.style.width = newWidth + 'px';
+                    col.style.width = newWidth + 'px';
+     
+                    // Ajustar el contenido de las celdas
+                    const cells = table.querySelectorAll(`tbody tr td:nth-child(${index + 1})`);
+                    cells.forEach(cell => {
+                            cell.style.width = newWidth + 'px';
+                        });
+                    }
+     
+                    function stopResize() {
+                         window.removeEventListener('mousemove', resize);
+                         window.removeEventListener('mouseup', stopResize);
+                     }
+                 });
+             });
+    </script>
+     
 </body>
 
 </html>

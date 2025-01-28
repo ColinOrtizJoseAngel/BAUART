@@ -1,6 +1,6 @@
 <!--IMPOTRAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}Nuevo Proyecto{% endblock %}
+{% block title %}PROYECTOS{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 
@@ -40,7 +40,7 @@
                     <div class="mb-3">
                         <label for="ESTATUS" class="form-label">Estado</label>
                         <select class="form-select" id="ESTATUS" name="ESTATUS">
-                            <option value="">Seleccionar</option>
+                            <option value="">SELECCIONAR</option>
                             <option value="activo">Activo</option>
                             <option value="bloqueado">Bloqueado</option>
                         </select>
@@ -73,14 +73,14 @@
         </a>
     </div>
     <br>
-    <div class="table-container">
+    <div class="table-container resizable-table">
         <table class="table">
             <colgroup>
                 <col style="width: 40px;">
                 <col style="width: 300px;">
                 <col style="width: 300px;">
                 <col style="width: 150px;">
-                <col style="width: 125px;">
+                <col style="width: 200px;">
                 <col style="width: 300px;">
                 <col style="width: 125px;">
                 <col style="width: 150px;">
@@ -396,6 +396,6 @@
 
 */
     </script>
-
+   
 
     {% endblock %}

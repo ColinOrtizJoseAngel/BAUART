@@ -1,7 +1,7 @@
 class Clientes:
     
     def __init__(self, id, id_empresa, razon_social, rfc, cp, estado, ciudad, municipio, pais, calle, no_exterior,
-                 regimen_fiscal_id, uso_cfdi_id, condicion_pago_id, forma_pago_id, fecha_registro=None, usuario=None, is_blocked=False) -> None:
+                 regimen_fiscal_id, uso_cfdi_id, condicion_pago, forma_pago_id, fecha_registro=None, usuario=None, is_blocked=False) -> None:
 
         self.id = id
         self.id_empresa = id_empresa
@@ -16,7 +16,7 @@ class Clientes:
         self.no_exterior = no_exterior
         self.regimen_fiscal_id = regimen_fiscal_id
         self.uso_cfdi_id = uso_cfdi_id
-        self.condicion_pago_id = condicion_pago_id
+        self.condicion_pago = condicion_pago
         self.forma_pago_id = forma_pago_id
         self.fecha_registro = fecha_registro
         self.usuario = usuario

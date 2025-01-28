@@ -274,4 +274,137 @@ class ModelEmpleado:
         except Exception as ex:
             db.rollback()
             raise Exception(ex)
+    
+    
+    @classmethod
+    def obtener_directores(cls,db):
+        try:
+            with db.cursor() as cursor:
+                query = """SELECT * FROM EMPLEADOS WHERE PUESTO = 39"""
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                empleados = []
+                for row in rows:
+                    empleados.append(Empleados(
+                        id=row[0],
+                        nombre=row[1],
+                        apellido=row[2],
+                        id_empresa=row[3],
+                        puesto=row[4],
+                        tipo_empleado=row[5],
+                        tipo_nomina=row[6],
+                        sueldo_imss=row[7],
+                        monedero=row[8],
+                        nomina=row[9],
+                        banco=row[10],
+                        numero_cuenta=row[11],
+                        clabe=row[12],
+                        alta_empleado=row[13],
+                        baja_empleado=row[14],
+                        fecha_registro=row[15],
+                        is_blocked=row[16]
+                    ))
+                return empleados
         
+        except Exception as ex:
+            raise Exception(ex)
+        
+        
+    @classmethod
+    def obtener_lideres(cls,db):
+        try:
+            with db.cursor() as cursor:
+                query = """SELECT * FROM EMPLEADOS WHERE PUESTO = 40"""
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                empleados = []
+                for row in rows:
+                    empleados.append(Empleados(
+                        id=row[0],
+                        nombre=row[1],
+                        apellido=row[2],
+                        id_empresa=row[3],
+                        puesto=row[4],
+                        tipo_empleado=row[5],
+                        tipo_nomina=row[6],
+                        sueldo_imss=row[7],
+                        monedero=row[8],
+                        nomina=row[9],
+                        banco=row[10],
+                        numero_cuenta=row[11],
+                        clabe=row[12],
+                        alta_empleado=row[13],
+                        baja_empleado=row[14],
+                        fecha_registro=row[15],
+                        is_blocked=row[16]
+                    ))
+                return empleados
+        
+        except Exception as ex:
+            raise Exception(ex)
+        
+    
+    @classmethod
+    def obtener_gerentes(cls,db):
+        try:
+            with db.cursor() as cursor:
+                query = """SELECT * FROM EMPLEADOS WHERE PUESTO = 41"""
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                empleados = []
+                for row in rows:
+                    empleados.append(Empleados(
+                        id=row[0],
+                        nombre=row[1],
+                        apellido=row[2],
+                        id_empresa=row[3],
+                        puesto=row[4],
+                        tipo_empleado=row[5],
+                        tipo_nomina=row[6],
+                        sueldo_imss=row[7],
+                        monedero=row[8],
+                        nomina=row[9],
+                        banco=row[10],
+                        numero_cuenta=row[11],
+                        clabe=row[12],
+                        alta_empleado=row[13],
+                        baja_empleado=row[14],
+                        fecha_registro=row[15],
+                        is_blocked=row[16]
+                    ))
+                return empleados
+        
+        except Exception as ex:
+            raise Exception(ex)
+        
+    @classmethod
+    def obtener_director_por_id(cls,db,id):
+        try:
+            with db.cursor() as cursor:
+                query = """SELECT * FROM EMPLEADOS WHERE ID = ?"""
+                cursor.execute(query,(id,))
+                row = cursor.fetchone()
+                
+                director = Empleados(
+                        id=row[0],
+                        nombre=row[1],
+                        apellido=row[2],
+                        id_empresa=row[3],
+                        puesto=row[4],
+                        tipo_empleado=row[5],
+                        tipo_nomina=row[6],
+                        sueldo_imss=row[7],
+                        monedero=row[8],
+                        nomina=row[9],
+                        banco=row[10],
+                        numero_cuenta=row[11],
+                        clabe=row[12],
+                        alta_empleado=row[13],
+                        baja_empleado=row[14],
+                        fecha_registro=row[15],
+                        is_blocked=row[16]
+                    )
+                return director
+        
+        except Exception as ex:
+            raise Exception(ex)

@@ -76,7 +76,7 @@ class ModelPresupuesto:
                 """
                 cursor.execute(query, (
                     presupuesto.id_cliente,
-                    presupuesto.director_obra,
+                    presupuesto.id_director,
                     presupuesto.id_empresa,
                     presupuesto.proyecto,
                     presupuesto.id_proyecto,
@@ -103,7 +103,7 @@ class ModelPresupuesto:
                     presupuesto.total_diferencia,
                     0,  # is_blocked, se establece como 0 por defecto
                     presupuesto.estatus,
-                    "director"
+                    presupuesto.director_obra
                 ))
 
                 # Recuperar el último ID insertado

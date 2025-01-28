@@ -32,6 +32,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var input_Id_Cliente = document.querySelector("#CLIENTE_ID");
   var inputDIAS_TOTALES = document.querySelector("#DIAS_TOTALES"); 
   var inputDirecion = document.querySelector("#DIRECCION"); 
+  var inputDirector = document.querySelector("#DIRECTOR");
+  var inputIdDirector = document.querySelector("#ID_DIRECTOR");
 
 
 
@@ -43,7 +45,9 @@ document.addEventListener("DOMContentLoaded", function () {
       inputFECHA_FIN,
       inputDIAS_TOTALES,
       input_Id_Cliente,
-      inputDirecion
+      inputDirecion,
+      inputDirector,
+      inputIdDirector
     );
   }
 });
@@ -55,7 +59,9 @@ function configurar_autocompletado(
   inputFECHA_FIN,
   inputDIAS_TOTALES,
   inputCLIENTE_ID,
-  inputDIRECCION
+  inputDIRECCION,
+  inputDirector,
+  inputIdDirector
 ) {
   var proyectosDisponibles = [];
   var opcionSeleccionada = false;
@@ -74,6 +80,8 @@ function configurar_autocompletado(
       inputFECHA_FIN.value = "";
       inputDIAS_TOTALES.value = "";
       inputDIRECCION.value = "";
+      inputDirector.value = "";
+      inputIdDirector.value = "";
       return false;
     }
 
@@ -100,13 +108,15 @@ function configurar_autocompletado(
             var totalSemanas = proyectoData.semanas;
             var id_cliente = proyectoData.id_cliente;
             var direccion = proyectoData.direccion;
+            var director = proyectoData.director_proyecto;
+            var id_director = proyectoData.id_director;
    
             var regex = new RegExp(`(${val})`, "gi");
             var item = document.createElement("div");
             item.classList.add("list-group-item");
 
             item.innerHTML = proyecto.replace(regex, "<strong style='font-size: 14px;font-family: arial;'>$1</strong>");
-            item.innerHTML += `<input type='hidden' value='${proyecto}' data-cliente='${id_cliente}' data-id='${id}'  data-fecha-inicio='${fechainicio}' data-fecha-fin='${fechafin}' data-direccion='${direccion}'>`;
+            item.innerHTML += `<input type='hidden' value='${proyecto}' data-cliente='${id_cliente}' data-id='${id}'  data-fecha-inicio='${fechainicio}' data-fecha-fin='${fechafin}' data-direccion='${direccion}' data-director='${director}' data-id-director='${id_director}'>`;
 
             item.addEventListener("click", function () {
              
@@ -123,6 +133,9 @@ function configurar_autocompletado(
               inputFECHA_FIN.value =
                 this.querySelector("input").getAttribute("data-fecha-fin");
 
+              
+              inputDirector.value = this.querySelector("input").getAttribute("data-director");
+              inputIdDirector.value = this.querySelector("input").getAttribute("data-id-director");
               
               inputDIAS_TOTALES.value = totalSemanas; // Asignar la diferencia de días al input correspondiente
 
