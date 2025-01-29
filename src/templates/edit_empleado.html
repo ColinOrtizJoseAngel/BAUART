@@ -166,7 +166,35 @@
                                     <input type="hidden" name="FOTO_BASE64" id="FOTO_BASE64">
                                     <small class="form-text text-muted">Sube una foto del empleado.</small>
                                 </div>
+                                
+                                <!-- Contratable Checkbox -->
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label for="CONTRATABLE" class="form-label">¿Es Contratable?</label>
+                                    <div class="form-check">
+                                        <input 
+                                            class="form-check-input" 
+                                            type="checkbox" 
+                                            name="CONTRATABLE" 
+                                            id="CONTRATABLE" 
+                                            value="1" 
+                                            {% if empleado.contratable == '1' %}checked{% endif %}>
+                                        <label class="form-check-label" for="CONTRATABLE">Sí</label>
+                                    </div>
+                                </div>
 
+                                <!-- Observaciones -->
+                                <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                    <label for="OBSERVACIONES" class="form-label">Observaciones</label>
+                                    <textarea 
+                                        class="form-control" 
+                                        name="OBSERVACIONES" 
+                                        id="OBSERVACIONES" 
+                                        rows="3" 
+                                        {% if empleado.contratable == '1' %}disabled{% endif %}>{{ empleado.observaciones or '' }}</textarea>
+
+                                    <small class="form-text text-muted">Si no es contratable, añade las razones.</small>
+                                </div>
+                       
                                 <!-- Campo oculto para la imagen guardada en Base64 -->
                                 <input type="hidden" name="IMAGEN_ACTUAL" id="IMAGEN_ACTUAL" value="{{ empleado.foto_base64 or '' }}">
                             </div>
@@ -178,23 +206,23 @@
                             <div class="form-group row">
                                 <!-- CALLE -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="CALLE" class="form-label">CALLE*</label>
+                                    <label for="CALLE" class="form-label">CALLE</label>
                                     <input type="text" class="form-control" name="CALLE" id="CALLE" 
-                                        value="{{ empleado.calle or '' }}" required>
+                                        value="{{ empleado.calle or '' }}" >
                                     <div class="invalid-feedback">Completar Calle</div>
                                 </div>
                                 <!-- MANZANA -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="MANZANA" class="form-label">MANZANA*</label>
+                                    <label for="MANZANA" class="form-label">MANZANA</label>
                                     <input type="text" class="form-control" name="MANZANA" id="MANZANA" 
-                                        value="{{ empleado.manzana or '' }}" required>
+                                        value="{{ empleado.manzana or '' }}" >
                                     <div class="invalid-feedback">Completar Manzana</div>
                                 </div>
                                 <!-- LOTE -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="LOTE" class="form-label">LOTE*</label>
+                                    <label for="LOTE" class="form-label">LOTE</label>
                                     <input type="text" class="form-control" name="LOTE" id="LOTE" 
-                                        value="{{ empleado.lote or '' }}" required>
+                                        value="{{ empleado.lote or '' }}" >
                                     <div class="invalid-feedback">Completar Lote</div>
                                 </div>
                                 <!-- EDIFICIO -->
@@ -220,42 +248,42 @@
                                 </div>
                                 <!-- COLONIA -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="COLONIA" class="form-label">COLONIA*</label>
+                                    <label for="COLONIA" class="form-label">COLONIA</label>
                                     <input type="text" class="form-control" name="COLONIA" id="COLONIA" 
-                                        value="{{ empleado.colonia or '' }}" required>
+                                        value="{{ empleado.colonia or '' }}" >
                                     <div class="invalid-feedback">Completar Colonia</div>
                                 </div>
                                 <!-- CÓDIGO POSTAL -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="CODIGO_POSTAL" class="form-label">CÓDIGO POSTAL*</label>
+                                    <label for="CODIGO_POSTAL" class="form-label">CÓDIGO POSTAL</label>
                                     <input type="text" class="form-control" name="CODIGO_POSTAL" id="CODIGO_POSTAL" 
-                                        value="{{ empleado.codigo_postal or '' }}" required>
+                                        value="{{ empleado.codigo_postal or '' }}" >
                                     <div class="invalid-feedback">Completar Código Postal</div>
                                 </div>
                                 <!-- ALCALDÍA -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="ALCALDIA" class="form-label">ALCALDÍA*</label>
+                                    <label for="ALCALDIA" class="form-label">ALCALDÍA</label>
                                     <input type="text" class="form-control" name="ALCALDIA" id="ALCALDIA" 
-                                        value="{{ empleado.alcaldia or '' }}" required>
+                                        value="{{ empleado.alcaldia or '' }}" >
                                     <div class="invalid-feedback">Completar Alcaldía</div>
                                 </div>
                                 <!-- MUNICIPIO -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
+                                    <label for="MUNICIPIO" class="form-label">MUNICIPIO</label>
                                     <input type="text" class="form-control" name="MUNICIPIO" id="MUNICIPIO" 
-                                        value="{{ empleado.municipio or '' }}" required>
+                                        value="{{ empleado.municipio or '' }}" >
                                     <div class="invalid-feedback">Completar Municipio</div>
                                 </div>
                                 <!-- ESTADO -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <label for="ESTADO" class="form-label">ESTADO*</label>
+                                    <label for="ESTADO" class="form-label">ESTADO</label>
                                     <input type="text" class="form-control" name="ESTADO" id="ESTADO" 
-                                        value="{{ empleado.estado or '' }}" required>
+                                        value="{{ empleado.estado or '' }}" >
                                     <div class="invalid-feedback">Completar Estado</div>
                                 </div>
                                 <!-- DOMICILIO (Oculto) -->
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" style="display: none;">
-                                    <label for="DOMICILIO" class="form-label">DOMICILIO*</label>
+                                    <label for="DOMICILIO" class="form-label">DOMICILIO</label>
                                     <input type="text" class="form-control" name="DOMICILIO" id="DOMICILIO" 
                                         value="{{ empleado.domicilio or '' }}" readonly>
                                 </div>
@@ -439,11 +467,13 @@
                             <br>
                             <div class="form-group row">
                                 <!-- BANCO -->
+                                
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="BANCO" class="form-label">BANCO:*</label>
                                     <select class="form-control" name="BANCO" id="BANCO" required>
                                         <option value="" style="text-align: center;">- SELECCIONE -</option>
                                         {% for b in bancos %}
+                                        <!-- Cambié la comparación para usar empleado.cuenta, ya que parece ser el ID del banco -->
                                         <option value="{{ b.id }}" {% if empleado.banco == b.id %}selected{% endif %}>{{ b.nombre|upper }}</option>
                                         {% endfor %}
                                     </select>
@@ -456,9 +486,9 @@
                                     <input 
                                         type="text" 
                                         class="form-control" 
-                                        name="CUENTA" 
-                                        id="CUENTA" 
-                                        value="{{ empleado.cuenta or '' }}"
+                                        name="NUM_CUENTA" 
+                                        id="NUM_CUENTA" 
+                                        value="{{ empleado.numero_cuenta or '' }}"
                                         maxlength="20"
                                         required
                                     >
@@ -484,13 +514,7 @@
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="REGISTRO_PATRONAL" class="form-label">REGISTRO PATRONAL:*</label>
                                     <select class="form-control" name="REGISTRO_PATRONAL" id="REGISTRO_PATRONAL" required>
-                                        <option value="" style="text-align: center;">- SELECCIONE -</option>
-                                        {% for registro in registosPatronales %}
-                                        <option value="{{ registro.id_registro }}" 
-                                            {% if empleado.registro_patronal|string == registro.id_registro|string %}selected{% endif %}>
-                                            {{ registro.numero_registro_patronal }} - {{ registro.estado }}
-                                        </option>
-                                        {% endfor %}
+                                        
                                     </select>
                                     <div class="invalid-feedback">Selecciona un Registro Patronal</div>
                                 </div>
@@ -1004,14 +1028,13 @@ document.addEventListener("DOMContentLoaded", function () {
     telefonoInputs.forEach((input) => {
         input.addEventListener("input", (event) => {
             let value = event.target.value.replace(/[^0-9]/g, ""); // Solo números
-            value = value.substring(0, 10); // Máximo 10 dígitos
-            if (value.length >= 7) {
-                event.target.value = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
-            } else if (value.length >= 4) {
-                event.target.value = `(${value.substring(0, 3)}) ${value.substring(3)}`;
-            } else if (value.length > 0) {
-                event.target.value = `(${value}`;
+
+            // Formatear como (52)5532742229
+            if (value.length > 2) {
+                value = `(${value.substring(0, 2)})${value.substring(2)}`;
             }
+
+            event.target.value = value;
         });
     });
 });
@@ -1345,6 +1368,102 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const empresaSelect = document.getElementById("EMPRESA");
+    const registroPatronalSelect = document.getElementById("REGISTRO_PATRONAL");
+    const registroPatronalAsignado = "{{ empleado.registro_patronal or '' }}"; // Registro patronal actual del empleado
+
+    // Función para cargar registros patronales
+    function cargarRegistrosPatronales(empresaId) {
+    if (!empresaId) {
+        registroPatronalSelect.innerHTML = '<option value="">- SELECCIONE -</option>';
+        return;
+    }
+
+    fetch(`/get_registro_patronal_empresa/${empresaId}`)
+        .then(response => response.json())
+        .then(data => {
+            registroPatronalSelect.innerHTML = '<option value="">- SELECCIONE -</option>';
+
+            if (data.message) {
+                console.warn(data.message);
+                return;
+            }
+
+            // Agregar las opciones al select
+            data.forEach(registro => {
+                const option = document.createElement("option");
+                option.value = registro.id_registro;
+                option.textContent = `${registro.numero_registro_patronal} - ${registro.estado}`;
+                registroPatronalSelect.appendChild(option);
+            });
+
+            // Seleccionar automáticamente el registro patronal guardado
+            seleccionarRegistroPatronal();
+        })
+        .catch(error => console.error("Error al obtener registros patronales:", error));
+}
+
+function seleccionarRegistroPatronal() {
+    // Retrasar la selección para asegurar que las opciones estén disponibles
+    setTimeout(() => {
+        const opciones = registroPatronalSelect.options;
+        for (let i = 0; i < opciones.length; i++) {
+            if (opciones[i].value == registroPatronalAsignado) {
+                opciones[i].selected = true;
+                console.log(`Registro patronal seleccionado: ${opciones[i].textContent}`);
+                return;
+            }
+        }
+        console.warn("No se encontró el registro patronal asignado.");
+    }, 300); // Ajustar el tiempo de espera si es necesario
+}
+
+    // Observa cambios en el select de empresa
+    const observer = new MutationObserver(() => {
+        if (empresaSelect.value) {
+            cargarRegistrosPatronales(empresaSelect.value);
+            observer.disconnect(); // Dejar de observar después de cargar
+        }
+    });
+
+    observer.observe(empresaSelect, { attributes: true, attributeFilter: ["value"] });
+
+    // Forzar carga inicial con un retraso en caso de que el valor de EMPRESA tarde en inicializarse
+    setTimeout(() => {
+        if (empresaSelect.value) {
+            cargarRegistrosPatronales(empresaSelect.value);
+        }
+    }, 500);
+
+    // Cargar registros patronales cuando el usuario cambie manualmente el valor de EMPRESA
+    empresaSelect.addEventListener("change", function () {
+        cargarRegistrosPatronales(empresaSelect.value);
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+        const contratableCheckbox = document.getElementById("CONTRATABLE");
+        const observacionesInput = document.getElementById("OBSERVACIONES");
+
+        // Función para habilitar/deshabilitar Observaciones
+        function toggleObservaciones() {
+            if (contratableCheckbox.checked) {
+                observacionesInput.disabled = true;
+                observacionesInput.value = ""; // Limpia el campo si no es necesario
+            } else {
+                observacionesInput.disabled = false;
+            }
+        }
+
+        // Evento al cambiar el estado del checkbox
+        contratableCheckbox.addEventListener("change", toggleObservaciones);
+
+        // Inicializar estado
+        toggleObservaciones();
+    });
+    
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -19,12 +19,10 @@ class ModelEmpleado:
                     CUENTA_CORREO, SALARIO_DIARIO_INTEGRADO, NUMERO_CREDITO_INFONAVIT, 
                     TIPO_DESCUENTO_INFONAVIT, FACTOR_INFONAVIT, FECHA_INGRESO, 
                     TURNO, TIPO_CONTRATO, CONTACTO_ACCIDENTE, ALERGIAS, ENFERMEDADES_CONTROLADAS,
-                    EDIFICIO, ALCALDIA, MUNICIPIO, REGISTRO_PATRONAL, CUENTA
+                    EDIFICIO, ALCALDIA, MUNICIPIO, REGISTRO_PATRONAL, CUENTA, CONTRATABLE, OBSERVACIONES
                 ) 
                 VALUES (
-                    ?, ?, ?, ?, ?, ?, ?,
-                    ?, ?, ?, ?, ?, ?, ?,
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                 )
                 """
                 cursor.execute(query, (
@@ -40,7 +38,7 @@ class ModelEmpleado:
                     empleado.numero_credito_infonavit, empleado.tipo_descuento_infonavit, empleado.factor_infonavit,
                     empleado.fecha_ingreso, empleado.turno, empleado.tipo_contrato, empleado.contacto_accidente,
                     empleado.alergias, empleado.enfermedades_controladas, empleado.edificio, empleado.alcaldia, empleado.municipio,
-                    empleado.registro_patronal, empleado.cuenta
+                    empleado.registro_patronal, empleado.cuenta, empleado.contratable, empleado.observaciones
                 ))
                 db.commit()
         except Exception as ex:
@@ -62,13 +60,16 @@ class ModelEmpleado:
             raise Exception(ex)
 
     
-    @classmethod 
-    def get_empleado_by_id(cls,db,id):
+    @classmethod
+    def get_empleado_by_id(cls, db, id):
         try:
             with db.cursor() as cursor:
                 query = """SELECT * FROM EMPLEADOS WHERE ID = ?"""
                 cursor.execute(query, (id,))
-                row = cursor.fetchone()       
+                row = cursor.fetchone()
+
+                print("🔍 Datos obtenidos de la DB:", row)  # Debug para ver el orden
+
                 if row:
                     return Empleados(
                         id=row[0],
@@ -78,7 +79,7 @@ class ModelEmpleado:
                         puesto=row[4],
                         tipo_empleado=row[5],
                         tipo_nomina=row[6],
-                        monedero=row[7],
+                        monedero=row[7],   
                         nomina=row[8],
                         banco=row[9],
                         clabe=row[10],
@@ -94,9 +95,9 @@ class ModelEmpleado:
                         cedula_profesional=row[20],
                         estado_civil=row[21],
                         fecha_nacimiento=row[22],
-                        telefono_contacto=row[23],
-                        domicilio=row[24],
-                        tope_horas_extra=row[25],
+                        telefono_contacto=row[23], 
+                        domicilio=row[24],  
+                        tope_horas_extra=row[25],  
                         numero_cuenta=row[26],
                         sueldo_imss=row[27],
                         foto_base64=row[28],
@@ -126,15 +127,17 @@ class ModelEmpleado:
                         edificio=row[52],
                         alcaldia=row[53],
                         municipio=row[54],
-                        cuenta=row[55],
-                        registro_patronal=row[56],
+                        cuenta=row[55],  
+                        registro_patronal=row[56],  
                         motivo_baja=row[57],
-                        id_monedero=row[58]
+                        id_monedero=row[58],
+                        contratable=row[59],
+                        observaciones=row[60]
                     )
-
-                
         except Exception as ex:
+            print(f"❌ Error en get_empleado_by_id: {ex}")
             raise Exception(ex)
+
 
 
     @classmethod
@@ -160,7 +163,7 @@ class ModelEmpleado:
                         TIPO_CONTRATO = ?, CONTACTO_ACCIDENTE = ?, ALERGIAS = ?, 
                         ENFERMEDADES_CONTROLADAS = ?, EDIFICIO = ?, ALCALDIA = ?, 
                         MUNICIPIO = ?, REGISTRO_PATRONAL = ?, CUENTA = ?, 
-                        MOTIVO_BAJA = ?, ID_MONEDERO = ?
+                        MOTIVO_BAJA = ?, ID_MONEDERO = ?, CONTRATABLE = ?, OBSERVACIONES = ?
                     WHERE 
                         ID = ?
                 """
@@ -180,7 +183,7 @@ class ModelEmpleado:
                     empleado.fecha_ingreso, empleado.turno, empleado.tipo_contrato, empleado.contacto_accidente, 
                     empleado.alergias, empleado.enfermedades_controladas, empleado.edificio, empleado.alcaldia, 
                     empleado.municipio, empleado.registro_patronal, empleado.cuenta, empleado.motivo_baja, 
-                    empleado.id_monedero, empleado.id
+                    empleado.id_monedero, empleado.contratable, empleado.observaciones, empleado.id
                 ))
                 db.commit()
         except Exception as ex:

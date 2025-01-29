@@ -324,6 +324,26 @@ a.link {
   text-transform: uppercase; /* Convierte el texto a mayúsculas */
 }
 
+.botones-gregar{
+  font-size: 12px;
+  background-color: #d9e3eb;
+  color: #000000;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
+.botones-gregar:hover {
+  background-color: #0f2d3a !important; /* Color de fondo al pasar el mouse */
+  color: #ffffff !important; /* Color del texto */
+  transition: all 0.3s ease; /* Transición suave */
+}
+
+
+
 .dropdown {
   text-transform: uppercase; /* Convierte el texto a mayúsculas */
 }
