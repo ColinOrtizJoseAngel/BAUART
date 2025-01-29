@@ -233,19 +233,19 @@ function añadirConcepto() {
 
   cell4.innerHTML = `
   <div class="position-relative">
-    <input type="text" class="form-control currency-input presupuesto-cliente" id="PRESUPUESTO_CLIENTE_${contador}" name="PRESUPUESTO_CLIENTE[]" placeholder="$0.00" maxlength="9" onchange="calcular_diferencia()" required>
+    <input type="text" class="form-control currency-input presupuesto-cliente" id="PRESUPUESTO_CLIENTE_${contador}" name="PRESUPUESTO_CLIENTE[]" placeholder="$0.00" maxlength="15" onchange="calcular_diferencia()" required>
   </div>
 `;
 
   cell5.innerHTML = `
   <div class="position-relative">
-    <input type="text" class="form-control currency-input presupuesto-proveedor" id="PRESUPUESTO_PROVEEDOR_${contador}" name="PRESUPUESTO_PROVEEDOR[]" placeholder="$0.00" maxlength="9" onchange="calcular_diferencia()" required>
+    <input type="text" class="form-control currency-input presupuesto-proveedor" id="PRESUPUESTO_PROVEEDOR_${contador}" name="PRESUPUESTO_PROVEEDOR[]" placeholder="$0.00" maxlength="15" onchange="calcular_diferencia()" required>
   </div>
 `;
 
   cell6.innerHTML = `
   <div class="position-relative">
-    <input type="text" class="form-control currency-input presupuesto-diferencia" id="DIFERENCIA_${contador}" name="DIFERENCIA[]" onchange="concular_diferencia()" maxlength="9" placeholder="$0.00" readonly>
+    <input type="text" class="form-control currency-input presupuesto-diferencia" id="DIFERENCIA_${contador}" name="DIFERENCIA[]" onchange="concular_diferencia()" maxlength="15" placeholder="$0.00" readonly>
   </div>
 `;
 
