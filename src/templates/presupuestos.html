@@ -69,26 +69,28 @@
         <button class="btn botones" type="button" data-bs-toggle="modal" data-bs-target="#miModal">
             <i class="bi bi-search"></i> FILTRAR
         </button>
-        <a class="btn botones" href="/prespuestos">
+        <a class="btn botones" href="/Presupuestos">
             <i class="bi bi-eraser"></i> LIMPIAR FILTRO
         </a>
     </div>
     <br>
     <div class="table-container">
-        <table class="table table-hover resizable-table">
+        <table id="TABLA_PRESUOUESTOS" name="TABLA_PRESUOUESTOS" class="table table-hover resizable-table tablas-presupuesto">
             <colgroup>
-                <col style="width: 30px;"> <!-- Primera columna de 150px -->
+                <col style="width: 75px;"> <!-- Primera columna de 150px -->
                 <col style="width: 250px;"> <!-- Segunda columna de 200px -->
-                <col style="width: 150px;"> <!-- Tercera columna de 100px -->
-                <col style="width: 150px;"> <!-- Primera columna de 150px -->
-                <col style="width: 100px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 250px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 196.5px;"> <!-- Primera columna de 150px -->
+                <col style="width: 200px;"> <!-- Segunda columna de 200px -->
                 <col style="width: 100px;"> <!-- Tercera columna de 100px -->
                 <col style="width: 100px;"> <!-- Tercera columna de 100px --> 
                 <col style="width: 100px;"> <!-- Tercera columna de 100px --> 
-                
-
-                <col style="width: 125px;"> <!-- Primera columna de 150px -->
-
+                <col style="width: 100px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 100px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 100px;"> <!-- Primera columna de 150px -->
+                <col style="width: 100px;"> <!-- Segunda columna de 200px -->
+                <col style="width: 100px;"> <!-- Tercera columna de 100px -->
+                <col style="width: 150px;">  
             </colgroup>
             <thead class="table-dark">
                 <tr>
@@ -96,10 +98,15 @@
                     <th scope="col">CLIENTE</th>
                     <th scope="col">PROYECTO</th>
                     <th scope="col">EMPRESA</th>
-                    <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTLA PRESUPUSTO CLIENTE</th>
+                    <th scope="col">ESTATUS</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">NUMERO DE PARTIDAS</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTAL CONTRATOS FIRMADOS</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTAL CONTRATOS POR FIRMAR</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">PARTIDAS APROBADAS</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">POR APROBAR</th>
+                    <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTAL PRESUPUSTO CLIENTE</th>
                     <th scope="col" style="white-space: normal;word-wrap: break-word;">TOTAL PRESUPUESTO PROVEEDOR</th>
                     <th scope="col">DIREFENCIA</th>
-                    <th scope="col">ESTATUS</th>
                     <th scope="col">ACCIONES</th>
                 </tr>
             </thead>
@@ -110,6 +117,37 @@
                     <td>{{ p.cliente }}</td>
                     <td>{{ p.proyecto }}</td>
                     <td>{{ p.empresa }}</td>
+                    <td>
+                        {% if p.estatus == 0 %}
+                            PRESUPUESTO CARGADO
+                        {% elif p.estatus == 1 %}
+                            APROBADO POR DIRECTOR
+                        {% elif p.estatus == 2 %}
+                            PRESUPUESTO EN PROCESO
+                        {% else %}
+                            ESTATUS DESCONOCIDO
+                        {% endif %}
+                    </td>
+                    <td>{{ p.partidas_totales }}</td>
+                    
+                    {% if p.contratos_firmados == p.partidas_totales %}
+                        <td>{{ p.contratos_firmados }}</td>
+                        <td  style="background-color: #308446; color: black;">{{ p.partidas_sin_contrato }}</td>
+                    {% else %}
+                        <td>{{ p.contratos_firmados }}</td>
+                        <td style="background-color: #cc0605; color: white;">{{ p.partidas_sin_contrato }}</td>
+                    {% endif %}
+                    {% if p.partidas_totales == p.partidas_aprobadas%}
+                        <td>{{ p.partidas_aprobadas }}</td>
+
+                        <td style="background-color: #308446; color: black;">{{ p.partidas_por_aprobar }}</td>
+                      
+                    {% else %}
+                        <td >{{ p.partidas_aprobadas }}</td>
+
+                        <td  style="background-color: #cc0605; color: white;">{{ p.partidas_por_aprobar }}</td>
+                    {% endif %}
+            
                     <td>{{ p.total_cliente_iva }}</td>
                     <td>{{ p.sub_proveedor}}</td>
                     {% if p.diferencia_es_negativa %}
@@ -117,17 +155,7 @@
                     {% else %}
                         <td>{{ p.sub_diferencia}}</td>
                     {% endif %}
-                    <td>
-                        {% if p.estatus == 0 %}
-                            PRESUPUESTO CARGADO
-                        {% elif p.estatus == 1 %}
-                            PRESUPUESTO APROBADO POR DIRECTOR
-                        {% elif p.estatus == 2 %}
-                            PRESUPUESTO EN PROCESO
-                        {% else %}
-                            ESTATUS DESCONOCIDO
-                        {% endif %}
-                    </td>
+                   
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton{{ p.id_presupuesto }}"

@@ -110,35 +110,35 @@ function añadirContacto() {
   var cell6 = newRow.insertCell(5); // Celda para el botón de eliminar
 
   cell1.innerHTML = `
-        <input type="text"  class="form-control" name="NOMBRE_CONTACTO[]" required>
+        <input type="text"  class="form-control" style="text-align: center;" name="NOMBRE_CONTACTO[]" required>
         <div class="invalid-feedback">
           COMPLETA NOMBRE
         </div>
       `;
 
   cell2.innerHTML = `
-      <input type="text" class="form-control" name="APELLIDO_CONTACTO[]" required>
+      <input type="text" class="form-control" style="text-align: center;" name="APELLIDO_CONTACTO[]" required>
       <div class="invalid-feedback">
         COMPLETA APELLIDO
       </div>
     `;
 
   cell3.innerHTML = `
-    <input type="tel" class="form-control" name="TELEFONO_CONTACTO[]" required>
+    <input type="tel" class="form-control" maxlength="10" style="text-align: center;" name="TELEFONO_CONTACTO[]" required>
     <div class="invalid-feedback">
       COMPLETA TELEFONO DE CONTACTO
     </div>
   `;
 
   cell4.innerHTML = `
-    <input type="email" class="form-control" name="CORREO_CONTACTO[]" required>
+    <input type="email" class="form-control" style="text-align: center;" name="CORREO_CONTACTO[]" required>
     <div class="invalid-feedback">
       COMPLETA CORRECO
     </div>
   `;
 
   cell5.innerHTML = `
-    <input type="text" class="form-control" name="PUESTO_CONTACTO[]" required>
+    <input type="text" class="form-control" style="text-align: center;" name="PUESTO_CONTACTO[]" required>
     <div class="invalid-feedback">
       COMPLETA PUESTO 
     </div>
@@ -177,14 +177,14 @@ function añadirCuentasBancarias() {
       `;
 
   cell2.innerHTML = `
-        <input type="text" class="form-control" name="NO_CUENTA[]" maxlength="19" oninput="formatearCLABE(this)" required>
+        <input type="text" class="form-control" style="text-align: center;" name="NO_CUENTA[]" maxlength="19" oninput="formatearCLABE(this)" required>
         <div class="invalid-feedback">
           COMPLETA NUMERO DE CUENTA
         </div>
       `;
 
   cell3.innerHTML = `
-        <input type="text" class="form-control" name="CLABE[]" maxlength="23" oninput="formatearCLABE(this)" required>
+        <input type="text" class="form-control" style="text-align: center;" name="CLABE[]" maxlength="23" oninput="formatearCLABE(this)" required>
         <div class="invalid-feedback">
           COMPLETA CLABE
         </div>
@@ -469,3 +469,109 @@ function validar_rfc(input_rfc){
 
 
 }
+
+function initMap() {
+  // Obtener el campo de entrada para autocompletar
+  const input = document.getElementById('inputDirecionObra');
+  if (!input) {
+      console.error("Campo 'autocomplete' no encontrado");
+      return;
+  }
+
+  // Inicializa el mapa
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 19.432608, lng: -99.133209 }, // Coordenadas de Ciudad de México (por defecto)
+    zoom: 14,
+  });
+
+  // Agrega un marcador inicial
+  marker = new google.maps.Marker({
+    map: map,
+    draggable: false,
+  });
+
+  // Configurar el autocompletado, restringido solo a direcciones
+  const autocomplete = new google.maps.places.Autocomplete(input, {
+    types: ["address"],
+    componentRestrictions: { country: "mx" },
+  });
+
+  // Añadir listener para cuando el usuario selecciona una ubicación
+  autocomplete.addListener('place_changed', function () {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) {
+          console.error("No se encontró información de ubicación para la dirección");
+          return;
+      }
+
+      // Obtener latitud y longitud de la ubicación seleccionada
+      const lat = place.geometry.location.lat();
+      console.log("Esta es la lat" + lat)
+      const lng = place.geometry.location.lng();
+      console.log("Esta es la lat" + lng)
+
+
+      // Asignar latitud y longitud a los campos correspondientes
+      inputLat = document.getElementById('id_latitud')
+      console.log(inputLat)
+      inputLat.value = lat
+      
+
+      inputlng =document.getElementById('id_longitud')
+      inputlng.value = lng
+
+      // Extraer componentes de la dirección y asignarlos a los campos correspondientes
+      const addressComponents = place.address_components;
+      let street = '', streetNumber = '', neighborhood = '', postalCode = '', state = '', city = '';
+
+      addressComponents.forEach(component => {
+          const types = component.types;
+          if (types.includes("route")) {
+              street = component.long_name; // Calle
+          }
+          if (types.includes("street_number")) {
+              streetNumber = component.long_name; // Número exterior
+          }
+          if (types.includes("sublocality") || types.includes("neighborhood")) {
+              neighborhood = component.long_name; // Colonia
+          }
+          if (types.includes("postal_code")) {
+              postalCode = component.long_name; // Código postal
+          }
+          if (types.includes("administrative_area_level_1")) {
+              state = component.long_name; // Estado
+          }
+          if (types.includes("locality")) {
+              city = component.long_name; // Ciudad
+          }
+      });
+
+      // Asignar los valores a los campos individuales
+      document.getElementById('inputCalle').value = street;
+      document.getElementById('inputNumeroExterior').value = streetNumber;
+      document.getElementById('inputColonia').value = neighborhood;
+      document.getElementById('inputCp').value = postalCode;
+      document.getElementById('inputEstado').value = state;
+      document.getElementById('inputCiudad').value = city;
+
+      // Centrar el mapa en la ubicación seleccionada
+      const map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: lat, lng: lng },
+          zoom: 15,
+      });
+
+       // Centrar el mapa y mover el marcador
+       const location = place.geometry.location;
+       map.setCenter(location);
+       marker.setPosition(location);
+
+       // Colocar un marcador en la ubicación seleccionada
+      new google.maps.Marker({
+        position: { lat: lat, lng: lng },
+        map: map,
+      });
+  });
+}
+
+// Asegurarse de que initMap se ejecute cuando la ventana esté cargada
+window.addEventListener('load', initMap);

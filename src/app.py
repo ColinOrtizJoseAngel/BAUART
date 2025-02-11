@@ -1,9 +1,21 @@
-from flask import Flask, render_template, request, url_for,redirect, flash, jsonify,session,send_from_directory
+from flask import Flask, render_template, request, url_for,redirect, flash, jsonify,session,send_from_directory, send_file
 from database import db_sql_server
 from flask_login import LoginManager,login_user, logout_user, login_required,current_user
 from flask_wtf.csrf import CSRFProtect
 import uuid
-from datetime import datetime, timedelta,date
+from datetime import datetime, timedelta, date, time
+import pytz
+
+
+# Zona horaria de México (UTC-6)
+mexico_tz = pytz.timezone('America/Mexico_City')
+
+# Obtener la hora actual en UTC
+utc_now = datetime.now(pytz.utc)
+
+# Convertir a la zona horaria de México
+mexico_now = utc_now.astimezone(mexico_tz)
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import A4
@@ -11,11 +23,13 @@ from werkzeug.exceptions import BadRequestKeyError
 import pdfkit
 from flask import make_response
 import base64
-
-
-
-# C     onfiguracion app
-from config import config
+import os
+import pandas as pd
+from io import BytesIO
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill, Font, Alignment
+from openpyxl.drawing.image import Image
+from openpyxl.styles import Border, Side
 
 # Models
 from models.ModelEmpresas import ModelEmpresas
@@ -39,27 +53,33 @@ from models.ModelFamilias import ModelFamilias
 from models.ModelMaterialesFamilia import ModelMaterialesFamilia
 from models.ModelMateriales import ModelMateriales
 from models.ModelEmpleado import ModelEmpleado
+from models.ModelMonedero import ModelMonedero
+from models.ModelAsignaciones import ModelAsignaciones
 from models.ModelUser import ModelUser
 from models.ModelRequisiciones import ModelRequisiciones
 from models.ModelPresupuesto import ModelPresupuesto
 from models.ModelAsistencias import AsistenciaModel
 from models.ModelRequisiciones import ModelRequisiciones
+from models.ModelIncidencias import IncidenciaModel
+from models.ModelNomina import ModelNomina
 from models.ModelOrden import MyOrdendeCompra
 from models.ModelPDF import ModelPDF
 from models.ModelCompras import ModelCompras
-from models.ModelMonedero import ModelMonedero
-
 
 # Entities
 from models.entities.Empresas import Empresas
+from models.entities.Nomina import Nomina
+from models.entities.Asignacion import Asignacion
 from models.entities.Clientes import Clientes
 from models.entities.Categoria import Categoria
 from models.entities.Puestos import Puesto
 from models.entities.Banco import Banco
+from models.entities.Incidencias import Incidencia
 from models.entities.RegistroPatronal import RegistroPatronal
 from models.entities.CuentasEmpresas import CuentasEmpresas
 from models.entities.CuentasClientes import CuentasClientes
 from models.entities.ContactoClientes import ContactosClientes
+from models.entities.Monedero import Monedero
 from models.entities.UsoCFDI import UsoCFDI
 from models.entities.Especialidades import Especialidades
 from models.entities.Proveedores import Proveedores
@@ -74,10 +94,6 @@ from models.entities.Empleados import Empleados
 from models.entities.Usuarios import User
 from models.entities.Presupuestos import Presupuesto,DetallePresupuesto,PresupuestoBauart,DetalleBauart
 from models.entities.Materiales import Materiales
-from models.entities.Monedero import Monedero
-
-
-
 
 app = Flask(__name__)
 
@@ -967,32 +983,12 @@ def Altaempleados():
         empresas = ModelEmpresas.get_empresas_not_block(db)
         registosPatronales = ModelRegistroPatronal.get_all_registros_patronales(db)
 
-        # Imprimir datos obtenidos para depuración
-        print(f"Puestos: {puesto}")
-        print(f"Bancos: {bancos}")
-        print(f"Empresas: {empresas}")
-        print(f"Registros Patronales: {registosPatronales}")
-
         # Validar que los datos no estén vacíos
-        if not puesto:
-            print("Error: No se encontraron puestos disponibles")
-            return redirect(url_for('empleados'))
-        if not bancos:
-            print("Error: No se encontraron bancos disponibles")
-            return redirect(url_for('empleados'))
-        if not empresas:
-            print("Error: No se encontraron empresas disponibles")
-            return redirect(url_for('empleados'))
-        if not registosPatronales:
-            print("Error: No se encontraron registros patronales disponibles")
+        if not puesto or not bancos or not empresas or not registosPatronales:
             return redirect(url_for('empleados'))
 
         if request.method == 'POST':
-            print("Procesando método POST")
-
             try:
-                print(f"Datos recibidos del formulario: {request.form}")
-
                 # Verificar token
                 token = request.form.get('token')
                 if not token or session.get('token') != token:
@@ -1001,23 +997,11 @@ def Altaempleados():
                 session.pop('token', None)
 
                 # Validar campos obligatorios
-                required_fields = [
-                    'NOMBRE', 'APELLIDO', 'EMPRESA', 'PUESTO', 'TIPO_EMPLEADO',
-                    'TIPO_NOMINA', 'SUELDO_IMSS', 'MONEDERO', 'NOMINA', 'BANCO',
-                    'CLABE', 'CATEGORIA', 'NO_IMSS', 'CURP', 'RFC',
-                    'ESTADO_CIVIL', 'FECHA_NACIMIENTO', 'TELEFONO_CONTACTO', 'DOMICILIO',
-                    'TOPE_HORAS_EXTRA', 'TIPO_SANGRE', 'LUGAR_NACIMIENTO', 'SEXO', 'CALLE',
-                    'COLONIA', 'CODIGO_POSTAL', 'ESTADO', 'EDIFICIO', 'ALCALDIA', 'MUNICIPIO',
-                    'REGISTRO_PATRONAL', 'CUENTA'
-                ]
+                required_fields = []
 
-                missing_fields = []
-                for field in required_fields:
-                    if field not in request.form or not request.form[field].strip():
-                        missing_fields.append(field)
-
+                missing_fields = [field for field in required_fields if field not in request.form or not request.form[field].strip()]
                 if missing_fields:
-                    print(f"Error: Campos requeridos faltantes: {', '.join(missing_fields)}")
+                    print(f"Campos faltantes: {missing_fields}")
                     return redirect(url_for('Altaempleados'))
 
                 # Validar campos numéricos
@@ -1025,8 +1009,8 @@ def Altaempleados():
                     sueldo_imss = float(request.form['SUELDO_IMSS'].replace('$', '').replace(',', ''))
                     monedero = float(request.form['MONEDERO'].replace('$', '').replace(',', ''))
                     nomina = float(request.form['NOMINA'].replace('$', '').replace(',', ''))
-                except ValueError:
-                    print("Error: Datos numéricos inválidos en los campos SUELDO_IMSS, MONEDERO o NOMINA")
+                except ValueError as ve:
+                    print("Error en campos numéricos")
                     return redirect(url_for('Altaempleados'))
 
                 # Crear objeto empleado
@@ -1042,7 +1026,7 @@ def Altaempleados():
                     monedero=monedero,
                     nomina=nomina,
                     banco=request.form['BANCO'],
-                    numero_cuenta=request.form.get('NUM_CUENTA', None),
+                    numero_cuenta=request.form['NUM_CUENTA'],
                     clabe=request.form['CLABE'],
                     alta_empleado=request.form.get('ALTA_EMPLEADO', ''),
                     baja_empleado=None,
@@ -1063,7 +1047,7 @@ def Altaempleados():
                     tipo_sangre=request.form['TIPO_SANGRE'],
                     lugar_nacimiento=request.form['LUGAR_NACIMIENTO'],
                     sexo=request.form['SEXO'],
-                    calle=request.form['CALLE'],
+                    calle=request.form.get('CALLE', ''),
                     manzana=request.form.get('MANZANA', ''),
                     lote=request.form.get('LOTE', ''),
                     numero_exterior=request.form.get('NUMERO_EXTERIOR', ''),
@@ -1087,38 +1071,32 @@ def Altaempleados():
                     alcaldia=request.form.get('ALCALDIA', ''),
                     municipio=request.form.get('MUNICIPIO', ''),
                     registro_patronal=request.form.get('REGISTRO_PATRONAL', ''),
-                    cuenta=request.form.get('CUENTA', '')
-
+                    cuenta=request.form.get('CUENTA', ''),
+                    contratable=request.form.get('CONTRATABLE', None),
+                    observaciones=request.form.get('OBSERVACIONES', '')
                 )
-                print(f"Empleado creado: {vars(empleado)}")
 
                 # Insertar en la base de datos
                 ModelEmpleado.alta_empleado(db, empleado)
-                print("Empleado insertado con éxito")
                 return redirect(url_for('empleados'))
 
             except KeyError as ke:
                 print(f"Error de campo faltante: {str(ke)}")
                 return redirect(url_for('Altaempleados'))
 
-            except ValueError as ve:
-                print(f"Error de valor: {str(ve)}")
-                return redirect(url_for('Altaempleados'))
-
             except Exception as ex:
-                print(f"Error procesando el método POST: {str(ex)}")
+                print(f"Error en alta empleado: {str(ex)}")
                 return redirect(url_for('Altaempleados'))
 
         else:
-            print("Procesando método GET")
             session['token'] = str(uuid.uuid4())
             return render_template('altaEmpleados.html', registosPatronales=registosPatronales, empresas=empresas, bancos=bancos, puesto=puesto, token=session['token'])
 
     except Exception as e:
         print(f"Error en la ruta /Altaempleados: {str(e)}")
-        return redirect(url_for('empleados'))
-
-
+        return redirect(url_for('empleados')) 
+    
+    
 #BLOQUEAR EMPLEADO
 @app.route('/block_empleado/<int:id>', methods=['POST'])
 def block_empleado(id):
@@ -1149,30 +1127,17 @@ def edit_empleado(id):
         # Obtener datos iniciales
         puesto = ModelPuesto.get_all_puestos_no_block(db)
         bancos = ModelBanco.get_all_bancos_no_block(db)
+        bancos_data = [{"id": banco.id, "nombre": banco.nombre} for banco in bancos]
         empresas = ModelEmpresas.get_empresas_not_block(db)
-        registosPatronales = ModelRegistroPatronal.get_all_registros_patronales(db)  # Agregado
+        registosPatronales = ModelRegistroPatronal.get_all_registros_patronales(db)
         empleado = ModelEmpleado.get_empleado_by_id(db, id)
 
         if request.method == 'POST':
             try:
                 # Validar campos obligatorios
-                required_fields = [
-                    'NOMBRE', 'APELLIDO', 'EMPRESA', 'PUESTO', 'TIPO_EMPLEADO',
-                    'TIPO_NOMINA', 'SUELDO_IMSS', 'MONEDERO', 'NOMINA', 'BANCO',
-                    'CLABE', 'CATEGORIA', 'NO_IMSS', 'CURP', 'RFC',
-                    'ESTADO_CIVIL', 'FECHA_NACIMIENTO', 'TELEFONO_CONTACTO', 'DOMICILIO',
-                    'TOPE_HORAS_EXTRA', 'TIPO_SANGRE', 'LUGAR_NACIMIENTO', 'SEXO', 'CALLE',
-                    'COLONIA', 'CODIGO_POSTAL', 'ESTADO', 'EDIFICIO', 'ALCALDIA', 'MUNICIPIO',
-                    'REGISTRO_PATRONAL', 'CUENTA'
-                ]
-
-                missing_fields = []
-                for field in required_fields:
-                    if field not in request.form or not request.form[field].strip():
-                        missing_fields.append(field)
-
+                required_fields = []  # Define aquí los campos requeridos
+                missing_fields = [field for field in required_fields if field not in request.form or not request.form[field].strip()]
                 if missing_fields:
-                    print(f"Error: Campos requeridos faltantes: {', '.join(missing_fields)}")
                     return redirect(url_for('edit_empleado', id=id))
 
                 # Validar campos numéricos
@@ -1181,7 +1146,6 @@ def edit_empleado(id):
                     monedero = float(request.form['MONEDERO'].replace('$', '').replace(',', ''))
                     nomina = float(request.form['NOMINA'].replace('$', '').replace(',', ''))
                 except ValueError:
-                    print("Error: Datos numéricos inválidos en los campos SUELDO_IMSS, MONEDERO o NOMINA")
                     return redirect(url_for('edit_empleado', id=id))
 
                 # Actualizar objeto empleado
@@ -1197,7 +1161,7 @@ def edit_empleado(id):
                     monedero=monedero,
                     nomina=nomina,
                     banco=request.form['BANCO'],
-                    numero_cuenta=request.form.get('NUM_CUENTA', None),
+                    numero_cuenta=request.form['NUM_CUENTA'],
                     clabe=request.form['CLABE'],
                     alta_empleado=request.form.get('ALTA_EMPLEADO', ''),
                     baja_empleado=None,
@@ -1218,7 +1182,7 @@ def edit_empleado(id):
                     tipo_sangre=request.form['TIPO_SANGRE'],
                     lugar_nacimiento=request.form['LUGAR_NACIMIENTO'],
                     sexo=request.form['SEXO'],
-                    calle=request.form['CALLE'],
+                    calle=request.form.get('CALLE', ''),
                     manzana=request.form.get('MANZANA', ''),
                     lote=request.form.get('LOTE', ''),
                     numero_exterior=request.form.get('NUMERO_EXTERIOR', ''),
@@ -1242,32 +1206,35 @@ def edit_empleado(id):
                     alcaldia=request.form.get('ALCALDIA', ''),
                     municipio=request.form.get('MUNICIPIO', ''),
                     registro_patronal=request.form.get('REGISTRO_PATRONAL', ''),
-                    cuenta=request.form.get('CUENTA', '')
+                    cuenta=request.form.get('CUENTA', ''),
+                    contratable=request.form.get('CONTRATABLE', None),
+                    observaciones=request.form.get('OBSERVACIONES', '')
                 )
 
                 # Actualizar en la base de datos
                 ModelEmpleado.update_empleado(db, empleado)
-                print("Empleado actualizado con éxito")
+
+                # Imprimir datos del empleado para depuración
+                print(empleado)
+
                 return redirect(url_for('empleados'))
 
             except Exception as ex:
-                print(f"Error procesando el método POST: {str(ex)}")
                 return redirect(url_for('edit_empleado', id=id))
 
-        # Renderizar la plantilla con los registros patronales
+        # Renderizar la plantilla con los registros patronales y los campos adicionales
         return render_template(
-            'edit_empleado.html', 
-            empleado=empleado, 
-            empresas=empresas, 
-            bancos=bancos, 
-            puesto=puesto, 
+            'edit_empleado.html',
+            empleado=empleado,
+            empresas=empresas,
+            bancos=bancos_data,
+            puesto=puesto,
             registosPatronales=registosPatronales
         )
 
     except Exception as e:
         print(f"Error en la ruta /edit_empleado: {str(e)}")
         return redirect(url_for('empleados'))
-
 
 """
 FIN EMPLEADOS
@@ -1712,8 +1679,8 @@ def altaproveedores():
                 municipio=request.form['MUNICIPIO'],
                 colonia=request.form['COLONIA'],
                 calle=request.form['CALLE'],
-                numero_exterior=request.form['NO_EXTERIOR'],
-                numero_interior=request.form['NO_INTERIOR'],
+                numero_exterior=request.form['NUMERO_EXTERIOR'],
+                numero_interior=request.form['NUMERO_INTERIOR'],
                 usuario=current_user.id
             )
 
@@ -2734,6 +2701,19 @@ def edit_presupuesto():
          
                 
                 try:
+                    #OBTENER ESTATUS DE PRESUPUESTO Y ESTADO DE CONTRATOS
+                    estatus_contratos = request.form.get('status_contratos')
+                    estatus_presupuesto = request.form.get('status_presupuesto')
+                    
+                    # Validar si ambos son "true"
+                    if estatus_contratos == "true" and estatus_presupuesto == "true":
+                        estatus_actual = 1
+                    else:
+                        estatus_actual = 0
+                
+                    
+                    
+                    
                     # 1- ACTUALIZAR CABECERA DE PRESUPUESTO
                     presupuesto = Presupuesto(
                         id=id,
@@ -2750,8 +2730,12 @@ def edit_presupuesto():
                         total_proveedor=request.form.get('totalContratista', 0),
                         total_diferencia=request.form.get('totalDiferencia', 0),
                         usuario_id=current_user.id,
-                        estatus=0
+                        estatus=estatus_actual,
+                        estatus_contratos = estatus_contratos,
+                        estatus_presupuesto = estatus_presupuesto
                     )
+                    
+                   
                     
                     actualizacion_presupuesto = ModelPresupuesto.actualizar_presupuesto(db, presupuesto)
                     
@@ -3104,16 +3088,30 @@ def altaPresupuestos():
 
 
 # PAGOS SUGERIDOS
-@app.route('/pagos_sugeridos', methods=['GET', 'POST'])
-def pagos_sugeridos():
-    
+@app.route('/carga_pagos_sugeridos/', methods=['GET', 'POST'])
+def carga_pagos_sugeridos():
+    id = request.args.get('id')
     if request.method == 'POST':
         pass
     
     else:
-        presupuestos = ModelPresupuesto.obtener_presupuestos(db)
-        
-        return render_template('presupuestos copy.html',presupuestos=presupuestos)
+        session['token'] = str(uuid.uuid4())
+        proveedores = ModelProveedores.get_all_proveedores_not_blocked(db)
+        puestos = ModelPuesto.get_all_puestos_no_block(db)
+        presupuesto = ModelPresupuesto.obtener_presupuesto_completo(db, id)
+        return render_template('altaPagosSugeridos.html', presupuesto=presupuesto, proveedores=proveedores, puestos=puestos,token=session['token'])
+
+
+@app.route('/pagos_sugeridos', methods=['GET', 'POST'])
+def pagos_sugeridos():
+   
+    if request.method == 'POST':
+        pass
+    
+    else:
+        print("hola mundo")
+        presupuestos = ModelPresupuesto.obtener_presupuestos(db)    
+        return render_template('pagos_sugeridos.html',presupuestos=presupuestos)
 
 
 # MATERIALES
@@ -3874,6 +3872,216 @@ def requisiciones():
         proyectos = []
     return render_template('requisiciones.html', proyectos=proyectos)
 
+#Rutas Nomina
+@app.route('/nominas', methods=['GET'])
+def obtener_nominas():
+    """
+    Ruta para obtener todas las nóminas registradas.
+    """
+    try:
+        # Obtener todas las nóminas usando el modelo
+        resultado = ModelNomina.get_all_nominas(db)
+        return jsonify([nomina.__dict__ for nomina in resultado]), 200
+    except Exception as e:
+        print(f"Error interno: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+        
+
+@app.route('/nominas/<int:id>', methods=['GET'])
+def obtener_nomina_por_id(id):
+    """
+    Ruta para obtener una nómina específica por su ID.
+    """
+    try:
+        resultado = ModelNomina.get_nomina_by_id(db, id)
+        if resultado:
+            return jsonify(resultado.__dict__), 200
+        return jsonify({"error": "Nómina no encontrada"}), 404
+    except Exception as e:
+        print(f"Error interno: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
+@app.route('/crear_actualizar_nominas', methods=['POST'])
+def crear_actualizar_nominas():
+    try:
+        data = request.get_json()
+
+        for nomina_data in data.get('nominas', []):
+            nomina = Nomina(
+                id_empleado=nomina_data['id_empleado'],
+                fecha_inicio=nomina_data['fecha_inicio'],
+                fecha_final=nomina_data['fecha_final'],
+                extra=nomina_data.get('extra', 0),
+                deuda=nomina_data.get('deuda', 0),
+                total_nomina=nomina_data['total_nomina'],
+                fecha_registro=nomina_data['fecha_registro']
+            )
+
+            # Verificar si ya existe una nómina para ese empleado y semana
+            existing_nomina = ModelNomina.get_nomina_by_id(db, nomina.id_empleado)
+            if existing_nomina:
+                ModelNomina.update_nomina(db, nomina)
+            else:
+                ModelNomina.create_nomina(db, nomina)
+
+        return jsonify({"message": "Nóminas procesadas correctamente."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/actualizar_nomina_empleado', methods=['POST'])
+def actualizar_nomina_empleado():
+    """
+    Endpoint para actualizar o crear un registro de nómina basado en el ID del empleado y rango de fechas.
+    """
+    try:
+        # Obtener los datos enviados en el cuerpo de la solicitud
+        data = request.get_json()
+        print("[DEBUG] Datos recibidos en el backend:", data)  # Debug: Imprimir los datos recibidos
+
+        # Extraer datos y validarlos
+        id_empleado = data.get("id_empleado")
+        fecha_inicio = data.get("fecha_inicio")
+        fecha_final = data.get("fecha_final")
+        extra = data.get("extra", 0)
+        deuda = data.get("deuda", 0)
+        observaciones = data.get("observaciones", "").strip()
+
+        # Log de los datos antes de validarlos
+        print("[DEBUG] Datos extraídos:")
+        print(f"  - id_empleado: {id_empleado} (tipo: {type(id_empleado)})")
+        print(f"  - fecha_inicio: {fecha_inicio} (tipo: {type(fecha_inicio)})")
+        print(f"  - fecha_final: {fecha_final} (tipo: {type(fecha_final)})")
+        print(f"  - extra: {extra} (tipo: {type(extra)})")
+        print(f"  - deuda: {deuda} (tipo: {type(deuda)})")
+        print(f"  - observaciones: {observaciones} (tipo: {type(observaciones)})")
+
+        # Validaciones básicas
+        if not id_empleado or not isinstance(id_empleado, int):
+            raise ValueError("El ID del empleado no es válido.")
+        if not fecha_inicio or not fecha_final:
+            raise ValueError("Las fechas de inicio y final son obligatorias.")
+        if not isinstance(extra, (int, float)):
+            raise ValueError("El valor de 'extra' debe ser numérico.")
+        if not isinstance(deuda, (int, float)):
+            raise ValueError("El valor de 'deuda' debe ser numérico.")
+
+        # Log antes de enviar los datos al modelo
+        print("[DEBUG] Datos validados, enviando al modelo:")
+        print(f"  - id_empleado: {id_empleado}")
+        print(f"  - fecha_inicio: {fecha_inicio}")
+        print(f"  - fecha_final: {fecha_final}")
+        print(f"  - extra: {extra}")
+        print(f"  - deuda: {deuda}")
+        print(f"  - observaciones: {observaciones}")
+
+        # Lógica para crear o actualizar el registro de nómina
+        resultado = ModelNomina.upsert_nomina(
+            db,
+            id_empleado=id_empleado,
+            fecha_inicio=fecha_inicio,
+            fecha_final=fecha_final,
+            extra=extra,
+            deuda=deuda,
+            observaciones=observaciones,
+        )
+
+        # Log del resultado del modelo
+        print("[DEBUG] Resultado del modelo:", resultado)
+
+        # Responder con éxito
+        action = resultado.get("action")
+        id_nomina = resultado.get("id_nomina")
+        message = f"Nómina {'actualizada' if action == 'updated' else 'creada'} correctamente."
+
+        print("[DEBUG] Respuesta final del endpoint:", {
+            "success": True,
+            "message": message,
+            "id_nomina": id_nomina,
+            "action": action
+        })
+
+        return jsonify({
+            "success": True,
+            "message": message,
+            "id_nomina": id_nomina,
+            "action": action
+        }), 200
+
+    except ValueError as ve:
+        print("[ERROR] Error de validación:", str(ve))  # Debug: Imprimir errores de validación
+        return jsonify({"error": f"Datos inválidos: {str(ve)}"}), 400
+    except Exception as e:
+        print("[ERROR] Error inesperado:", str(e))  # Debug: Imprimir cualquier otro error inesperado
+        return jsonify({"error": f"Error inesperado: {str(e)}"}), 500
+
+
+
+@app.route('/nominas', methods=['POST'])
+def crear_nomina():
+    """
+    Ruta para crear una nueva nómina.
+    """
+    try:
+        data = request.json
+        nueva_nomina = Nomina(
+            id=None,
+            id_empleado=data.get('id_empleado'),
+            fecha_inicio=data.get('fecha_inicio'),
+            fecha_final=data.get('fecha_final'),
+            extra=data.get('extra'),
+            deuda=data.get('deuda'),
+            total_nomina=data.get('total_nomina'),
+            fecha_registro=data.get('fecha_registro')
+        )
+        ModelNomina.create_nomina(db, nueva_nomina)
+        return jsonify({"message": "Nómina creada exitosamente"}), 201
+    except Exception as e:
+        print(f"Error interno: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
+@app.route('/api/actualizar_nomina', methods=['POST'])
+def actualizar_nomina():
+    data = request.json
+    id_empleado = data.get("id_empleado")
+    extra = data.get("extra", 0)
+    deuda = data.get("deuda", 0)
+    pago_neto_semanal = data.get("pago_neto_semanal", 0)
+
+    if not id_empleado:
+        return jsonify({"error": "ID de empleado requerido"}), 400
+
+    # Lógica para actualizar o crear el registro en la base de datos
+    try:
+        registro_nomina = Nomina.query.filter_by(id_empleado=id_empleado).first()
+        if not registro_nomina:
+            # Crear un nuevo registro si no existe
+            registro_nomina = Nomina(id_empleado=id_empleado, extra=extra, deuda=deuda, pago_neto_semanal=pago_neto_semanal)
+            db.session.add(registro_nomina)
+        else:
+            # Actualizar el registro existente
+            registro_nomina.extra = extra
+            registro_nomina.deuda = deuda
+            registro_nomina.pago_neto_semanal = pago_neto_semanal
+
+        db.session.commit()
+        return jsonify({"message": "Registro de nómina actualizado correctamente."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/nominas/<int:id>', methods=['DELETE'])
+def eliminar_nomina(id):
+    """
+    Ruta para eliminar una nómina por su ID.
+    """
+    try:
+        ModelNomina.delete_nomina(db, id)
+        return jsonify({"message": "Nómina eliminada exitosamente"}), 200
+    except Exception as e:
+        print(f"Error interno: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+
+#FinRutasNomina  
 
 # Portal de asistencia
 asistencia_model = AsistenciaModel(db)
@@ -3915,6 +4123,53 @@ def buscar_empleado():
     except Exception as e:
         # Manejar errores y devolver un mensaje de error
         return jsonify({'error': str(e)}), 500
+
+
+        
+@app.route('/api/buscar_empleado_nombre_apellido/', methods=['GET'])
+def buscar_empleado_nombre_apellido():
+    try:
+        # Obtener el parámetro de búsqueda desde la URL
+        query = request.args.get('query', '').strip()
+        
+        if not query:
+            return jsonify({'error': 'El término de búsqueda es requerido'}), 400
+
+        # Dividir el término de búsqueda en posibles nombre y apellido
+        query_parts = query.split()
+        nombre = query_parts[0] if len(query_parts) > 0 else None
+        apellido = " ".join(query_parts[1:]) if len(query_parts) > 1 else None
+
+        # Reutilizar el método filter_empleados del modelo
+        empleados = ModelEmpleado.filter_empleados(
+            db=db,
+            nombre=nombre,
+            apellido=apellido,
+            tipo_empleado=None,
+            estado='0'  # Buscar solo empleados no bloqueados
+        )
+        
+        # Formatear los datos para la respuesta JSON
+        empleados_filtrados = [
+            {
+                'id': e.id,
+                'nombre': e.nombre,
+                'apellido': e.apellido,
+                'puesto': e.puesto,
+                'nomina': e.nomina
+            }
+            for e in empleados
+        ]
+        
+        if empleados_filtrados:
+            return jsonify(empleados_filtrados), 200
+        else:
+            return jsonify({'error': 'No se encontraron empleados con el nombre y apellido especificados'}), 404
+
+    except Exception as e:
+        # Manejar errores y devolver un mensaje de error
+        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/registrar_asistencia_empleado', methods=['POST'])
 def registrar_asistencia_empleado():
@@ -3994,6 +4249,191 @@ def verificar_asistencia():
         print(f"Error interno: {str(e)}")
         return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
+import logging
+
+# Cofigurar el logger (puedes configurarlo según tus necesidades)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+@app.route('/api/empleados_por_categoria/<string:categoria>/<int:id_proyecto>', methods=['GET'])
+def obtener_empleados_por_categoria(categoria, id_proyecto):
+    if db is None:
+        print("Error: Database connection failed")
+        return jsonify({"error": "Database connection failed"}), 500
+
+    try:
+        # Imprimir los parámetros de entrada para verificar que están llegando correctamente
+        print(f"Recibiendo solicitud con categoria: {categoria} e id_proyecto: {id_proyecto}")
+
+        # Llamar a la función para obtener empleados
+        empleados = ModelEmpleado.get_empleados_por_categoria(db, categoria, id_proyecto)
+
+        # Verificar que los empleados se han recuperado correctamente
+        print(f"Empleados recuperados: {len(empleados)} empleados encontrados.")
+
+        # Procesar los empleados y convertirlos en formato JSON
+        empleados_json = []
+        for emp in empleados:
+            print(f"Procesando empleado: {emp.id}, {emp.nombre} {emp.apellido}")
+
+            # Aquí agregamos el campo `monedero` junto con los otros campos
+            empleado_data = {
+                "id": emp.id, 
+                "nombre": emp.nombre, 
+                "apellido": emp.apellido,
+                "sueldo_imss": emp.sueldo_imss,
+                "base_sueldo": emp.nomina,  # Asegúrate de que 'nomina' esté siendo accedido correctamente
+                "monedero": emp.monedero    # Agregamos el campo monedero aquí
+            }
+
+            # Imprimir el JSON generado para cada empleado
+            print(f"Datos JSON generado: {empleado_data}")
+            empleados_json.append(empleado_data)
+
+        # Verificar que los datos JSON se están generando correctamente
+        print(f"Datos JSON completos: {empleados_json}")
+
+        return jsonify(empleados_json), 200
+
+    except Exception as e:
+        # Imprimir el error para entender qué salió mal
+        print(f"Error en la ruta /api/empleados_por_categoria: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/empleado_by_id/<int:id_empleado>', methods=['GET'])
+def obtener_empleado_por_id(id_empleado):
+    if db is None:
+        print("Error: Database connection failed")
+        return jsonify({"error": "Database connection failed"}), 500
+
+    try:
+        # Llamamos al método para obtener el empleado por su ID
+        empleado = ModelEmpleado.get_empleado_by_id(db, id_empleado)
+
+        # Si no se encuentra el empleado, devolver un error
+        if not empleado:
+            return jsonify({"error": "Empleado no encontrado"}), 404
+
+        # Convertir los datos del empleado en formato JSON
+        empleado_data = {
+            "id": empleado.id,
+            "nombre": empleado.nombre,
+            "apellido": empleado.apellido,
+            "sueldo_imss": empleado.sueldo_imss,
+            "monedero": empleado.monedero,
+            "base_sueldo": empleado.nomina,
+            # Aquí puedes agregar más campos si es necesario
+        }
+
+        # Retornar los datos del empleado en formato JSON
+        return jsonify(empleado_data), 200
+
+    except Exception as e:
+        print(f"Error en la ruta /api/empleado_by_id: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/datos_modal_nomina', methods=['GET'])
+def get_datos_modal_nomina():
+    """Ruta para obtener proyectos y empleados no bloqueados"""
+    try:
+        # Obtener los proyectos no bloqueados
+        proyectos = ModelProyectoObra.get_proyectos_not_block(db)
+        # Obtener todos los empleados
+        empleados = ModelEmpleado.get_all_empleados(db)
+
+        
+        # Preparar los datos para el JSON
+        proyectos_data = [
+            {
+                "id": proyecto.id,
+                "nombre_proyecto": proyecto.nombre_proyecto,
+                "centro_comercial": proyecto.centro_comercial
+            } for proyecto in proyectos
+        ]
+
+        empleados_data = [
+            {
+                "id": empleado.id,
+                "nombre_completo": f"{empleado.nombre} {empleado.apellido}",
+                "puesto": empleado.puesto
+            } for empleado in empleados
+        ]
+
+        # Devolver los datos en formato JSON
+        return jsonify({
+            "proyectos": proyectos_data,
+            "empleados": empleados_data
+        }), 200
+    except Exception as ex:
+        # Registrar el error en el log
+        logging.error(f"Error al obtener los datos del modal: {str(ex)}")
+        return jsonify({"error": str(ex)}), 500
+
+@app.route('/api/buscar_proyectos_asignados/', methods=['GET'])
+def buscar_proyectos_asignados():
+    """
+    Ruta para obtener los proyectos asignados a un empleado específico.
+    """
+    try:
+        # Log: Inicio del endpoint
+        app.logger.info("Iniciando búsqueda de proyectos asignados...")
+
+        # Obtener parámetros de la solicitud
+        id_empleado = request.args.get('id_empleado')
+        query = request.args.get('query', '')
+
+        # Validación del parámetro id_empleado
+        if not id_empleado:
+            app.logger.error("El ID del empleado no fue proporcionado.")
+            return jsonify({'error': 'El ID del empleado es requerido'}), 400
+
+        # Log: Parámetros recibidos
+        app.logger.info(f"ID del empleado: {id_empleado}, Query: {query}")
+
+        # Intentar obtener proyectos asignados
+        proyectos = ModelAsignaciones.get_proyectos_asignados(db, int(id_empleado))
+        app.logger.info(f"Proyectos encontrados: {len(proyectos)}")
+
+        proyectos_filtrados = []
+
+        # Filtrar proyectos por query
+        for p in proyectos:
+            if query.lower() in p.nombre_proyecto.lower():
+                app.logger.info(f"Proyecto coincidente: {p.nombre_proyecto}")
+
+                # Calcular semanas entre fecha de inicio y fin
+                fecha_inicio = datetime.strptime(str(p.fecha_inicio), '%Y-%m-%d')
+                fecha_fin = datetime.strptime(str(p.fecha_fin), '%Y-%m-%d')
+                diferencia = fecha_fin - fecha_inicio
+                semanas = round(diferencia.days / 7)
+
+                # Construir dirección del proyecto
+                direccion = f"{p.calle} {p.numero_exterior}"
+                if p.numero_interior:
+                    direccion += f" Int. {p.numero_interior}"
+                direccion += f", {p.colonia}, {p.municipio}, {p.estado}, {p.pais}"
+
+                proyectos_filtrados.append({
+                    'id': p.id,
+                    'nombre_proyecto': p.nombre_proyecto,
+                    'fecha_inicio': p.fecha_inicio,
+                    'fecha_fin': p.fecha_fin,
+                    'semanas': semanas,
+                    'direccion': direccion
+                })
+
+        # Log: Proyectos filtrados
+        app.logger.info(f"Proyectos filtrados: {len(proyectos_filtrados)}")
+
+        # Devolver respuesta
+        return jsonify(proyectos_filtrados), 200
+
+    except Exception as e:
+        # Log: Error
+        app.logger.error(f"Error en buscar_proyectos_asignados: {str(e)}")
+        return jsonify({'error': 'Ocurrió un error interno en el servidor'}), 500
+
+
 
 @app.route('/obtener_asistencias', methods=['GET'])
 def obtener_asistencias():
@@ -4012,6 +4452,7 @@ def obtener_asistencias():
         return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
     
     
+    
 @app.route('/api/asistencias_general', methods=['GET'])
 def obtener_asistencias_general():
     try:
@@ -4025,40 +4466,443 @@ def obtener_asistencias_general():
             fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
             fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
         else:
-            hoy = datetime.now()
-            fecha_inicio = hoy - timedelta(days=hoy.weekday())
-            fecha_fin = fecha_inicio + timedelta(days=4)
+            hoy = datetime.now().date()
+            # Calcular rango de lunes a domingo basado en la fecha actual
+            fecha_inicio = hoy - timedelta(days=hoy.weekday())  # Lunes
+            fecha_fin = fecha_inicio + timedelta(days=6)  # Domingo
 
-        # Convertir id_proyecto a entero si está presente
+        # Validar id_proyecto como entero
         if id_proyecto:
             try:
                 id_proyecto = int(id_proyecto)
             except ValueError:
                 return jsonify({"error": "El parámetro id_proyecto debe ser un número entero."}), 400
 
-        # Obtener las asistencias
+        # Obtener asistencias del modelo
         asistencias = asistencia_model.obtener_asistencias_por_rango(fecha_inicio, fecha_fin, id_proyecto)
 
-        # Manejar errores del modelo
-        if isinstance(asistencias, dict) and "error" in asistencias:
-            print(f"Error en modelo: {asistencias['error']}")
-            return jsonify({"error": asistencias['error']}), 500
+        # Validar que sea una lista y manejar errores
+        if not isinstance(asistencias, list):
+            print(f"Error en modelo: {asistencias.get('error', 'Error desconocido')}")
+            return jsonify({"error": asistencias.get("error", "Error interno del servidor.")}), 500
 
-        # Revisar si las asistencias incluyen nombre del proyecto
+        # Ajustar datos faltantes en asistencias
         for asistencia in asistencias:
-            if not asistencia.get("nombre_proyecto"):
-                asistencia["nombre_proyecto"] = "No asignado"  # Opcional: manejar valores nulos
+            asistencia.setdefault("nombre_proyecto", "No asignado")  # Valor predeterminado
 
-        # Respuesta correcta
         return jsonify(asistencias), 200
 
     except Exception as e:
         print(f"Error en la ruta: {e}")
-        return jsonify({"error": "Error interno del servidor"}), 500
+        return jsonify({"error": "Error interno del servidor."}), 500
+    
 
-@app.route('/sabanaasistencias', methods=['GET'])
-def sabanaasistencias():
-    return render_template('sabanaasistencias.html')
+
+@app.route('/api/asistencias_general2', methods=['GET'])
+def obtener_asistencias_general2():
+    try:
+        # Obtener parámetros de la solicitud
+        fecha_inicio_str = request.args.get('fecha_inicio')
+        fecha_fin_str = request.args.get('fecha_fin')
+        id_proyecto = request.args.get('id_proyecto')  # Filtro opcional por proyecto
+
+        # Manejar fechas
+        if fecha_inicio_str and fecha_fin_str:
+            fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
+            fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
+        else:
+            hoy = datetime.now().date()
+            fecha_inicio = hoy - timedelta(days=hoy.weekday())  # Lunes
+            fecha_fin = fecha_inicio + timedelta(days=6)  # Domingo
+
+        # Validar id_proyecto como entero
+        if id_proyecto:
+            try:
+                id_proyecto = int(id_proyecto)
+            except ValueError:
+                return jsonify({"error": "El parámetro id_proyecto debe ser un número entero."}), 400
+
+        # Obtener asistencias del modelo
+        asistencias = asistencia_model.obtener_asistencias_por_rango2(fecha_inicio, fecha_fin, id_proyecto)
+
+        # Validar que sea una lista y manejar errores
+        if not isinstance(asistencias, list):
+            print(f"⚠️ Error en modelo: {asistencias.get('error', 'Error desconocido')}")
+            return jsonify({"error": asistencias.get("error", "Error interno del servidor.")}), 500
+
+        # 🔹 **Calcular las horas extra por empleado**
+        total_horas_extra_global = 0  # Para acumular el total de todas las horas extra
+
+        for asistencia in asistencias:
+            total_horas_extra = 0  # Reiniciar el contador por empleado
+
+            for dia in ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]:
+                if dia in asistencia:
+                    hora_salida = asistencia[dia].get("hora_salida", None)
+                    horario_salida = asistencia.get("horario_personalizado_salida") or asistencia.get("hora_salida_proyecto")
+
+                    # 🕒 **Cálculo de horas extra solo si hay salida registrada**
+                    if hora_salida and horario_salida:
+                        try:
+                            hora_salida_asistencia = datetime.strptime(hora_salida, "%H:%M")
+                            hora_salida_horario = datetime.strptime(horario_salida, "%H:%M")
+
+                            if hora_salida_asistencia > hora_salida_horario:
+                                diferencia = hora_salida_asistencia - hora_salida_horario
+                                horas_extra = diferencia.total_seconds() / 3600  # Convertir a horas
+                                horas_extra = round(horas_extra, 2)  # Redondear a 2 decimales
+                                total_horas_extra += horas_extra  # Sumar al total del empleado
+                        except Exception as e:
+                            print(f"⚠️ Error calculando horas extra para {asistencia['nombre_empleado']} en {dia}: {e}")
+
+            # 🔥 **Añadir el total de horas extra al objeto del empleado**
+            asistencia["total_horas_extra"] = total_horas_extra
+            total_horas_extra_global += total_horas_extra  # Acumular en el total general
+
+        # 🔥 **Imprimir solo el total global de horas extra**
+        print(f"\n🕒 Total de horas extra trabajadas en el rango: {total_horas_extra_global} horas\n")
+
+        return jsonify(asistencias), 200
+
+    except Exception as e:
+        print(f"❌ Error en la ruta: {e}")
+        return jsonify({"error": "Error interno del servidor."}), 500
+
+
+@app.route('/api/modificar_horas_extra', methods=['POST'])
+def modificar_horas_extra():
+    """
+    Ruta para modificar las horas extras de una asistencia específica.
+    """
+    try:
+        print("Iniciando la ruta modificar_horas_extra")
+        data = request.json
+        print(f"Datos recibidos: {data}")
+
+        id_empleado = data.get('id_empleado')
+        fecha = data.get('fecha')
+        horas_extra = data.get('horas_extra')
+
+        # Validar datos
+        if not all([id_empleado, fecha, horas_extra is not None]):
+            return jsonify({"error": "Faltan datos obligatorios (id_empleado, fecha, horas_extra)."}), 400
+
+        # Validar tipo de datos
+        try:
+            horas_extra = float(horas_extra)
+        except ValueError:
+            return jsonify({"error": "El campo horas_extra debe ser un número válido."}), 400
+
+        # Llamar a la función del modelo
+        resultado = asistencia_model.actualizar_horas_extra(id_empleado, fecha, horas_extra)
+
+        # Manejar respuesta del modelo
+        if "error" in resultado:
+            return jsonify(resultado), 400
+
+        return jsonify(resultado), 200
+
+    except Exception as e:
+        print(f"Error en la ruta modificar_horas_extra: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+    
+@app.route('/asignar_empleado', methods=['POST'])
+def asignar_empleado():
+    """
+    Ruta para asignar un empleado a un proyecto con sueldos, monedero y horarios opcionales.
+    """
+    data = request.json
+
+    # Validar que se envíen los datos requeridos
+    id_empleado = data.get('id_empleado')
+    id_proyecto = data.get('id_proyecto')
+    sueldo_base = data.get('sueldo_base')
+    sueldo_imss = data.get('sueldo_imss')
+    monedero = data.get('monedero')
+    id_detalle_bauart = data.get('id_detalle_bauart')  # Para actualización de Detalle Bauart
+    hora_entrada_p = data.get('hora_entrada_p')  # Campo opcional
+    hora_salida_p = data.get('hora_salida_p')  # Campo opcional
+
+    if not id_empleado or not id_proyecto or sueldo_base is None or sueldo_imss is None or monedero is None:
+        return jsonify({'error': 'Faltan datos requeridos: id_empleado, id_proyecto, sueldo_base, sueldo_imss, monedero'}), 400
+
+    try:
+        # Validar existencia del empleado
+        empleado = ModelEmpleado.get_empleado_by_id(db, id_empleado)
+        if not empleado:
+            return jsonify({'error': f'El empleado con ID {id_empleado} no existe.'}), 404
+
+        # Validar existencia del proyecto
+        proyecto = ModelProyectoObra.get_proyecto_by_id(db, id_proyecto)
+        if not proyecto:
+            return jsonify({'error': f'El proyecto con ID {id_proyecto} no existe.'}), 404
+
+        # Siempre usar la fecha actual para la asignación
+        fecha_asignacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # Crear la asignación con los nuevos campos
+        nueva_asignacion = Asignacion(
+            id_empleado=id_empleado,
+            id_proyecto=id_proyecto,
+            sueldo_base=sueldo_base,
+            sueldo_imss=sueldo_imss,
+            monedero=monedero,
+            fecha_asignacion=fecha_asignacion,  # 🔥 Siempre usamos la fecha actual aquí
+            fecha_fin=data.get('fecha_fin', None),  # Fecha opcional
+            id_detalle=id_detalle_bauart,  # Se añadió este campo
+            hora_entrada_p=hora_entrada_p,  # Nuevo campo opcional
+            hora_salida_p=hora_salida_p  # Nuevo campo opcional
+        )
+
+        # Guardar la asignación en la base de datos
+        ModelAsignaciones.add_asignacion(db.cursor(), nueva_asignacion)
+        db.commit()  # Confirmar la transacción
+
+        # Si hay un id_detalle_bauart, actualizarlo con el ID de la asignación en lugar del ID del empleado
+        if id_detalle_bauart:
+            cursor = db.cursor()
+            ModelAsignaciones.update_id_asignacion_detalle_bauart(cursor, id_detalle_bauart, nueva_asignacion.id_empleado)
+            db.commit()  # Confirmar la transacción
+
+        # Crear manualmente el diccionario de respuesta con los nuevos campos
+        asignacion_data = {
+            'id_empleado': nueva_asignacion.id_empleado,
+            'id_proyecto': nueva_asignacion.id_proyecto,
+            'sueldo_base': nueva_asignacion.sueldo_base,
+            'sueldo_imss': nueva_asignacion.sueldo_imss,
+            'monedero': nueva_asignacion.monedero,
+            'fecha_asignacion': fecha_asignacion, 
+            'fecha_fin': nueva_asignacion.fecha_fin,
+            'id_detalle': nueva_asignacion.id_detalle,
+            'hora_entrada_p': nueva_asignacion.hora_entrada_p,  # Nuevo campo en respuesta
+            'hora_salida_p': nueva_asignacion.hora_salida_p  # Nuevo campo en respuesta
+        }
+
+        return jsonify({'message': 'Asignación creada exitosamente.', 'asignacion': asignacion_data}), 201
+
+    except Exception as ex:
+        db.rollback()  # Revertir cambios en caso de error
+        return jsonify({'error': f'Error al asignar empleado: {str(ex)}'}), 500
+
+
+@app.route('/desasignar_empleado', methods=['POST'])
+def desasignar_empleado():
+    """
+    Ruta para desasignar un empleado de un proyecto, actualizando la fecha de fin en la asignación 
+    y desasignando el detalle de Bauart.
+    """
+    data = request.json
+
+    # Validar que se envíen los datos requeridos
+    id_empleado = data.get('id_empleado')
+    id_proyecto = data.get('id_proyecto')
+
+    if not id_empleado or not id_proyecto:
+        return jsonify({'error': 'Faltan datos requeridos: id_empleado, id_proyecto'}), 400
+
+    try:
+        # Validar existencia del empleado
+        empleado = ModelEmpleado.get_empleado_by_id(db, id_empleado)
+        if not empleado:
+            return jsonify({'error': f'El empleado con ID {id_empleado} no existe.'}), 404
+
+        # Validar existencia del proyecto
+        proyecto = ModelProyectoObra.get_proyecto_by_id(db, id_proyecto)
+        if not proyecto:
+            return jsonify({'error': f'El proyecto con ID {id_proyecto} no existe.'}), 404
+
+        # Desasignar el empleado
+        cursor = db.cursor()
+        if ModelAsignaciones.desasignar_empleado(cursor, id_empleado, id_proyecto):
+            db.commit()  # Confirmar la transacción
+
+            return jsonify({'message': 'Empleado desasignado exitosamente.'}), 200
+        else:
+            return jsonify({'error': 'Error al desasignar el empleado.'}), 500
+
+    except Exception as ex:
+        db.rollback()  # Revertir cambios en caso de error
+        return jsonify({'error': f'Error al desasignar empleado: {str(ex)}'}), 500
+
+@app.route('/detalles_proyecto/<int:id_proyecto>', methods=['GET'])
+def obtener_detalles_proyecto(id_proyecto):
+
+    try:
+        with db.cursor() as cursor:
+
+            detalles = ModelAsignaciones.get_project_details(cursor, id_proyecto)
+
+
+        if not detalles:
+
+            return jsonify({'error': f'No se encontraron detalles para el proyecto {id_proyecto}'}), 404
+
+        return jsonify({'id_proyecto': id_proyecto, 'detalles': detalles}), 200
+
+    except Exception as ex:
+        import traceback
+        print(f"❌ Error al obtener los detalles del proyecto {id_proyecto}:\n{traceback.format_exc()}")
+        return jsonify({'error': f'Error al obtener los detalles del proyecto: {str(ex)}'}), 500
+
+
+
+@app.route('/sabanaasistencias2', methods=['GET'])
+def sabanaasistencias2():
+    # Obtener los parámetros de la URL
+    project_id = request.args.get('project_id', None)  # ID del proyecto
+    start_date = request.args.get('start_date', None)  # Fecha de inicio de la semana
+    end_date = request.args.get('end_date', None)  # Fecha de fin de la semana
+
+        # Aquí pasamos project_id, start_date y end_date a la plantilla
+    return render_template('sabanaasistencias_2.html', project_id=project_id, start_date=start_date, end_date=end_date)
+
+@app.route('/sabanaasistencias3', methods=['GET'])
+def sabanaasistencia3():
+    return render_template('pago.html')
+
+
+@app.route('/sabanaasistencias4', methods=['GET'])
+def sabanaasistencia4():
+    return render_template('dispersionmonedero.html')
+
+@app.route('/sabanaasistencias5', methods=['GET'])
+def sabanaasistencia5():
+    return render_template('dispersionimss.html')
+
+@app.route('/exportar_excel', methods=['POST'])
+def exportar_excel():
+    """
+    Ruta para generar un archivo Excel con los datos enviados desde el frontend,
+    ignorando la columna 'ACCIONES' y agregando el rango de fechas bajo el título del proyecto,
+    sin afectar la tabla y agregando logo y datos adicionales sin sobreponer.
+    """
+    try:
+        # Obtener los datos JSON enviados
+        data = request.get_json()
+
+        headers = data.get('headers')
+        rows = data.get('rows')
+
+        # Eliminar la columna 'ACCIONES' (suponiendo que la columna está en la última posición)
+        if "ACCIONES" in headers:
+            acciones_index = headers.index("ACCIONES")
+            headers.pop(acciones_index)  # Eliminar 'ACCIONES' de los encabezados
+            for row in rows:
+                row.pop(acciones_index)  # Eliminar la columna 'ACCIONES' de cada fila
+
+        # Verificar si los datos están vacíos
+        if not headers or not rows:
+            return {"error": "No hay datos para exportar"}, 400
+
+        # Crear un DataFrame con los datos limpios
+        df = pd.DataFrame(rows, columns=headers)
+
+        # Crear un archivo Excel en memoria
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name="Asistencias")
+
+        # Cargar el archivo Excel para aplicar los estilos
+        output.seek(0)
+        wb = load_workbook(output)
+        sheet = wb["Asistencias"]
+
+        # Insertar una fila en la parte superior para logo y otros datos
+        sheet.insert_rows(1, 5)  # Inserta 5 filas para espacio para logo, nombre del proyecto y más
+
+        # Insertar logo en la parte superior izquierda (A1)
+        logo_path = 'static/img/Bauart-Logo-Pantalla-RGB.MED.JPG'  # Ruta al logo en tu carpeta estática
+        img = Image(logo_path)
+        img.width = 250  # Ajusta el tamaño horizontal del logo (más largo)
+        img.height = 60  # Ajusta el alto para hacer el logo menos alto
+        sheet.add_image(img, 'A1')  # Insertar la imagen en la celda A1
+
+        # Mover el nombre del proyecto (ahora en D2)
+        project_name = data.get('project_name', 'Proyecto sin nombre')  # Obtener el nombre del proyecto
+        sheet['D2'] = f"{project_name}"
+        sheet['D2'].font = Font(size=14, bold=True)
+        sheet['D2'].alignment = Alignment(horizontal="center", vertical="center")
+
+        # Mover la información de la empresa (ahora en D3)
+        sheet['D3'] = "BA HOLDING, S.A. DE C.V."
+        sheet['D3'].font = Font(size=12, italic=True)
+        sheet['D3'].alignment = Alignment(horizontal="center", vertical="center")
+
+        # Insertar el rango de fechas (ahora en D4)
+        date_range = data.get('date_range', 'Rango no especificado')
+        sheet['D4'] = f"Rango de Fechas: {date_range}"
+        sheet['D4'].font = Font(size=12, italic=True)
+        sheet['D4'].alignment = Alignment(horizontal="center", vertical="center")
+
+        # Colocar Líder de Proyecto y Periodo en las celdas a la derecha (G1 y G2)
+        leader_project = data.get('leader_project', 'Líder de Proyecto')
+        period = data.get('period', 'Periodo no especificado')
+        sheet['G1'] = f"LÍDER DE PROYECTO: {leader_project}"
+        sheet['G1'].font = Font(size=12, bold=True)
+        sheet['G1'].alignment = Alignment(horizontal="center", vertical="center")
+
+        sheet['G2'] = f"PERIODO: {period}"
+        sheet['G2'].font = Font(size=12, bold=True)
+        sheet['G2'].alignment = Alignment(horizontal="center", vertical="center")
+
+        # Aplicar color azul cielo a los encabezados y bordes fuertes
+        blue_fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
+        bold_font = Font(bold=True)
+        black_fill = PatternFill(start_color="000000", end_color="000000", fill_type="solid")
+        white_font = Font(bold=True, color="FFFFFF")
+        alignment = Alignment(horizontal="center", vertical="center")
+
+        # Añadir bordes más fuertes para los encabezados
+        border_thin = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+        border_strong = Border(left=Side(style='thick'), right=Side(style='thick'), top=Side(style='thick'), bottom=Side(style='thick'))
+
+        # Aplicar formato de encabezado
+        for cell in sheet[6]:  # Los encabezados están ahora en la fila 6
+            if cell.value:  # Solo aplicar si hay un valor
+                cell.fill = blue_fill
+                cell.font = bold_font
+                cell.border = border_strong  # Bordes más fuertes para los encabezados
+                cell.alignment = alignment
+
+        # Añadir bordes más claros a las celdas normales (sin encabezado)
+        for row in sheet.iter_rows(min_row=7):  # Empezamos desde la fila 7 (datos)
+            for cell in row:
+                if cell.value:  # Solo aplicar bordes a celdas con contenido
+                    cell.border = border_thin  # Bordes delgados para las celdas normales
+
+        # Ajustar el ancho de las columnas automáticamente con un poco de espacio adicional
+        for col in sheet.columns:
+            max_length = 0
+            column = col[0].column_letter  # Obtener la letra de la columna
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 5)
+            sheet.column_dimensions[column].width = adjusted_width
+
+        # Ajustar el texto en todas las celdas a centrado
+        for row in sheet.iter_rows(min_row=7):  # Empezamos desde la fila 7 (datos)
+            for cell in row:
+                cell.alignment = alignment
+
+        # Crear nombre de archivo con el nombre del proyecto y rango de fechas
+        file_name = f"{project_name}_{date_range.replace(' ', '_').replace(':', '').replace('-', '_')}.xlsx"
+
+        # Guardar el archivo modificado en memoria
+        output.seek(0)
+        wb.save(output)
+
+        output.seek(0)
+
+        # Enviar el archivo Excel como respuesta
+        return send_file(output, as_attachment=True, download_name=file_name, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    except Exception as e:
+        # Capturar cualquier excepción y mostrar el error
+        return {"error": f"Error al generar el archivo Excel: {str(e)}"}, 500
 
 #RUTAS PDF 
 

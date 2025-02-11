@@ -1,0 +1,2069 @@
+{% extends "layout.html" %}
+{% block title %}Consultar Asistencia{% endblock %}
+{% block customCSS %}
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<style>
+
+    .table-container table {
+        table-layout: auto; /* Permite que las columnas se ajusten automáticamente */
+        width: 100%; /* La tabla ocupará todo el ancho disponible */
+    }
+
+    .table-container th, .table-container td {
+        word-wrap: break-word; /* Ajusta el texto a la siguiente línea si es necesario */
+        white-space: normal; /* Permite que el texto se envuelva */
+        vertical-align: middle; /* Alinea verticalmente el contenido al centro */
+        text-align: center; /* Centra el texto horizontalmente */
+        padding: 5px; /* Añade un poco de espacio alrededor del texto */
+    }
+    .header-container {
+    display: flex;
+    justify-content: space-between; /* Para distribuir los elementos */
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 20px; /* Reducir el relleno */
+    background-color: #f8f9fa;
+    border-radius: 4px; /* Bordes menos redondeados */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Reducir la sombra */
+    width: 100%; /* Ocupa todo el ancho */
+    max-width: 100%; /* Sin límite de ancho */
+    margin: 0 auto 20px;
+    gap: 10px;
+}
+
+.week-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px; /* Espaciado más compacto */
+}
+
+.week-selector button {
+    background-color: #0f2d3a;
+    color: white;
+    border: none;
+    padding: 6px 12px; /* Botones más pequeños */
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px; /* Texto más pequeño */
+    font-weight: bold;
+}
+
+.week-selector button:hover {
+    background-color: white;
+    color: #0f2d3a;
+    border: 1px solid #0f2d3a;
+}
+
+.week-selector span {
+    font-size: 14px; /* Texto más pequeño */
+    font-weight: bold;
+}
+
+.export-button {
+    background-color: #0f2d3a;
+    color: white;
+    border: none;
+    padding: 8px 16px; /* Botón más compacto */
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px; /* Texto más pequeño */
+    font-weight: bold;
+}
+
+.export-button:hover {
+    background-color: white;
+    color: #0f2d3a;
+    border: 1px solid #0f2d3a;
+}
+
+#projectInput {
+    padding: 6px; /* Input más pequeño */
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    max-width: 300px; /* Input más corto */
+}
+    #map {
+        width: 100%;
+        height: 300px; /* Ajusta según tu diseño */
+        margin-top: 10px;
+    }
+    
+/* Estilo general para inputs, selects y textareas */
+input, select, textarea {
+    text-transform: uppercase; /* Convertir texto a mayúsculas */
+    font-family: Arial, sans-serif; /* Fuente estándar para legibilidad */
+    font-size: 14px; /* Tamaño de fuente */
+    padding: 8px; /* Espaciado interno */
+    border: 1px solid #ccc; /* Borde estándar */
+    border-radius: 4px; /* Bordes redondeados */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    max-width: 400px; /* Ancho máximo */
+}
+
+/* Cambios al enfocar */
+input:focus, select:focus, textarea:focus {
+    border-color: #007bff; /* Borde azul */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Sombra azul */
+    outline: none; /* Quitar el borde azul por defecto */
+}
+
+/* Placeholder en mayúsculas (para navegadores compatibles) */
+::placeholder {
+    text-transform: uppercase;
+    color: #aaa; /* Color gris claro */
+}
+
+/* Estilo deshabilitado */
+input:disabled, select:disabled, textarea:disabled {
+    background-color: #f8f9fa; /* Fondo gris claro */
+    color: #6c757d; /* Texto gris */
+    cursor: not-allowed; /* Cursor no permitido */
+}
+
+/* Botones dentro de formularios */
+button {
+    text-transform: uppercase; /* Convertir texto a mayúsculas */
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 16px;
+    background-color: #007bff; /* Azul predeterminado */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3; /* Azul más oscuro */
+}
+.menu-container {
+margin-bottom: 20px;
+text-align: center;
+}
+
+.nav-tabs .nav-link {
+color: #fff; /* Texto blanco */
+background-color: #0f2d3a; /* Fondo azul oscuro */
+font-weight: bold;
+font-size: 14px;
+border: none; /* Sin bordes */
+padding: 10px 20px; /* Ajustar tamaño */
+}
+
+.nav-tabs .nav-link.active {
+background-color: #fff; /* Fondo blanco para la activa */
+color: #0f2d3a; /* Texto azul oscuro */
+border: 1px solid #0f2d3a; /* Borde para destacar */
+}
+
+.nav-tabs .nav-link:hover {
+background-color: #f8f9fa; /* Fondo gris claro en hover */
+color: #0f2d3a; /* Texto azul oscuro */
+}
+</style>
+
+{% endblock %}
+{% block titutlo %}SÁBANA DE ASISTENCIA{% endblock %}
+{% block content %}
+<!-- Modal para EXTRA/DEUDA -->
+<div class="modal fade" id="extraDeudaModal" tabindex="-1" aria-labelledby="extraDeudaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="extraDeudaModalLabel">Actualizar Extra, Deuda y Observaciones</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form id="extraDeudaForm">
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="modal-body">
+                    <input type="hidden" id="extraDeudaEmpleadoId" name="id_empleado">
+                    
+                    <div class="form-group mb-3">
+                        <label for="extraInput">Extra:</label>
+                        <input type="number" id="extraInput" name="extra" class="form-control" min="0" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="deudaInput">Deuda:</label>
+                        <input type="number" id="deudaInput" name="deuda" class="form-control" min="0" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="observacionesInput">Observaciones:</label>
+                        <textarea id="observacionesInput" name="observaciones" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="submit" class="export-button">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <br>
+    <header class="header-container">
+        <!-- Información del proyecto -->
+        <div class="project-info">
+            <h4 id="projectName">Obra:</h4>
+            <div>
+                <input type="text" id="projectInput" class="form-control" placeholder="Buscar proyecto..." />
+            </div>
+            <p><strong>Líder de Proyecto:</strong> <span id="projectLeader">N/A</span></p>
+            <p><strong>Periodo:</strong> <span id="projectPeriodo">N/A</span></p>
+            <p><strong>Horario:</strong> <span id="projectSchedule">N/A</span></p>
+            <!-- Selector de semanas -->
+            <div class="week-selector">
+                <button id="prevWeek" class="nav-button">Semana Anterior</button>
+                <span id="currentWeek">21 Nov. 2024 - 25 Nov. 2024</span>
+                <button id="nextWeek" class="nav-button">Semana Siguiente</button>
+            </div>
+        </div>
+        
+        
+    
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+            <button id="abrirModalAsignar" class="export-button" data-bs-toggle="modal" data-bs-target="#asignarEmpleadoModal">
+                Asignar Empleado a Proyecto
+            </button>
+            <button id="exportExcel" class="export-button">Exportar a Excel</button>
+        </div>
+    </header>
+    
+<!-- Modal para asignar empleados a un proyecto -->
+<div class="modal fade" id="asignarEmpleadoModal" tabindex="-1" aria-labelledby="asignarEmpleadoLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="asignarEmpleadoLabel">Asignar Empleado a Proyecto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <form id="asignarEmpleadoForm" class="needs-validation" novalidate action="/asignar_empleado" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="token" value="{{ token }}">
+
+            <div class="container">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h5>Formulario de Asignación</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Proyecto -->
+                        <div class="form-group row">
+                            <label for="proyectoSelect" class="col-md-3 col-form-label">Proyecto:</label>
+                            <div class="col-md-9">
+                                <select id="proyectoSelect" name="id_proyecto" class="form-control" required>
+                                    <option value="">Selecciona un proyecto</option>
+                                    {% for proyecto in proyectos %}
+                                    <option value="{{ proyecto.id }}">{{ proyecto.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Selecciona un proyecto.</div>
+                            </div>
+                        </div>
+
+                        <!-- Nómina -->
+                        <div class="form-group row">
+                            <label for="nominaSelect" class="col-md-3 col-form-label">Nómina:</label>
+                            <div class="col-md-9">
+                                <select id="nominaSelect" name="nomina_presupuestada" class="form-control" required>
+                                    <option value="" disabled selected>Selecciona una nómina</option>
+                                </select>
+                                <input type="hidden" id="idDetalleBauartInput" name="id_detalle_bauart">
+                                <div class="invalid-feedback">Selecciona una nómina.</div>
+                            </div>
+                        </div>
+
+                        <!-- Empleado -->
+                        <div class="form-group row">
+                            <label for="empleadoSelect" class="col-md-3 col-form-label">Empleado:</label>
+                            <div class="col-md-9">
+                                <select id="empleadoSelect" name="id_empleado" class="form-control" required>
+                                    <option value="">Selecciona un empleado</option>
+                                    {% for empleado in empleados %}
+                                        <option value="{{ empleado.id }}" 
+                                            data-sueldo_imss="{{ empleado.sueldo_imss }}" 
+                                            data-monedero="{{ empleado.monedero }}">
+                                            {{ empleado.nombre }} {{ empleado.apellido }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Selecciona un empleado.</div>
+                            </div>
+                        </div>
+
+                        <!-- Sueldo IMSS -->
+                        <div class="form-group row">
+                            <label for="sueldoImssInput" class="col-md-3 col-form-label">Sueldo IMSS:</label>
+                            <div class="col-md-9">
+                                <input type="number" id="sueldoImssInput" name="sueldo_imss" class="form-control" required min="0" step="0.01">
+                                <div class="invalid-feedback">Ingresa el sueldo IMSS.</div>
+                            </div>
+                        </div>
+
+                        <!-- Monedero -->
+                        <div class="form-group row">
+                            <label for="monederoInput" class="col-md-3 col-form-label">Monedero:</label>
+                            <div class="col-md-9">
+                                <input type="number" id="monederoInput" name="monedero" class="form-control" required min="0" step="0.01">
+                                <div class="invalid-feedback">Ingresa el monto del monedero.</div>
+                            </div>
+                        </div>
+
+                        <!-- Sueldo Base (Calculado automáticamente) -->
+                        <div class="form-group row">
+                            <label for="sueldoBaseInput" class="col-md-3 col-form-label">Sueldo Base:</label>
+                            <div class="col-md-9">
+                                <input type="number" id="sueldoBaseInput" name="sueldo_base" class="form-control" readonly>
+                            </div>
+                        </div>
+
+                        <!-- Checkbox para activar horario -->
+                        <div class="form-group row">
+                            <label class="col-md-3 col-form-label">Usar Horario:</label>
+                            <div class="col-md-9">
+                                <input type="checkbox" id="usarHorario">
+                            </div>
+                        </div>
+
+                        <!-- Hora de Entrada -->
+                        <div class="form-group row">
+                            <label for="horaEntradaInput" class="col-md-3 col-form-label">Hora de Entrada:</label>
+                            <div class="col-md-9">
+                                <input type="time" id="horaEntradaInput" name="hora_entrada_p" class="form-control" disabled>
+                            </div>
+                        </div>
+
+                        <!-- Hora de Salida -->
+                        <div class="form-group row">
+                            <label for="horaSalidaInput" class="col-md-3 col-form-label">Hora de Salida:</label>
+                            <div class="col-md-9">
+                                <input type="time" id="horaSalidaInput" name="hora_salida_p" class="form-control" disabled>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Asignación -->
+                        <div class="form-group row">
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="btn botones">Asignar</button>
+                            </div>
+                        </div>
+                    </div> <!-- Cierre de .card-body -->
+                </div> <!-- Cierre de .card -->
+            </div> <!-- Cierre de .container -->
+        </form>                                             
+    </div> <!-- Cierre de .modal-body -->
+</div> <!-- Cierre de .modal-content -->
+</div> <!-- Cierre de .modal-dialog -->
+</div> <!-- Cierre del modal -->
+
+
+<div class="menu-container">
+<nav class="nav nav-tabs">
+    <a class="nav-link {{ 'active' if request.path == '/sabanaasistencias2' else '' }}" href="/sabanaasistencias2">Asistencias</a>
+    <a class="nav-link {{ 'active' if request.path == '/sabanaasistencias3' else '' }}" href="/sabanaasistencias3">Pagos</a>
+    <a class="nav-link {{ 'active' if request.path == '/sabanaasistencias4' else '' }}" href="/sabanaasistencias4">DISPERSION MONEDERO</a>
+    <a class="nav-link {{ 'active' if request.path == '/sabanaasistencias5' else '' }}" href="/sabanaasistencias5">DISPERSION IMSS</a>
+</nav>
+</div>
+<input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
+<input type="hidden" id="token" name="token" value="{{ token }}">
+
+<div id="mensajeSeleccion" class="text-center" style="display: none; padding: 20px; font-size: 18px;">
+    <p><strong>Selecciona un proyecto por favor</strong></p>
+</div>
+
+<div id="tablaAsistenciaContainer" class="table-container" style="display: none;">
+    <table class="table table-hover" id="asistenciaTable">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">EMPLEADO</th>
+                <th scope="col">CATEGORÍA</th>
+                <th scope="col">S.BASE</th>
+                <th scope="col">SUELDO/HORA</th>
+                <th scope="col">L</th>
+                <th scope="col">M</th>
+                <th scope="col">M</th>
+                <th scope="col">J</th>
+                <th scope="col">V</th>
+                <th scope="col">S</th>
+                <th scope="col">D</th>
+                <th scope="col">S.REAL</th>
+                <th scope="col">T.T.E.</th>
+                <th scope="col">EXTRA</th>
+                <th scope="col">DEUDA</th>
+                <th scope="col">PAGO NETO SEMANAL</th>
+                <th scope="col">ACCIONES</th>
+            </tr>
+        </thead>
+        <tbody id="tablaAsistencia">
+            <!-- Aquí se inyectarán los empleados dinámicamente -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="asistenciaModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Detalles de Asistencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+
+                <p><strong>Empleado:</strong> <span id="modalEmpleado"></span></p>
+                <p><strong>Día:</strong> <span id="modalDia"></span></p>
+                <p><strong>Hora de Entrada:</strong> <span id="modalEntrada"></span></p>
+                <p><strong>Hora de Salida:</strong> <span id="modalSalida"></span></p>
+                <p><strong>Tope de Horas Extra:</strong> <span id="modalTopeHoras"></span></p>
+                <div id="modalFotoContainer">
+                    <h5>Foto de Asistencia</h5>
+                    <div id="modalFoto" style="text-align: center; margin-top: 10px;">
+                        <!-- Aquí se mostrará dinámicamente la foto -->
+                    </div>
+                </div>
+                <h5>Ubicación</h5>
+                <div id="map"></div>
+
+                <!-- Nuevo input para capturar horas extra -->
+                <div>
+                    <label for="horas">Horas:</label>
+                    <input type="number" id="horas" name="horas" min="0" max="23" step="1" placeholder="HH">
+                </div>
+                <button id="registrarHorasExtra">Registrar</button>
+            </div>           
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Registro de Incidencia -->
+<div class="modal fade" id="incidenciaModal" tabindex="-1" aria-labelledby="incidenciaModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="incidenciaModalLabel">Registro de Incidencia</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form id="incidenciaForm" method="POST" novalidate>
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <!-- Campo oculto para el ID del empleado -->
+                <input type="hidden" id="idEmpleado" name="idEmpleado" required>
+
+                <div class="form-group">
+                    <label for="employeeName">Nombre del Empleado:</label>
+                    <input type="text" id="employeeName" class="form-control" placeholder="Buscar empleado" autocomplete="off" required>
+                    <div id="employeeSuggestions" class="list-group"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipoIncidencia">Tipo de Incidencia:</label>
+                    <select id="tipoIncidencia" name="tipoIncidencia" class="form-control" required>
+                        <option value="" disabled selected>-----Seleccione una Opción-----</option>
+                        <option value="I">Incapacidad</option>
+                        <option value="V">Vacaciones</option>
+                        <option value="DT">Descanso Trabajado</option>
+                        <option value="DF">Dia Festivo</option>
+                        <option value="PCG">Permiso con Goce</option>
+                        <option value="PSG">Permiso sin Goce</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fechaInicial">Fecha Inicial:</label>
+                    <input type="date" id="fechaInicial" name="fechaInicial" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="fechaFinal">Fecha Final:</label>
+                    <input type="date" id="fechaFinal" name="fechaFinal" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="diasSolicitados">Días Solicitados:</label>
+                    <input type="number" id="diasSolicitados" name="diasSolicitados" class="form-control" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="comentarios">Comentarios:</label>
+                    <textarea id="comentarios" name="comentarios" class="form-control" rows="3" placeholder="Comentarios adicionales"></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary" id="submitIncidencia">Registrar Incidencia</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    
+    // Declaración de variables globales
+    let currentStartDate = new Date(2024, 11, 2); // Lunes, 2 de diciembre de 2024
+    let currentProjectId = null; // Proyecto seleccionado (se inicializa como null)
+    let map, marker;
+    let selectedEmployeeId = null; // Variable global para guardar el ID del empleado seleccionado
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+
+    document.getElementById("registrarHorasExtra").addEventListener("click", async () => {
+try {
+// Capturar las horas ingresadas (ahora permitimos 0)
+const horas = parseFloat(document.getElementById("horas").value);
+if (isNaN(horas) || horas < 0) {
+    alert("Por favor, ingresa un valor válido para horas extra.");
+    return;
+}
+
+// Obtener el tope de horas extra desde el modal
+const topeHorasExtra = parseFloat(document.getElementById("modalTopeHoras").textContent) || 0;
+if (horas > topeHorasExtra) {
+    alert(`No puedes registrar más de ${topeHorasExtra} horas extra.`);
+    return;
+}
+
+// Obtener datos del empleado desde el modal
+const empleadoNombre = document.getElementById("modalEmpleado").textContent.trim();
+let empleadoId = document.getElementById("modalEmpleado").dataset.empleadoId;
+
+// Si no se encuentra el ID, buscarlo por nombre
+if (!empleadoId) {
+    empleadoId = await fetchEmpleadoId(empleadoNombre);
+}
+if (!empleadoId) {
+    alert("No se pudo obtener el ID del empleado. Verifica los datos.");
+    return;
+}
+
+// 🔹 Obtener la fecha seleccionada en el modal correctamente
+const fechaOriginal = document.getElementById("modalDia").textContent.trim();
+console.log("Fecha Original en el Modal:", fechaOriginal);
+
+if (!fechaOriginal) {
+    alert("No se pudo obtener la fecha de la asistencia.");
+    return;
+}
+
+// 🔹 Asegurar que la fecha se está obteniendo correctamente
+let fechaFormatted = "";
+try {
+    // Si la fecha ya está en formato correcto, la tomamos directamente
+    const regexFecha = /^\d{4}-\d{2}-\d{2}$/; // Validar formato YYYY-MM-DD
+    if (regexFecha.test(fechaOriginal)) {
+        fechaFormatted = fechaOriginal;
+    } else {
+        // Si la fecha no está en formato correcto, intentamos extraerla de un string con zona horaria
+        const date = new Date(fechaOriginal);
+        if (isNaN(date.getTime())) {
+            throw new Error("Fecha inválida detectada");
+        }
+        fechaFormatted = date.toISOString().split("T")[0]; // Convertir a YYYY-MM-DD
+    }
+} catch (error) {
+    console.error("❌ Error al formatear la fecha:", error);
+    alert("Error al procesar la fecha de la asistencia.");
+    return;
+}
+
+console.log("Fecha Enviada al Backend:", fechaFormatted);
+
+// Obtener CSRF Token
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+// Enviar la solicitud al backend
+const response = await fetch('/api/modificar_horas_extra', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({
+        id_empleado: empleadoId,
+        fecha: fechaFormatted,  // 🔹 Enviamos la fecha corregida
+        horas_extra: horas  // 🔹 Ahora sí permite 0
+    })
+});
+
+if (response.ok) {
+    const result = await response.json();
+    console.log("✅ Respuesta del servidor:", result);
+    alert("Horas extra registradas correctamente.");
+    cargarAsistencias(currentStartDate, currentProjectId);  // Recargar asistencias
+} else {
+    const error = await response.json();
+    console.error("❌ Error del servidor:", error);
+    alert(error.error || "Error al actualizar las horas extra.");
+}
+} catch (error) {
+console.error("❌ Error en la función registrarHorasExtra:", error);
+alert("Hubo un problema al registrar las horas extra. Intenta nuevamente.");
+}
+});
+   
+    // Obtener rango de fechas (7 días)
+    function getWeeklyDates(startDate) {
+        const dates = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + i);
+            
+            const options = { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit' 
+            };
+            const formattedDate = date.toLocaleDateString('en-GB', options).split('/').reverse().join('-');
+            
+            dates.push(formattedDate); // Formato YYYY-MM-DD
+        }
+        return dates;
+    }
+
+// Asignar dinámicamente las fechas a los días de la tabla
+function assignDatesToTable() {
+    // Obtener las fechas de la semana actual
+    const weeklyDates = getWeeklyDates(currentStartDate);
+
+    // Simular columnas en la tabla (lunes a domingo)
+    const daysOfWeek = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"];
+    const table = {}; // Para almacenar la asignación (simula las filas de la tabla)
+
+    daysOfWeek.forEach((day, index) => {
+        // Asignar la fecha respectiva a cada día
+        table[day] = weeklyDates[index];
+    });
+
+    // Simular añadirlo a la tabla (ejemplo: asociar a botones o elementos DOM)
+    document.querySelectorAll(".asistencia-btn").forEach((btn, index) => {
+        if (index < 7) { // Asignar solo si hay suficientes días
+            btn.setAttribute("data-fecha", weeklyDates[index]);
+        }
+    });
+}
+
+// Ejecutar el script
+assignDatesToTable();
+    // Ajustar el inicio de la semana a lunes
+    function getStartOfWeek(date) {
+        const day = date.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+        const diff = day === 0 ? -6 : 1 - day; // Si es domingo, retrocede 6 días; si no, ajusta a lunes
+        const startOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() + diff);
+        return startOfWeek;
+    }
+
+    // Formatear fecha en formato YYYY-MM-DD y ajustar a la zona horaria local
+    function formatDate(date) {
+        const options = { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit' 
+        };
+        
+        // Obtener la fecha local ajustada a la zona horaria
+        const localDate = new Date(date);
+        const formattedDate = localDate.toLocaleDateString('en-GB', options).split('/').reverse().join('-');
+
+        return formattedDate; // Retornar la fecha en formato YYYY-MM-DD
+    }
+
+
+    // Inicializar el mapa con coordenadas específicas
+    function initMap(lat, lng) {
+        const location = { lat: parseFloat(lat), lng: parseFloat(lng) };
+        const mapOptions = {
+            center: location,
+            zoom: 15,
+        };
+
+        if (!map) {
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            marker = new google.maps.Marker({
+                position: location,
+                map: map,
+            });
+        } else {
+            map.setCenter(location);
+            marker.setPosition(location);
+        }
+    }
+
+    // Actualizar el rango de fechas en el encabezado
+    function updateWeekDisplay(startDate) {
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6); // Incrementar 6 días para incluir el domingo
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        document.getElementById("currentWeek").textContent = `${startDate.toLocaleDateString('es-ES', options)} - ${endDate.toLocaleDateString('es-ES', options)}`;
+    }
+
+    function procesarIncidencias(incidencias) {
+        // Inicializar un objeto para contar incidencias por tipo
+        const conteoIncidencias = {};
+
+        Object.entries(incidencias).forEach(([empleadoId, empleado]) => {
+            const { nombre_empleado, incidencias: incidenciasPorDia } = empleado;
+
+            // Buscar la fila correspondiente al empleado en la tabla
+            document.querySelectorAll("#tablaAsistencia tr").forEach(fila => {
+                const nombreCelda = fila.querySelector("td:first-child");
+
+                if (nombreCelda && nombreCelda.textContent.trim() === nombre_empleado) {
+                    // Iterar sobre las incidencias por día
+                    Object.entries(incidenciasPorDia).forEach(([fecha, incidencia]) => {
+                        const diaSemana = (new Date(fecha).getDay() + 1) % 7; // Ajustar para considerar Domingo como último día
+
+                        if (diaSemana >= 1 && diaSemana <= 7) { // Ignorar Domingo (0)
+                            const celdaDia = fila.querySelectorAll("td")[diaSemana];
+
+                            if (celdaDia) {
+                                const boton = celdaDia.querySelector("button");
+                                if (boton) {
+                                    // Actualizar contenido y estilo del botón
+                                    const tipoIncidencia = incidencia.tipo_incidencia || "I"; // Por defecto "I" si no está definido
+                                    boton.textContent = tipoIncidencia;
+                                    boton.style.backgroundColor = "#fff3cd"; // Amarillo claro
+                                    boton.style.color = "#856404"; // Marrón oscuro
+                                    boton.title = incidencia.comentarios || "Sin comentarios";
+
+                                    // Incrementar el conteo del tipo de incidencia
+                                    conteoIncidencias[tipoIncidencia] = (conteoIncidencias[tipoIncidencia] || 0) + 1;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+    }
+
+    async function cargarIncidencias(startDate) {
+const endDate = new Date(startDate);
+endDate.setDate(startDate.getDate() + 6); // Calcular el rango hasta el domingo
+
+const url = `/api/incidencias_rango?fecha_inicio=${formatDate(startDate)}&fecha_fin=${formatDate(endDate)}`;
+
+try {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Error al consultar incidencias: ${response.statusText}`);
+    }
+
+    const incidencias = await response.json();
+
+    // Procesar y renderizar las incidencias en la tabla
+    
+
+    // Colorear las celdas en la tabla basándote en las incidencias
+    procesarIncidencias(incidencias);
+
+    return incidencias; // Retornar incidencias por si es necesario para otro procesamiento
+} catch (error) {
+    console.error("Error al cargar incidencias:", error);
+    return []; // En caso de error, retornar un arreglo vacío
+}
+}
+
+
+// Función para calcular los totales de un empleado
+function calcularTotalesEmpleado(empleado, nominaSemanal, rowElement = null) {
+const sueldoDiario = nominaSemanal / 7; // Calcular sueldo diario
+
+// Calcular los días asistidos considerando DT como doble
+const diasAsistidos = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+    .reduce((total, dia) => {
+        const estado = empleado[dia]?.estado;
+        if (estado === "A" || estado === "I" || estado === "PCG") {
+            return total + 1; // Asistencia normal cuenta como 1
+        } else if (estado === "DT" || estado === "DF") {
+            return total + 2; // Día doble cuenta como 2
+        }
+        return total; // Otros estados no suman
+    }, 0);
+
+const sueldoReal = sueldoDiario * diasAsistidos; // Calcular sueldo real basado en días asistidos
+
+// Calcular faltas y su impacto
+let faltas = 0;
+let descuentoPorFaltas = 0;
+
+// Días laborales
+["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"].forEach(dia => {
+    if (empleado[dia]?.estado === "F") {
+        faltas++; // Contar el día de la falta
+        descuentoPorFaltas += sueldoDiario * (7 / 6); // Descuento por el día más el séptimo día proporcional
+    }
+});
+
+// Contar días con DF y DT
+const diasDoblePago = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+    .filter(dia => empleado[dia]?.estado === "DF" || empleado[dia]?.estado === "DT").length;
+
+// Sumar horas extra de lunes a domingo
+const horasExtra = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+    .reduce((total, dia) => total + (empleado[dia]?.horas_extra || 0), 0);
+
+// Calcular el sueldo neto descontando las faltas
+const sueldoCalculado = nominaSemanal - descuentoPorFaltas;
+
+// Calcular el monto adicional por días de doble sueldo
+const totalDoblePago = sueldoDiario * 2 * diasDoblePago;
+
+// Calcular el total por horas extra
+const valorPorHoraExtra = sueldoDiario / 8;
+const totalHorasExtra = valorPorHoraExtra * horasExtra;
+
+// Calcular la Prima Dominical (PD) si hay asistencia en domingo
+let primaDominical = 0;
+if (empleado.Domingo?.estado === "A") { // Verificar asistencia en domingo
+    primaDominical = sueldoDiario * 0.25;
+}
+
+// Capturar valor del campo "Extra" si existe un rowElement asociado
+let extra = 0;
+if (rowElement) {
+    const extraInput = rowElement.querySelector(".extra-input");
+    if (extraInput) {
+        extra = parseFloat(extraInput.value) || 0; // Asegurarse de capturar un valor numérico
+    }
+} else {
+    extra = empleado.extra || 0; // Usar el valor predeterminado si no hay input
+}
+
+// Capturar valor del campo "Deuda" si existe un rowElement asociado
+let deuda = 0;
+if (rowElement) {
+    const deudaInput = rowElement.querySelector(".deuda-input");
+    if (deudaInput) {
+        deuda = parseFloat(deudaInput.value) || 0; // Asegurarse de capturar un valor numérico
+    }
+} else {
+    deuda = empleado.deuda || 0; // Usar el valor predeterminado si no hay input
+}
+
+// Calcular el total de nómina
+const totalNomina = 
+    Number(sueldoReal || 0) + 
+    Number(totalHorasExtra || 0) + 
+    Number(primaDominical || 0) +
+    Number(extra || 0) -
+    Number(deuda || 0); // Restar la deuda
+
+// Devolver los totales como un objeto
+return {
+    faltas,
+    descuentoPorFaltas,
+    diasDoblePago,
+    totalHorasExtra,
+    primaDominical,
+    totalDoblePago,
+    extra,
+    deuda, // Incluir deuda en el objeto retornado
+    sueldoReal,
+    totalNomina
+};
+}
+
+
+// Función para procesar y renderizar los datos en la tabla
+function renderizarAsistencias(data, startDate) {
+const tabla = document.getElementById("tablaAsistencia");
+tabla.innerHTML = ""; // Limpiar la tabla
+
+// Ordenar empleados por categoría
+data.sort((a, b) => a.categoria.localeCompare(b.categoria));
+
+const horarioProyecto = document.getElementById("projectSchedule").textContent.trim(); // Obtener horario del proyecto
+
+data.forEach(empleado => {
+const row = document.createElement("tr");
+
+const horarioPersonalizadoEntrada = empleado.horario_personalizado_entrada || null;
+const horarioPersonalizadoSalida = empleado.horario_personalizado_salida || null;
+const empleado_id = empleado.id_empleado;
+const currentWeekStartDate = new Date(startDate);
+const lunes = new Date(currentWeekStartDate);
+const martes = new Date(currentWeekStartDate); martes.setDate(lunes.getDate() + 1);
+const miercoles = new Date(currentWeekStartDate); miercoles.setDate(lunes.getDate() + 2);
+const jueves = new Date(currentWeekStartDate); jueves.setDate(lunes.getDate() + 3);
+const viernes = new Date(currentWeekStartDate); viernes.setDate(lunes.getDate() + 4);
+const sabado = new Date(currentWeekStartDate); sabado.setDate(lunes.getDate() + 5);
+const domingo = new Date(currentWeekStartDate); domingo.setDate(lunes.getDate() + 6);
+
+// Calcular totales
+const nominaSemanal = empleado.nomina || 0;
+const sueldoDiario = nominaSemanal / 7;
+const sueldoPorHora = sueldoDiario / 8;
+const topeHoras = empleado.tope_horas || 0; // Obtener el tope de horas extra (si es null, se pone 0)
+
+// Calcular los días asistidos considerando DT como doble
+const diasAsistidos = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+    .reduce((total, dia) => {
+        const estado = empleado[dia]?.estado;
+        if (estado === "A" || estado === "I" || estado === "PCG") {
+            return total + 1;
+        } else if (estado === "DT" || estado === "DF") {
+            return total + 2;
+        }
+        return total;
+    }, 0);
+
+// Calcular el sueldo real (S.REAL)
+const sueldoReal = sueldoDiario * diasAsistidos;
+
+// Calcular las horas extra sumando las de cada día (ajustando al tope)
+let totalHorasExtra = 0;
+["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"].forEach(dia => {
+    if (empleado[dia]) {
+        let horasExtra;
+        if (empleado[dia].horas_extra === null) {
+            // Si no hay horas extra registradas, calcular automáticamente
+            const horaEntrada = empleado[dia].hora_entrada || "00:00";
+            const horaSalida = empleado[dia].hora_salida || "00:00";
+            horasExtra = parseFloat(calcularHorasExtra(horaEntrada, horaSalida, horarioProyecto, horarioPersonalizadoEntrada, horarioPersonalizadoSalida));
+            console.log(horasExtra);
+        } else {
+            // Si ya hay horas extra registradas, respetarlas
+            horasExtra = parseFloat(empleado[dia].horas_extra);
+        }
+        totalHorasExtra += horasExtra;
+    }
+});
+
+// **Aplicar el tope de horas extra si es necesario**
+if (topeHoras > 0 && totalHorasExtra > topeHoras) {
+    totalHorasExtra = topeHoras;
+}
+
+// **Aquí calculamos el total de dinero por horas extra**
+const totalPagoHorasExtra = totalHorasExtra * sueldoPorHora;
+
+// Formateo de moneda
+const formatoMoneda = valor => new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN'
+}).format(valor);
+
+// Renderizar la fila con datos y fechas específicas
+row.innerHTML = `
+    <td>${empleado.id_empleado}</td>
+    <td>${empleado.nombre_empleado}</td>
+    <td>${empleado.categoria}</td>
+    <td>${formatoMoneda(nominaSemanal)}</td>
+    <td>${formatoMoneda(sueldoPorHora)}</td>
+    <td>${formatAsistencia(empleado.Lunes, lunes, empleado.tope_horas, horarioPersonalizadoEntrada, horarioPersonalizadoSalida)}</td>
+    <td>${formatAsistencia(empleado.Martes, martes, empleado.tope_horas, horarioPersonalizadoEntrada, horarioPersonalizadoSalida)}</td>
+    <td>${formatAsistencia(empleado.Miércoles, miercoles, empleado.tope_horas, horarioPersonalizadoEntrada, horarioPersonalizadoSalida)}</td>
+    <td>${formatAsistencia(empleado.Jueves, jueves, empleado.tope_horas, horarioPersonalizadoEntrada, horarioPersonalizadoSalida)}</td>
+    <td>${formatAsistencia(empleado.Viernes, viernes, empleado.tope_horas, horarioPersonalizadoEntrada, horarioPersonalizadoSalida)}</td>
+    <td>${formatAsistencia(empleado.Sábado, sabado, empleado.tope_horas, horarioPersonalizadoEntrada, horarioPersonalizadoSalida)}</td>
+    <td>${formatAsistencia(empleado.Domingo, domingo, empleado.tope_horas, horarioPersonalizadoEntrada, horarioPersonalizadoSalida)}</td>
+    <td>${formatoMoneda(sueldoReal)}</td>
+    <td>${formatoMoneda(totalPagoHorasExtra)}</td> <!-- Ahora respeta el tope de horas -->
+    <td>${formatoMoneda(empleado.extra)}</td>
+    <td>${formatoMoneda(empleado.deuda)}</td>
+    <td>${formatoMoneda(sueldoReal + totalPagoHorasExtra)}</td>
+    <td>
+        <div class="dropdown">
+            <button class="btn btn-outline-dark dropdown-toggle" id="dropdownMenuButton${empleado.id}" 
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                ACCIONES
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton${empleado.id}">
+                <li>
+                    <a class="dropdown-item" href="#" 
+                        onclick="abrirExtraDeudaModal(${empleado.id_empleado}, ${empleado.extra || 0}, ${empleado.deuda || 0})">
+                        EXTRA/DEUDA
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" onclick="darBajaEmpleado(${empleado.id_empleado}, ${currentProjectId})">DAR DE BAJA</a>
+                </li>
+            </ul>
+        </div>
+    </td>
+`;
+tabla.appendChild(row);
+});
+}
+
+
+// Función para obtener el valor de un parámetro en la URL
+function getParameterByName(name) {
+const urlParams = new URLSearchParams(window.location.search);
+return urlParams.get(name);
+}
+
+// Al cargar la página, obtener el project_id de la URL
+document.addEventListener("DOMContentLoaded", function() {
+const projectId = getParameterByName("project_id");
+
+if (projectId) {
+currentProjectId = projectId; // Asigna el project_id al valor global
+// Llama a la función para cargar las asistencias del proyecto seleccionado
+cargarAsistencias(currentStartDate, currentProjectId);
+} else {
+cargarAsistencias(currentStartDate); // Cargar asistencias iniciales
+}
+});
+
+// Función para cargar las asistencias con el project_id
+async function cargarAsistencias(startDate, projectId = null) {
+const mensajeSeleccion = document.getElementById("mensajeSeleccion");
+const tablaAsistenciaContainer = document.getElementById("tablaAsistenciaContainer");
+
+// Si no hay proyecto seleccionado, mostrar mensaje y ocultar la tabla
+if (!projectId) {
+mensajeSeleccion.style.display = "block";
+tablaAsistenciaContainer.style.display = "none";
+return;
+} else {
+mensajeSeleccion.style.display = "none";
+tablaAsistenciaContainer.style.display = "block";
+}
+
+const endDate = new Date(startDate);
+endDate.setDate(startDate.getDate() + 6); // Extender hasta domingo
+
+const url = `/api/asistencias_general?fecha_inicio=${formatDate(startDate)}&fecha_fin=${formatDate(endDate)}&id_proyecto=${projectId}`;
+
+try {
+const response = await fetch(url);
+if (!response.ok) throw new Error(`Error al cargar asistencias: ${response.statusText}`);
+
+const data = await response.json();
+// Renderizar los datos en la tabla
+renderizarAsistencias(data, startDate);
+
+// Asignar eventos a los botones de la tabla de asistencias
+attachAsistenciaEvents();  // Asegúrate de que esta línea esté después de que la tabla se haya renderizado
+
+} catch (error) {
+console.error("Error al cargar asistencias:", error);
+}
+}
+
+// Formatear asistencia en HTML
+function formatAsistencia(dia, fecha, topeHoras, horarioPersonalizadoEntrada = null, horarioPersonalizadoSalida = null) {
+if (!dia) {
+return `<button class="btn asistencia-btn" 
+    data-dia="N/A"
+    style="background-color: #f8d7da; color: #721c24;" 
+    disabled>F</button>`;
+}
+
+const estado = dia.estado || "N/A";
+const esIncidencia = dia.es_incidencia === 1;
+const tipoIncidencia = dia.tipo_incidencia || null;
+let color, textColor, textoBoton;
+
+if (esIncidencia && tipoIncidencia) {
+color = "#cce5ff";
+textColor = "#004085";
+textoBoton = tipoIncidencia;
+} else if (estado === "A") {
+color = "#d4edda";
+textColor = "#155724";
+textoBoton = "A";
+} else if (estado === "F") {
+color = "#f8d7da";
+textColor = "#721c24";
+textoBoton = "F";
+} else if (estado === "I") {
+color = "#f8d7da";
+textColor = "#721c24";
+textoBoton = "I";
+} else if (estado === "V") {
+color = "#f8d7da";
+textColor = "#721c24";
+textoBoton = "V";
+} else if (estado === "DT") {
+color = "#f8d7da";
+textColor = "#721c24";
+textoBoton = "DT";
+} else if (estado === "PCG") {
+color = "#f8d7da";
+textColor = "#721c24";
+textoBoton = "PCG";
+} else if (estado === "PSG") {
+color = "#f8d7da";
+textColor = "#721c24";
+textoBoton = "PSG";
+} else if (estado === "DF") {
+color = "#f8d7da";
+textColor = "#721c24";
+textoBoton = "DF";
+} else {
+color = "#f8d7da";
+textColor = "#721c24";
+textoBoton = "N/A";
+}
+
+const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+const localDate = new Date(fecha);
+const fechaFormatted = localDate.toLocaleDateString('en-GB', options).split('/').reverse().join('-');
+
+console.log(`Fecha Formateada: ${fechaFormatted}`);
+
+return `
+<button class="btn asistencia-btn" 
+    data-dia="${dia.dia || 'N/A'}"
+    data-fecha="${fechaFormatted}" 
+    data-tope-horas="${dia.tope_horas_extra || 0}"  
+    data-entrada="${dia.hora_entrada || '--'}"
+    data-salida="${dia.hora_salida || '--'}"
+    data-horario-personalizado-entrada="${horarioPersonalizadoEntrada || ''}"
+    data-horario-personalizado-salida="${horarioPersonalizadoSalida || ''}"
+    data-foto="${dia.foto_base64 || ''}" 
+    data-lat="${dia.latitud || ''}"
+    data-lng="${dia.longitud || ''}"
+    data-horas-extra="${dia.horas_extra}"
+    style="background-color: ${color}; color: ${textColor};">
+    ${textoBoton}
+</button>
+`;
+}
+
+
+
+    async function fetchEmpleadoId(nombreEmpleado) {
+    try {
+        const response = await fetch(`/api/buscar_empleado_nombre_apellido/?query=${encodeURIComponent(nombreEmpleado)}`);
+        const empleados = await response.json();
+        if (empleados.length > 0) {
+            return empleados[0].id; // Retorna el ID del primer empleado encontrado
+        }
+        return null; // No se encontró el empleado
+    } catch (error) {
+        console.error("Error al buscar empleado:", error);
+        return null;
+    }
+}
+
+// Agregar eventos a los botones de asistencia
+function calcularHorasExtra(horaEntrada, horaSalida, horarioProyecto, horarioPersonalizadoEntrada, horarioPersonalizadoSalida) {
+if (!horaEntrada || !horaSalida) {
+return 0;
+}
+
+// Usar el horario de entrada personalizado si está definido, si no, usar la hora de entrada registrada
+const entrada = new Date(`1970-01-01T${horarioPersonalizadoEntrada || horaEntrada}`);
+const salida = new Date(`1970-01-01T${horaSalida}`);
+
+// Usar el horario de salida personalizado si está definido, si no, usar el horario general del proyecto
+const horarioFin = horarioPersonalizadoSalida 
+? new Date(`1970-01-01T${horarioPersonalizadoSalida}`) 
+: new Date(`1970-01-01T${horarioProyecto.split('-')[1].trim()}`);
+
+console.log(`Calculando horas extra con entrada: ${entrada.toLocaleTimeString()}, salida: ${salida.toLocaleTimeString()}, fin de jornada: ${horarioFin.toLocaleTimeString()}`);
+
+const horasTrabajadas = (salida - entrada) / (1000 * 60 * 60);
+const horasJornada = (horarioFin - entrada) / (1000 * 60 * 60);
+
+return horasTrabajadas > horasJornada ? (horasTrabajadas - horasJornada).toFixed(2) : 0;
+}
+
+function attachAsistenciaEvents() {
+document.querySelectorAll(".asistencia-btn").forEach(button => {
+button.addEventListener("click", async function () {
+    const topeHorasExtra = parseFloat(this.getAttribute("data-tope-horas")) || 0;
+    document.getElementById("modalTopeHoras").textContent = `${topeHorasExtra} horas`;
+
+    const row = this.closest("tr");
+    if (!row) return;
+
+    const empleadoNombre = row.querySelector("td:nth-child(2)")?.textContent.trim();
+    let idEmpleado = this.getAttribute("data-empleado-id");
+
+    if (!idEmpleado || idEmpleado === "undefined") {
+        idEmpleado = await fetchEmpleadoId(empleadoNombre);
+        if (!idEmpleado) {
+            alert("Empleado no encontrado en el sistema.");
+            return;
+        }
+    }
+
+    const fechaFormatted = this.getAttribute("data-fecha");
+    if (!fechaFormatted) {
+        console.error("Fecha no encontrada en el botón de asistencia.");
+        return;
+    }
+
+    const incidenciaTipos = ["F", "N/A", "I", "V", "DT", "DF", "PCG", "PSG"];
+    if (incidenciaTipos.includes(this.textContent.trim())) {
+        const incidenciaUrl = `/api/consultar_incidencia?id_empleado=${idEmpleado}&fecha=${fechaFormatted}`;
+        try {
+            const response = await fetch(incidenciaUrl);
+            if (!response.ok) throw new Error(`Error en la consulta de incidencia: ${response.status}`);
+
+            const incidencias = await response.json();
+
+            if (incidencias.length > 0) {
+                const incidencia = incidencias[0];
+                Swal.fire({
+                    title: "Detalles de Incidencia",
+                    html: `
+                        <p><strong>Empleado:</strong> ${empleadoNombre}</p>
+                        <p><strong>Fecha:</strong> ${fechaFormatted}</p>
+                        <p><strong>Tipo de Incidencia:</strong> ${incidencia.tipo}</p>
+                        <p><strong>Comentarios:</strong> ${incidencia.comentarios || "Sin comentarios"}</p>
+                        <p><strong>Días Solicitados:</strong> ${incidencia.dias_solicitados}</p>
+                    `,
+                    icon: "info",
+                    confirmButtonText: "Cerrar"
+                });
+            } else {
+                abrirFormularioIncidencia(empleadoNombre, idEmpleado, fechaFormatted);
+            }
+        } catch (error) {
+            console.error("Error al consultar incidencia:", error);
+            Swal.fire({
+                title: "Error",
+                text: error.message || "Hubo un problema al consultar las incidencias. Intente nuevamente.",
+                icon: "error",
+                confirmButtonText: "Cerrar"
+            });
+        }
+    } else {
+        // **Cálculo de horas extra con validación de `data-horas-extra`**
+        const horaEntrada = this.getAttribute("data-entrada") || "00:00";
+        const horaSalida = this.getAttribute("data-salida") || "00:00";
+        const horarioProyecto = document.getElementById("projectSchedule").textContent.trim();
+
+        const horarioPersonalizadoEntrada = this.getAttribute("data-horario-personalizado-entrada") || null;
+        const horarioPersonalizadoSalida = this.getAttribute("data-horario-personalizado-salida") || null;
+
+        let horasExtra = this.getAttribute("data-horas-extra");
+
+        if (!horasExtra || horasExtra === "null" || horasExtra.trim() === "") {
+            horasExtra = calcularHorasExtra(horaEntrada, horaSalida, horarioProyecto, horarioPersonalizadoEntrada, horarioPersonalizadoSalida);
+        }
+
+        document.getElementById("horas").value = horasExtra; // Llena el campo de horas extra
+
+        abrirModalDetallesAsistencia(
+            empleadoNombre,
+            this.getAttribute("data-dia"),
+            horaEntrada,
+            horaSalida,
+            this.getAttribute("data-foto"),
+            this.getAttribute("data-lat"),
+            this.getAttribute("data-lng"),
+            topeHorasExtra
+        );
+    }
+});
+});
+}
+
+// Función para buscar el ID del empleado usando la API
+async function fetchEmpleadoId(nombreEmpleado) {
+    try {
+        const response = await fetch(`/api/buscar_empleado_nombre_apellido/?query=${encodeURIComponent(nombreEmpleado)}`);
+        const empleados = await response.json();
+        if (empleados.length > 0) {
+            return empleados[0].id; // Retorna el ID del primer empleado encontrado
+        }
+        return null; // No se encontró el empleado
+    } catch (error) {
+        console.error("Error al buscar empleado:", error);
+        return null;
+    }
+}
+
+// Función para abrir el formulario de registro de incidencia
+function abrirFormularioIncidencia(empleadoNombre, idEmpleado, fecha) {
+    document.getElementById("employeeName").value = empleadoNombre || "Sin información";
+    document.getElementById("fechaInicial").value = fecha || "";
+    document.getElementById("fechaFinal").value = fecha || "";
+    document.getElementById("idEmpleado").value = idEmpleado || "";
+
+    // Calcular los días automáticamente cuando se abra el formulario
+    calcularDias();
+
+    const incidenciaModal = new bootstrap.Modal(document.getElementById("incidenciaModal"));
+    incidenciaModal.show();
+}
+
+
+// Función para abrir el modal con detalles de asistencia y mostrar el mapa
+function abrirModalDetallesAsistencia(empleadoNombre, dia, entrada, salida, foto, lat, lng, topeHorasExtra) {
+    // Mostrar detalles en el modal
+    document.getElementById("modalEmpleado").textContent = empleadoNombre || "Sin información";
+    document.getElementById("modalDia").textContent = dia || "Sin información";
+    document.getElementById("modalEntrada").textContent = entrada || "--";
+    document.getElementById("modalSalida").textContent = salida || "--";
+    document.getElementById("modalTopeHoras").textContent = `${topeHorasExtra || 0} horas`;  // Mostrar tope de horas extra
+
+    // Mostrar foto si está disponible
+    const modalFotoContainer = document.getElementById("modalFotoContainer");
+    modalFotoContainer.innerHTML = foto
+        ? `<img src="${foto.startsWith("data:image") ? foto : `data:image/png;base64,${foto}`}" alt="Foto de Asistencia" style="width: 100%;">`
+        : "<p>Sin foto disponible</p>";
+
+    // Inicializar el mapa con las coordenadas
+    if (lat && lng) {
+        initMap(lat, lng);
+    } else {
+        document.getElementById("map").innerHTML = "<p>Sin ubicación disponible.</p>";
+    }
+
+    // Mostrar el modal
+    const asistenciaModal = new bootstrap.Modal(document.getElementById("asistenciaModal"));
+    asistenciaModal.show();
+}
+
+// Función para abrir el formulario de registro de incidencia
+function abrirFormularioIncidencia(empleadoNombre, idEmpleado, fecha) {
+    document.getElementById("employeeName").value = empleadoNombre || "Sin información";
+    document.getElementById("fechaInicial").value = fecha || "";
+    document.getElementById("fechaFinal").value = fecha || "";
+    document.getElementById("idEmpleado").value = idEmpleado || "";
+
+    const incidenciaModal = new bootstrap.Modal(document.getElementById("incidenciaModal"));
+    incidenciaModal.show();
+}
+
+// Función para abrir el modal de detalles de asistencia
+function abrirModalDetallesAsistencia(empleadoNombre, dia, entrada, salida, foto, lat, lng) {
+    document.getElementById("modalEmpleado").textContent = empleadoNombre || "Sin información";
+    document.getElementById("modalDia").textContent = dia || "Sin información";
+    document.getElementById("modalEntrada").textContent = entrada || "--";
+    document.getElementById("modalSalida").textContent = salida || "--";
+
+    const modalFotoContainer = document.getElementById("modalFotoContainer");
+    modalFotoContainer.innerHTML = foto
+        ? `<img src="${foto.startsWith("data:image") ? foto : `data:image/png;base64,${foto}`}" alt="Foto de Asistencia" style="width: 100%;">`
+        : "<p>Sin foto disponible</p>";
+
+    if (lat && lng) {
+        initMap(lat, lng);
+    } else {
+        document.getElementById("map").innerHTML = "<p>Sin ubicación disponible.</p>";
+    }
+
+    const asistenciaModal = new bootstrap.Modal(document.getElementById("asistenciaModal"));
+    asistenciaModal.show();
+}
+
+    // Configurar el autocompletado del input de proyectos
+    function configurarAutocompletado() {
+        const projectInput = document.getElementById("projectInput");
+        const projectName = document.getElementById("projectName");
+
+        projectInput.addEventListener("input", async (event) => {
+            const query = event.target.value.trim();
+            if (query.length < 2) return;
+
+            const projects = await fetch(`/api/buscar_proyecto?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .catch(error => {
+                    console.error("Error al buscar proyectos:", error);
+                    return [];
+                });
+
+            const datalistId = "projectSuggestions";
+            let datalist = document.getElementById(datalistId);
+            if (!datalist) {
+                datalist = document.createElement("datalist");
+                datalist.id = datalistId;
+                document.body.appendChild(datalist);
+            }
+
+            datalist.innerHTML = "";
+            projects.forEach(project => {
+                const option = document.createElement("option");
+                option.value = project.nombre_proyecto;
+                option.dataset.projectId = project.id;
+                option.dataset.fechaInicio = project.fecha_inicio;  
+                option.dataset.fechaFin = project.fecha_fin;
+                option.dataset.hora_entrada = project.hora_entrada;  
+                option.dataset.hora_salida = project.hora_salida;  
+                datalist.appendChild(option);
+            });
+
+            projectInput.setAttribute("list", datalistId);
+        });
+
+        projectInput.addEventListener("change", () => {
+            const selectedOption = Array.from(document.querySelectorAll(`#projectSuggestions option`))
+                .find(option => option.value === projectInput.value);
+
+            if (selectedOption) {
+                currentProjectId = selectedOption.dataset.projectId; // Actualizar el proyecto seleccionado
+                const projectNameText = selectedOption.value;
+                projectName.textContent = projectNameText;
+                cargarAsistencias(currentStartDate, currentProjectId);
+            }
+        });
+    }
+
+    // Exportar a Excel
+document.getElementById("exportExcel").addEventListener("click", function () {
+const table = document.getElementById("asistenciaTable");
+
+// Extraer encabezados
+const headers = Array.from(table.querySelectorAll("thead th")).map(th => th.textContent.trim());
+
+// Extraer filas
+const rows = Array.from(table.querySelectorAll("tbody tr")).map(row => {
+    return Array.from(row.querySelectorAll("td")).map(td => td.textContent.trim());
+});
+
+// Obtener información adicional
+const projectName = document.getElementById("projectName").textContent.trim() || 'Todos los proyectos';
+const dateRange = document.getElementById("currentWeek").textContent.trim() || 'Rango no especificado';
+
+// Validar que no estén vacíos
+if (!headers.length || !rows.length) {
+    alert("No hay datos para exportar.");
+    console.error("Headers o filas vacíos.");
+    return;
+}
+
+
+
+// Recuperar el CSRF token
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+// Enviar datos al servidor con el CSRF token
+fetch("/exportar_excel", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken
+    },
+    body: JSON.stringify({
+        headers,
+        rows,
+        project_name: projectName,  // Enviar nombre del proyecto
+        date_range: dateRange       // Enviar rango de fechas
+    })
+})
+.then(async response => {
+    if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error en la respuesta del servidor:", errorData.error || response.statusText);
+        throw new Error(errorData.error || "Error desconocido al generar el Excel");
+    }
+    return response.blob();
+})
+.then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "asistencia.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+})
+.catch(error => {
+    console.error("Error en el cliente:", error.message);
+    alert(`Error al exportar el Excel: ${error.message}`);
+});
+});
+
+
+    // Inicializar eventos y cargar la asistencia inicial
+    document.addEventListener("DOMContentLoaded", function () {
+        currentStartDate = getStartOfWeek(new Date()); // Inicializar la semana actual
+        updateWeekDisplay(currentStartDate); // Actualizar encabezado de la semana
+        
+        
+        configurarAutocompletado();
+
+        document.getElementById("prevWeek").addEventListener("click", () => {
+currentStartDate.setDate(currentStartDate.getDate() - 7); // Retroceder una semana
+updateWeekDisplay(currentStartDate);
+cargarAsistencias(currentStartDate, currentProjectId); // Respetar el filtro actual
+
+assignDatesToTable(); // Actualizar las fechas visibles en la tabla
+});
+
+// Botón para la semana siguiente
+document.getElementById("nextWeek").addEventListener("click", () => {
+currentStartDate.setDate(currentStartDate.getDate() + 7); // Avanzar una semana
+updateWeekDisplay(currentStartDate);
+cargarAsistencias(currentStartDate, currentProjectId); // Respetar el filtro actual
+
+assignDatesToTable(); // Actualizar las fechas visibles en la tabla
+});
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+const form = document.getElementById("incidenciaForm");
+const employeeNameInput = document.getElementById("employeeName");
+const employeeSuggestions = document.getElementById("employeeSuggestions");
+const fechaInicialInput = document.getElementById("fechaInicial");
+const fechaFinalInput = document.getElementById("fechaFinal");
+const diasSolicitadosInput = document.getElementById("diasSolicitados");
+
+// Función para calcular la diferencia de días
+function calcularDias() {
+    const fechaInicial = new Date(fechaInicialInput.value);
+    const fechaFinal = new Date(fechaFinalInput.value);
+
+    if (!isNaN(fechaInicial) && !isNaN(fechaFinal) && fechaFinal >= fechaInicial) {
+        const diferenciaTiempo = fechaFinal - fechaInicial;
+        const diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24)) + 1; // +1 para incluir ambos días
+        diasSolicitadosInput.value = diferenciaDias; // Actualizar el campo con el total de días
+    } else {
+        diasSolicitadosInput.value = 0; // Si no hay rango válido, poner 0
+    }
+}
+
+// Actualizar el total de días al cambiar las fechas
+fechaInicialInput.addEventListener("change", calcularDias);
+fechaFinalInput.addEventListener("change", calcularDias);
+
+// Autocompletar empleados
+employeeNameInput.addEventListener("input", async () => {
+    const query = employeeNameInput.value.trim();
+    if (query.length > 0) { // Buscar desde la primera letra
+        try {
+            const response = await fetch(`/api/buscar_empleado/?query=${encodeURIComponent(query)}`);
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
+            const employees = await response.json();
+
+            // Mostrar sugerencias
+            employeeSuggestions.innerHTML = employees.map(emp => `
+                <a class="list-group-item list-group-item-action" data-id="${emp.id}">
+                    ${emp.nombre} ${emp.apellido}
+                </a>
+            `).join("");
+            employeeSuggestions.style.display = "block";
+
+            // Agregar evento de selección a cada sugerencia
+            employeeSuggestions.querySelectorAll(".list-group-item").forEach(item => {
+                item.addEventListener("click", () => {
+                    document.getElementById("idEmpleado").value = item.getAttribute("data-id");
+                    employeeNameInput.value = item.textContent.trim();
+                    employeeSuggestions.style.display = "none";
+                });
+            });
+        } catch (error) {
+            console.error("Error al buscar empleados:", error);
+            employeeSuggestions.innerHTML = `<p class="list-group-item text-danger">Error al buscar empleados</p>`;
+            employeeSuggestions.style.display = "block";
+        }
+    } else {
+        employeeSuggestions.innerHTML = "";
+        employeeSuggestions.style.display = "none";
+    }
+});
+
+// Cerrar el menú si haces clic fuera de él
+document.addEventListener("click", (event) => {
+    if (!employeeSuggestions.contains(event.target) && event.target !== employeeNameInput) {
+        employeeSuggestions.style.display = "none";
+    }
+});
+
+// Envío del formulario
+form.addEventListener("submit", async (event) => {
+    event.preventDefault(); // Prevenir el envío predeterminado del formulario
+
+    const csrfToken = document.querySelector('input[name="csrf_token"]').value; // Obtener CSRF token
+
+    const data = {
+        idEmpleado: document.getElementById("idEmpleado").value,
+        tipoIncidencia: document.getElementById("tipoIncidencia").value, // Enviará la inicial seleccionada
+        fechaInicial: document.getElementById("fechaInicial").value,
+        fechaFinal: document.getElementById("fechaFinal").value || null,
+        diasSolicitados: diasSolicitadosInput.value || 0,
+        comentarios: document.getElementById("comentarios").value || null,
+    };
+
+    try {
+        const response = await fetch('/guardar_incidencia', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken // Enviar CSRF token en el encabezado
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            Swal.fire({
+                title: "Éxito",
+                text: result.message || "Incidencia registrada exitosamente.",
+                icon: "success"
+            });
+
+            // Recargar y procesar incidencias
+            await cargarIncidencias(currentStartDate); // Reutilizar función existente
+
+            form.reset();
+            document.getElementById("idEmpleado").value = ""; // Limpiar el ID empleado
+            diasSolicitadosInput.value = 0; // Resetear el total de días
+        } else {
+            const error = await response.json();
+            Swal.fire({
+                title: "Error",
+                text: error.error || "Error al registrar la incidencia.",
+                icon: "error"
+            });
+        }
+    } catch (error) {
+        console.error("Error al enviar el formulario:", error);
+        Swal.fire({
+            title: "Error",
+            text: "Error al enviar el formulario. Intenta nuevamente.",
+            icon: "error"
+        });
+    }
+});
+});
+
+document.getElementById("sueldoImssInput").addEventListener("input", actualizarSueldoBase);
+document.getElementById("monederoInput").addEventListener("input", actualizarSueldoBase);
+
+function actualizarSueldoBase() {
+const sueldoImss = parseFloat(document.getElementById("sueldoImssInput").value) || 0;
+const monedero = parseFloat(document.getElementById("monederoInput").value) || 0;
+const sueldoBase = sueldoImss + monedero;
+
+document.getElementById("sueldoBaseInput").value = sueldoBase.toFixed(2);
+}
+
+document.getElementById("nominaSelect").addEventListener("change", (event) => {
+const selectedOption = event.target.options[event.target.selectedIndex];
+const idDetalleBauart = selectedOption.value; // Capturar el ID de la nómina seleccionada
+
+document.getElementById("idDetalleBauartInput").value = idDetalleBauart; // Asignarlo al input oculto
+});
+
+document.getElementById("asignarEmpleadoForm").addEventListener("submit", async (event) => {
+event.preventDefault(); // Evita el envío automático del formulario
+
+// Capturar valores de los campos
+const idProyecto = document.getElementById("proyectoSelect").value;
+const idEmpleado = document.getElementById("empleadoSelect").value.trim();
+const sueldoImss = parseFloat(document.getElementById("sueldoImssInput").value) || 0;
+const monedero = parseFloat(document.getElementById("monederoInput").value) || 0;
+const sueldoBase = sueldoImss + monedero;
+const idDetalleBauart = parseInt(document.getElementById("idDetalleBauartInput").value, 10); // Asegurar que es un número
+const csrfToken = document.querySelector("input[name='csrf_token']").value;
+
+// 📌 Capturar valores de horario (si el checkbox está activado)
+const usarHorario = document.getElementById("usarHorario").checked;
+const horaEntrada = usarHorario ? document.getElementById("horaEntradaInput").value : null;
+const horaSalida = usarHorario ? document.getElementById("horaSalidaInput").value : null;
+
+// Validaciones
+if (!idEmpleado) {
+alert("Debes seleccionar un empleado antes de asignar.");
+return;
+}
+
+try {
+const response = await fetch('/asignar_empleado', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+    },
+    body: JSON.stringify({
+        id_empleado: idEmpleado,
+        id_proyecto: idProyecto,
+        sueldo_imss: sueldoImss,
+        monedero: monedero,
+        sueldo_base: sueldoBase,
+        id_detalle_bauart: idDetalleBauart,
+        hora_entrada_p: horaEntrada,  // 🔹 Enviar hora si el checkbox está activado, de lo contrario null
+        hora_salida_p: horaSalida
+    }),
+});
+
+if (response.ok) {
+    alert("Empleado asignado correctamente.");
+    cargarAsistencias(currentStartDate, currentProjectId);
+} else {
+    const error = await response.json();
+    alert(`Error: ${error.error}`);
+}
+} catch (err) {
+console.error("🚨 Error al enviar la solicitud:", err);
+alert("Hubo un problema al asignar el empleado.");
+}
+});
+
+// ✅ Funcionalidad para habilitar/deshabilitar los inputs de hora según el checkbox
+document.getElementById("usarHorario").addEventListener("change", function() {
+const horaEntradaInput = document.getElementById("horaEntradaInput");
+const horaSalidaInput = document.getElementById("horaSalidaInput");
+
+if (this.checked) {
+horaEntradaInput.disabled = false;
+horaSalidaInput.disabled = false;
+} else {
+horaEntradaInput.disabled = true;
+horaSalidaInput.disabled = true;
+horaEntradaInput.value = ""; // Limpiar valores si se desactiva
+horaSalidaInput.value = "";
+}
+});
+
+
+
+// Limpiar los campos del formulario cada vez que se abre el modal
+document.getElementById("abrirModalAsignar").addEventListener("click", function () {
+// Limpiar el formulario al abrir el modal
+document.getElementById("asignarEmpleadoForm").reset();
+document.getElementById("empleadoSelect").selectedIndex = 0; // Restablecer el select de empleado
+document.getElementById("proyectoSelect").selectedIndex = 0; // Restablecer el select de proyecto
+document.getElementById("nominaSelect").selectedIndex = 0; // Restablecer el select de nómina
+
+// Reiniciar otros campos si es necesario
+document.getElementById("sueldoImssInput").value = "";
+document.getElementById("monederoInput").value = "";
+document.getElementById("sueldoBaseInput").value = "";
+
+// Cerrar cualquier otro modal si estaba abierto
+const modal = bootstrap.Modal.getInstance(document.getElementById('asignarEmpleadoModal'));
+if (modal) {
+modal.hide();
+}
+});
+
+document.getElementById("abrirModalAsignar").addEventListener("click", async () => {
+try {
+    const response = await fetch("/api/datos_modal_nomina");
+    if (!response.ok) throw new Error("Error al cargar los datos del modal.");
+    const data = await response.json();
+
+    llenarSelectProyectos(data.proyectos); // Llenar proyectos
+    vaciarSelectEmpleados(); // 🔹 Vaciar empleados para evitar datos innecesarios
+
+} catch (error) {
+    console.error("Error al cargar los datos del modal:", error);
+}
+});
+
+// 🔹 Función para vaciar el select de empleados al abrir el modal
+function vaciarSelectEmpleados() {
+const empleadoSelect = document.getElementById("empleadoSelect");
+empleadoSelect.innerHTML = '<option value="" disabled selected>Selecciona una nómina primero</option>';
+}
+
+document.getElementById("nominaSelect").addEventListener("change", async (event) => {
+const categoriaSeleccionada = event.target.options[event.target.selectedIndex].text.trim();  
+const idProyecto = document.getElementById("proyectoSelect").value; // Obtener el ID del proyecto
+
+if (!categoriaSeleccionada || !idProyecto) {
+console.error("No se seleccionó ninguna categoría o proyecto.");
+return;
+}
+
+try {
+const response = await fetch(`/api/empleados_por_categoria/${encodeURIComponent(categoriaSeleccionada)}/${idProyecto}`);
+if (!response.ok) throw new Error(`Error en la solicitud: ${response.statusText}`);
+
+const empleados = await response.json();
+llenarSelectEmpleados(empleados); // Llenar el select con empleados filtrados
+} catch (error) {
+console.error("Error al cargar empleados filtrados:", error);
+}
+});
+
+// Función para llenar el select de proyectos
+function llenarSelectProyectos(proyectos) {
+const proyectoSelect = document.getElementById("proyectoSelect");
+proyectoSelect.innerHTML = '<option value="" disabled selected>Selecciona un proyecto</option>';
+proyectos.forEach(proyecto => {
+    const option = document.createElement("option");
+    option.value = proyecto.id;
+    option.textContent = `${proyecto.nombre_proyecto} (${proyecto.centro_comercial})`;
+    proyectoSelect.appendChild(option);
+});
+}
+
+// Función para llenar el select de empleados
+function llenarSelectEmpleados(empleados) {
+const empleadoSelect = document.getElementById("empleadoSelect");
+empleadoSelect.innerHTML = '<option value="" disabled selected>Selecciona un empleado</option>';
+empleados.forEach(empleado => {
+    const option = document.createElement("option");
+    option.value = empleado.id;
+    option.textContent = `${empleado.nombre} ${empleado.apellido}`;
+    empleadoSelect.appendChild(option);
+});
+}
+
+function abrirExtraDeudaModal(idEmpleado, extra = 0, deuda = 0) {
+const startDate = getStartOfWeek(currentStartDate); // Inicio de la semana actual
+const weeklyDates = getWeeklyDates(startDate);
+
+const fechaInicio = weeklyDates[0]; // Lunes
+const fechaFinal = weeklyDates[6]; // Domingo
+
+// Configurar los valores del modal
+document.getElementById("extraDeudaEmpleadoId").value = idEmpleado;
+document.getElementById("extraInput").value = extra;
+document.getElementById("deudaInput").value = deuda;
+document.getElementById("observacionesInput").value = "";
+
+// Añade las fechas al modal para que se envíen al servidor
+document.getElementById("extraDeudaForm").dataset.fechaInicio = fechaInicio;
+document.getElementById("extraDeudaForm").dataset.fechaFinal = fechaFinal;
+
+// Mostrar el modal
+const modal = new bootstrap.Modal(document.getElementById("extraDeudaModal"));
+modal.show();
+}
+
+document.getElementById("extraDeudaForm").addEventListener("submit", async (event) => {
+event.preventDefault(); // Prevenir el envío automático del formulario
+
+// Obtener los valores del formulario
+const idEmpleado = parseInt(document.getElementById("extraDeudaEmpleadoId").value.trim(), 10);
+const extra = parseFloat(document.getElementById("extraInput").value.trim()) || 0;
+const deuda = parseFloat(document.getElementById("deudaInput").value.trim()) || 0;
+const observaciones = document.getElementById("observacionesInput").value.trim();
+
+// Obtener las fechas del rango de fechas (fecha_inicio y fecha_final)
+const fechaInicio = document.getElementById("extraDeudaForm").dataset.fechaInicio;
+const fechaFinal = document.getElementById("extraDeudaForm").dataset.fechaFinal;
+
+// Validar que los valores requeridos estén presentes
+if (!idEmpleado || isNaN(extra) || isNaN(deuda)) {
+alert("Por favor, asegúrese de ingresar todos los datos correctamente.");
+return;
+}
+
+// Realizar la solicitud al backend para actualizar o crear el registro
+try {
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+const response = await fetch('/actualizar_nomina_empleado', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({
+        id_empleado: idEmpleado,
+        extra: extra,
+        deuda: deuda,
+        observaciones: observaciones,
+        fecha_inicio: fechaInicio,  // Fecha de inicio (lunes)
+        fecha_final: fechaFinal,    // Fecha final (domingo)
+    })
+});
+
+const result = await response.json();
+
+if (response.ok) {
+    // Si la respuesta es exitosa, recargar la página con el proyecto y fechas actuales
+    const projectId = currentProjectId;  // Mantener el project_id actual
+    cargarAsistencias(currentStartDate, currentProjectId);
+} else {
+    alert(result.error || "Error al actualizar los datos. Intente nuevamente.");
+}
+} catch (error) {
+console.error("Error al actualizar la nómina:", error);
+alert("Hubo un problema al actualizar los datos. Intenta nuevamente.");
+}
+});
+
+// Función para formatear las fechas en formato YYYY-MM-DD
+function formatDate(date) {
+const year = date.getFullYear();
+const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Mes con dos dígitos
+const day = date.getDate().toString().padStart(2, "0"); // Día con dos dígitos
+return `${year}-${month}-${day}`;
+}
+
+
+document.getElementById("proyectoSelect").addEventListener("change", async (event) => {
+const projectId = event.target.value;
+if (!projectId) return;
+try {
+    const response = await fetch(`/detalles_proyecto/${projectId}`);
+    if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+    const projectDetails = await response.json();
+    llenarNominasPresupuestadas(projectDetails.detalles);
+} catch (error) {
+    console.error("Error al cargar los detalles del proyecto:", error);
+}
+});
+
+function llenarNominasPresupuestadas(detalles) {
+const nominaSelect = document.getElementById("nominaSelect");
+nominaSelect.innerHTML = '<option value="" disabled selected>Selecciona una nómina</option>';
+detalles.forEach(detalle => {
+    if (detalle.Tipo === "DetalleBauart") {
+        const option = document.createElement("option");
+        option.value = detalle.ID;
+        option.textContent = detalle.Descripcion;
+        nominaSelect.appendChild(option);
+    }
+});
+}
+
+document.getElementById("nominaSelect").addEventListener("change", async (event) => {
+const conceptoNomina = event.target.options[event.target.selectedIndex].text.trim(); 
+// 🔹 Tomamos el texto del select en lugar del value para enviar el concepto
+
+if (!conceptoNomina) {
+    console.error("No se seleccionó ninguna nómina presupuestada.");
+    return;
+}
+
+try {
+    const response = await fetch(`/api/empleados_por_concepto?concepto=${encodeURIComponent(conceptoNomina)}`);
+    if (!response.ok) throw new Error(`Error en la solicitud: ${response.statusText}`);
+
+    const empleados = await response.json();
+
+    // 🔹 Llenar el select de empleados con los datos filtrados
+    const empleadoSelect = document.getElementById("empleadoSelect");
+    empleadoSelect.innerHTML = '<option value="" disabled selected>Selecciona un empleado</option>';
+
+    empleados.forEach(empleado => {
+        const option = document.createElement("option");
+        option.value = empleado.id;
+        option.textContent = `${empleado.nombre} ${empleado.apellido}`;
+        empleadoSelect.appendChild(option);
+    });
+} catch (error) {
+    console.error("Error al cargar empleados filtrados:", error);
+}
+});
+
+document.getElementById("projectInput").addEventListener("change", function () {
+// Buscar el proyecto seleccionado en las opciones del datalist
+const selectedOption = Array.from(document.querySelectorAll(`#projectSuggestions option`))
+.find(option => option.value === this.value);
+
+// Si se seleccionó una opción válida
+if (selectedOption) {
+// Obtener la ID y los detalles del proyecto
+const projectId = selectedOption.dataset.projectId;
+const projectName = selectedOption.value;
+
+// Imprimir los datos del proyecto en la consola
+console.log("Proyecto seleccionado:", projectName);
+console.log("ID del Proyecto:", projectId);
+
+// Aquí puedes añadir más detalles si necesitas imprimir más información del proyecto
+// Por ejemplo, si tienes fechas asociadas al proyecto:
+const fechaInicio = selectedOption.dataset.fechaInicio;
+const fechaFin = selectedOption.dataset.fechaFin;
+const projectHoraEntrada = selectedOption.dataset.hora_entrada;
+const projectHoraSalida = selectedOption.dataset.hora_salida;
+console.log("Fecha de inicio:", fechaInicio);
+console.log("Fecha de fin:", fechaFin);
+
+// Ahora actualizas las partes de la UI con la información del proyecto seleccionado
+document.getElementById("projectName").textContent = projectName;
+document.getElementById("projectPeriodo").textContent = `${fechaInicio} - ${fechaFin}`;
+document.getElementById("projectSchedule").textContent = `${(projectHoraEntrada)} - ${(projectHoraSalida)}`;
+} else {
+console.log("No se seleccionó un proyecto válido.");
+}
+});
+
+
+// Función para formatear la fecha en formato YYYY-MM-DD
+function formatFechaYYYYMMDD(fechaISO) {
+if (!fechaISO || fechaISO === "SIN FECHA") return "SIN FECHA";
+
+// Convertir a objeto Date
+const fecha = new Date(fechaISO);
+
+// Verificar si la fecha es válida
+if (isNaN(fecha.getTime())) {
+    console.warn("⚠️ Fecha inválida recibida:", fechaISO);
+    return "SIN FECHA";
+}
+
+// Obtener el año, mes y día
+const año = fecha.getFullYear();
+const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+const dia = fecha.getDate().toString().padStart(2, "0");
+
+return `${año}-${mes}-${dia}`;
+}
+
+async function darBajaEmpleado(idEmpleado, idProyecto) {
+try {
+const response = await fetch('/desasignar_empleado', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({
+        id_empleado: idEmpleado,
+        id_proyecto: idProyecto
+    })
+});
+
+if (response.ok) {
+    const result = await response.json();
+    alert(result.message || "Empleado desasignado exitosamente.");
+    cargarAsistencias(currentStartDate, currentProjectId);
+    // Recargar los datos de la tabla o realizar cualquier otra acción necesaria
+} else {
+    const error = await response.json();
+    alert(error.error || "Error al desasignar el empleado.");
+}
+} catch (error) {
+console.error("Error al desasignar empleado:", error);
+alert("Hubo un problema al desasignar el empleado. Intenta nuevamente.");
+}
+}
+
+document.getElementById("empleadoSelect").addEventListener("change", async function() {
+const empleadoId = this.value;  // Obtener el ID del empleado seleccionado
+if (empleadoId) {
+try {
+    const response = await fetch(`/api/empleado_by_id/${empleadoId}`);
+    
+    // Verificar si la respuesta es exitosa
+    if (!response.ok) {
+        throw new Error("Empleado no encontrado");
+    }
+
+    const empleadoData = await response.json(); // Obtener los datos del empleado como JSON
+
+    // Asignar los datos del empleado a los campos del formulario
+    document.getElementById("sueldoImssInput").value = empleadoData.sueldo_imss || "0.00";
+    document.getElementById("monederoInput").value = empleadoData.monedero || "0.00";
+
+
+    console.log("Empleado seleccionado:", empleadoData);  // Imprime los datos del empleado en la consola
+
+    // Llamar a la función que calcula el sueldo base automáticamente
+    actualizarSueldoBase();  // Esta función ya la tienes en tu código
+
+} catch (error) {
+    console.error("Error al cargar los datos del empleado:", error);
+}
+}
+});
+
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNo8vETZRevilZe3c1pmM7CzrdI3VTXi0&callback=initMap"></script>
+{% endblock %}

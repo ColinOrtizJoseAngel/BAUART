@@ -1,6 +1,6 @@
 <!--IMPORTAR LAYOUT-->
 {% extends "layout.html" %}
-{% block title %}PROVEEDORES{% endblock %}
+{% block title %}MODIFICAR PROVEEDOR{% endblock %}
 <!--HOJA DE ESTILOS EXTERNA-->
 {% block customCSS %}
 
@@ -15,7 +15,7 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="token" value="{{ token }}">
 
-        <div class="container">
+        <div class="container-fluid">
             <div  class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <div class="text-center">
                     <button class="btn botones" type="submit">CONFIRMAR</button>
@@ -42,28 +42,30 @@
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
-                                type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Información
-                                General</button>
+                                type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+                                INFORMACIÓN GENERAL
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="direccion-tab" data-bs-toggle="tab" data-bs-target="#direccion-tab-pane"
-                                type="button" role="tab" aria-controls="direccion-tab-pane" aria-selected="false">Dirección</button>
+                                type="button" role="tab" aria-controls="direccion-tab-pane" aria-selected="false">DIRECCIÓN</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="especialidad-tab" data-bs-toggle="tab"
                                 data-bs-target="#especialidad-tab-pane" type="button" role="tab"
-                                aria-controls="especialidad-tab-pane" aria-selected="false">Especialidades</button>
+                                aria-controls="especialidad-tab-pane" aria-selected="false">ESPECIALIDADES</button>
                         </li>
             
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane"
-                                type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Información de
-                                Contacto</button>
+                                type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">
+                                CONTACTO</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="bank-tab" data-bs-toggle="tab" data-bs-target="#bank-tab-pane"
-                                type="button" role="tab" aria-controls="bank-tab-pane" aria-selected="false">Información
-                                Bancaria</button>
+                                type="button" role="tab" aria-controls="bank-tab-pane" aria-selected="false">
+                                CUENTAS
+                            </button>
                         </li>
                     </ul>
                     <div class="tab-content" id="myTabContent">
@@ -146,7 +148,7 @@
                                 <div class="form-group row">
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="CP" class="form-label">CP*</label>
-                                        <input type="text" class="form-control" id="CP" value="{{ proveedor.cp }}" name="CP" ma placeholder="CÓDIGO POSTAL"
+                                        <input type="text" class="form-control" id="CP" style="text-align: center;" value="{{ proveedor.cp }}" name="CP" ma placeholder="CÓDIGO POSTAL"
                                             required>
                                         <div class="invalid-feedback">
                                             COMPLETA CODIGO POSTAL
@@ -154,7 +156,7 @@
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                         <label for="ESTADO" class="form-label">ESTADO*</label>
-                                        <input type="text" class="form-control" id="ESTADO" value="{{ proveedor.estado }}" name="ESTADO" placeholder="ESTADO"
+                                        <input type="text" class="form-control" id="ESTADO" style="text-align: center;" value="{{ proveedor.estado }}" name="ESTADO" placeholder="ESTADO"
                                             required>
                                         <div class="invalid-feedback">
                                             COMPLETA ESTADO
@@ -162,7 +164,7 @@
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                         <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
-                                        <input type="text" class="form-control"  value="{{ proveedor.municipio }}"  name="MUNICIPIO" id="MUNICIPIO"
+                                        <input type="text" class="form-control" style="text-align: center;"  value="{{ proveedor.municipio }}"  name="MUNICIPIO" id="MUNICIPIO"
                                             placeholder="MUNICIPIO" required>
                                         <div class="invalid-feedback">
                                             COMPLETA MUNICIPIO
@@ -170,7 +172,7 @@
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="PAIS" class="form-label">PAÍS*</label>
-                                        <input type="text" class="form-control" name="PAIS" id="PAIS" value="{{ proveedor.pais }}" required>
+                                        <input type="text" class="form-control" style="text-align: center;" name="PAIS" id="PAIS" value="{{ proveedor.pais }}" required>
                                         <div class="invalid-feedback">
                                             COMPLETA PAÍS
                                         </div>
@@ -179,7 +181,7 @@
                                 <div class="form-group row">
                                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                         <label for="CALLE" class="form-label">CALLE*</label>
-                                        <input type="text" class="form-control" id="CALLE" value="{{ proveedor.calle }}"  name="CALLE" maxlength="50"
+                                        <input type="text" class="form-control" id="CALLE" style="text-align: center;" value="{{ proveedor.calle }}"  name="CALLE" maxlength="50"
                                             placeholder="CALLE" required>
                                         <div class="invalid-feedback">
                                             COMPLETA CALLE
@@ -187,7 +189,7 @@
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                         <label for="COLONIA" class="form-label">COLONIA*</label>
-                                        <input type="text" class="form-control" id="COLONIA" value="{{ proveedor.colonia }}"  name="COLONIA" maxlength="50"
+                                        <input type="text" class="form-control" id="COLONIA" style="text-align: center;" value="{{ proveedor.colonia }}"  name="COLONIA" maxlength="50"
                                             placeholder="COLONIA" required>
                                         <div class="invalid-feedback">
                                             COMPLETA COLONIA
@@ -195,12 +197,12 @@
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="NO_EXTERIOR" class="form-label">NO. EXTERIOR</label>
-                                        <input type="text" class="form-control" value="{{ proveedor.numero_exterior }}" name="NO_EXTERIOR" id="NO_EXTERIOR"
+                                        <input type="text" class="form-control" style="text-align: center;" value="{{ proveedor.numero_exterior }}" name="NO_EXTERIOR" id="NO_EXTERIOR"
                                             placeholder="NÚMERO EXTERIOR">
                                     </div>
                                     <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
                                         <label for="NO_EXTERIOR" class="form-label">NO. INTERIOR</label>
-                                        <input type="text" class="form-control" value="{{ proveedor.numero_interior }}"  name="NO_INTERIOR" id="NO_INTERIOR"
+                                        <input type="text" class="form-control" style="text-align: center;" value="{{ proveedor.numero_interior }}"  name="NO_INTERIOR" id="NO_INTERIOR"
                                             placeholder="NÚMERO INTERIOR">
                                     </div>
                                 </div>
@@ -293,35 +295,35 @@
                                         <tr>
                                             <td>
                                                 <input type="text" class="form-control" value="{{ cc.nombre }}"
-                                                    name="NOMBRE_CONTACTO[]" required="">
+                                                    name="NOMBRE_CONTACTO[]" style="text-align: center;" required="">
                                                 <div class="invalid-feedback">
                                                     Completa Nombre
                                                 </div>
                                             </td>
                                             <td>
                                                 <input type="text" class="form-control" value="{{ cc.apellido }}"
-                                                    name="APELLIDO_CONTACTO[]" required="">
+                                                    name="APELLIDO_CONTACTO[]" style="text-align: center;" required="">
                                                 <div class="invalid-feedback">
                                                     Completa Apellido
                                                 </div>
                                             </td>
                                             <td>
                                                 <input type="text" class="form-control" value="{{ cc.telefono }}"
-                                                    name="TELEFONO_CONTACTO[]" required="">
+                                                    name="TELEFONO_CONTACTO[]" style="text-align: center;" required="">
                                                 <div class="invalid-feedback">
                                                     Completa Telefono
                                                 </div>
                                             </td>
                                             <td>
                                                 <input type="text" class="form-control" value="{{ cc.correo }}"
-                                                    name="CORREO_CONTACTO[]" required="">
+                                                    name="CORREO_CONTACTO[]"  style="text-align: center;"  required="">
                                                 <div class="invalid-feedback">
                                                     Completa Correo
                                                 </div>
                                             </td>
                                             <td>
                                                 <input type="text" class="form-control" value="{{ cc.puesto }}"
-                                                    name="PUESTO_CONTACTO[]" required="">
+                                                    name="PUESTO_CONTACTO[]" style="text-align: center;" required="">
                                                 <div class="invalid-feedback">
                                                     Completa Puesto
                                                 </div>
@@ -383,7 +385,7 @@
                                                 </td>
 
                                                 <td>
-                                                    <input type="text" class="form-control" name="NO_CUENTA[]" maxlength="20" value="{{ cuenta.numero_cuenta }}"
+                                                    <input type="text" class="form-control" name="NO_CUENTA[]" style="text-align: center;" maxlength="20" value="{{ cuenta.numero_cuenta }}"
                                                         onchange="formatearCLABE(this)" required>
                                                     <div class="invalid-feedback">
                                                         Completa número de cuenta
@@ -391,7 +393,7 @@
                                                 </td>
 
                                                 <td>
-                                                    <input type="text" class="form-control" name="CLABE[]" maxlength="19" value="{{ cuenta.clabe }}"
+                                                    <input type="text" class="form-control" name="CLABE[]" style="text-align: center;" maxlength="19" value="{{ cuenta.clabe }}"
                                                         onchange="formatearCLABE(this)" required>
                                                     <div class="invalid-feedback">
                                                         Completa CLABE

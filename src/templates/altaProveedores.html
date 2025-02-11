@@ -79,7 +79,7 @@
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     <label for="RFC" class="form-label">RFC</label>
-                                    <input type="text" onchange="validar_rfc(this)" class="form-control" name="RFC" id="RFC" placeholder="RFC" required>
+                                    <input type="text" onchange="validar_rfc(this)" class="form-control" name="RFC" id="RFC" placeholder="RFC" maxlength="13" required>
                                     <div class="invalid-feedback">
                                         COMPLETA RFC
                                     </div>
@@ -140,102 +140,84 @@
                         <div class="tab-pane fade" id="direccion-tab-pane" role="tabpanel" aria-labelledby="direccion-tab"
                             tabindex="0">
                             <br>
-                            <div class="container-fluid">
-                                <div class="form-group row">
-                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label for="CALLE" class="form-label">CALLE*</label>
-                                        <input type="text" class="form-control" id="CALLE" name="CALLE" maxlength="50"
-                                            placeholder="CALLE" required>
-                                        <div class="invalid-feedback">
-                                            COMPLETA CALLE
+                            <div class="" id="contendorLugarEntrega">
+                                <br>
+                                <div class="container-fluid">
+                                    <div class="form-group row">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <label for="LUGAR_ENTREGA" class="form-label">DIRECION DE OBRA: </label>
+                                            <input type="text" class="form-control" placeholder="BUSCAR DIRECCION" id="inputDirecionObra" name="DIRECCION_OBRA" autocomplete="off" required>
+                                            <div class="invalid-feedback">
+                                                DIRECION DE OBRA
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                        <label for="NO_EXTERIOR" class="form-label">NO. EXTERIOR</label>
-                                        <input type="text" class="form-control" name="NO_EXTERIOR" id="NO_EXTERIOR"
-                                            placeholder="NÚMERO EXTERIOR">
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                        <label for="NO_EXTERIOR" class="form-label">NO. INTERIOR</label>
-                                        <input type="text" class="form-control" name="NO_INTERIOR" id="NO_INTERIOR"
-                                            placeholder="NÚMERO INTERIOR">
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label for="COLONIA" class="form-label">COLONIA*</label>
-                                        <input type="text" class="form-control" id="COLONIA" name="COLONIA" maxlength="50"
-                                            placeholder="COLONIA" required>
-                                        <div class="invalid-feedback">
-                                            COMPLETA COLONIA
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <label for="CALLE" class="form-label">CALLE: </label>
+                                            <input type="text" class="form-control" style="text-align: center;" id="inputCalle" name="CALLE" required>
+                                            <div class="invalid-feedback">
+                                                FALTA CALLE
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                        <label for="CP" class="form-label">CP*</label>
-                                        <input type="text" class="form-control" id="CP" name="CP" ma placeholder="CÓDIGO POSTAL"
-                                            required>
-                                        <div class="invalid-feedback">
-                                            COMPLETA CODIGO POSTAL
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <label for="inputNumeroExterior" class="form-label">NUMERO INTERIOR: </label>
+                                            <input type="text"  style="text-align: center;" class="form-control text-center
+                                            " id="inputNumeroInterior"  name="NUMERO_INTERIOR">
+                                            
                                         </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label for="ESTADO" class="form-label">ESTADO*</label>
-                                        <select id="ESTADO" class="form-control" name="ESTADO" required>
-                                            <option value="" style="text-align: center;">SELECIONA</option>
-                                            <option value="AGUASCALIENTES">AGUASCALIENTES</option>
-                                            <option value="BAJA CALIFORNIA">BAJA CALIFORNIA</option>
-                                            <option value="BAJA CALIFORNIA SUR">BAJA CALIFORNIA SUR</option>
-                                            <option value="CHIAPAS">CHIAPAS</option>
-                                            <option value="CHIHUAHUA">CHIHUAHUA</option>
-                                            <option value="CIUDAD DE MÉXICO">CIUDAD DE MÉXICO</option>
-                                            <option value="COAHUILA">COAHUILA</option>
-                                            <option value="COLIMA">COLIMA</option>
-                                            <option value="DURANGO">DURANGO</option>
-                                            <option value="ESTADO DE MÉXICO">ESTADO DE MÉXICO</option>
-                                            <option value="GUANAJUATO">GUANAJUATO</option>
-                                            <option value="GUERRERO">GUERRERO</option>
-                                            <option value="HIDALGO">HIDALGO</option>
-                                            <option value="JALISCO">JALISCO</option>
-                                            <option value="MICHOACÁN">MICHOACÁN</option>
-                                            <option value="MORELOS">MORELOS</option>
-                                            <option value="NAYARIT">NAYARIT</option>
-                                            <option value="NUEVO LEÓN">NUEVO LEÓN</option>
-                                            <option value="OAXACA">OAXACA</option>
-                                            <option value="PUEBLA">PUEBLA</option>
-                                            <option value="QUERÉTARO">QUERÉTARO</option>
-                                            <option value="SAN LUIS POTOSÍ">SAN LUIS POTOSÍ</option>
-                                            <option value="SIN LOCALIDAD">SIN LOCALIDAD</option>
-                                            <option value="SINALOA">SINALOA</option>
-                                            <option value="SONORA">SONORA</option>
-                                            <option value="TABASCO">TABASCO</option>
-                                            <option value="TAMAULIPAS">TAMAULIPAS</option>
-                                            <option value="TLAXCALA">TLAXCALA</option>
-                                            <option value="VERACRUZ">VERACRUZ</option>
-                                            <option value="YUCATÁN">YUCATÁN</option>
-                                            <option value="ZACATECAS">ZACATECAS</option>
-                                          </select>
-                                          <div class="invalid-feedback">
-                                            SELECIONA UN ESTADO
-                                          </div>
-                                        <div class="invalid-feedback">
-                                            COMPLETA ESTADO
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <label for="inputNumeroExterior" class="form-label">NUMERO EXTERIOR: </label>
+                                            <input type="text" style="text-align: center;" class="form-control text-center" id="inputNumeroExterior" name="NUMERO_EXTERIOR" required>
+                                            <div class="invalid-feedback">
+                                                FALTA NUMERO EXTERIOR
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label for="MUNICIPIO" class="form-label">MUNICIPIO*</label>
-                                        <input type="text" class="form-control" name="MUNICIPIO" id="MUNICIPIO"
-                                            placeholder="MUNICIPIO" required>
-                                        <div class="invalid-feedback">
-                                            COMPLETA MUNICIPIO
+                                    </div> 
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                            <label for="inputColonia" class="form-label">COLONIA: </label>
+                                                <input type="text" class="form-control" id="inputColonia" name="COLONIA"
+                                                    style="text-align: center;" required>
+                                                <div class="invalid-feedback">
+                                                    FALTA COLONIA
+                                                </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                        <label for="PAIS" class="form-label">PAÍS*</label>
-                                        <input type="text" class="form-control" name="PAIS" id="PAIS" value="MÉXICO" required>
-                                        <div class="invalid-feedback">
-                                            COMPLETA PAÍS
+                                        
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <label for="ESTADO" class="form-label">ESTADO: </label>
+                                            <input type="text" style="text-align: center;" class="form-control" id="inputEstado" name="ESTADO" required>
+                                            <div class="invalid-feedback">
+                                                FALTA ESTADO
+                                            </div>
                                         </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <label for="CIUDAD" class="form-label">MUNICIPIO: </label>
+                                            <input type="text" style="text-align: center;"  class="form-control" id="inputCiudad" name="MUNICIPIO" required>
+                                            <div class="invalid-feedback">
+                                                FALTA MUNICIPIO
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                            <label for="CALLE" class="form-label">CP: </label>
+                                            <input type="text" style="text-align: center;"  class="form-control" id="inputCp" name="CP" required>
+                                            <div class="invalid-feedback">
+                                                FALTA CP
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                            <label for="PAIS" class="form-label">PAÍS:*</label>
+                                            <input type="text" style="text-align: center;"  class="form-control" name="PAIS" id="PAIS" value="MÉXICO" required>
+                                            <div class="invalid-feedback">
+                                                COMPLETA PAÍS
+                                            </div>
+                                        </div>
+                                    </div> 
+                                     
+                                    <div class="row">
+                                        <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+                                        <input class="oculto" id="id_latitud" name="LATITUD">
+                                        <input class="oculto" id="id_longitud" name="LONGITUD">
                                     </div>
+
                                 </div>
                                 
                             </div>

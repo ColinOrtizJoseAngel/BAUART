@@ -143,6 +143,7 @@ body{
 
 th,
 td {
+  align-content: center;
   padding: 10px;
   text-align: center;
   border: 1px solid #ddd;

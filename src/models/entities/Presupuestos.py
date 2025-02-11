@@ -6,7 +6,8 @@ class Presupuesto:
                  porcentaje_indirecto=0.0, total_cliente=0.0, subtotal_proveedor=0.0, 
                  subtotal_diferencia=0.0, usuario_id=None, estatus=0, porcentaje_por_cobra=0.0,
                  fecha_inicio=None, fecha_fin=None, direccion_obra=None, porcetaje_gastado_real=0.0, 
-                 total_semanas=0, total_porcentaje_indirecto=0.0, total_proveedor=0.0, total_diferencia=0.0):
+                 total_semanas=0, total_porcentaje_indirecto=0.0, total_proveedor=0.0, total_diferencia=0.0,
+                 estatus_contratos=0,estatus_presupuesto=0):
         """
         Clase para representar un Presupuesto.
 
@@ -65,46 +66,48 @@ class Presupuesto:
         self.total_diferencia = total_diferencia
         self.usuario_id = usuario_id
         self.estatus = estatus
+        self.estatus_contratos = estatus_contratos
+        self.estatus_presupuesto = estatus_presupuesto
+        
 
     def to_dict(self):
-        """
-        Serializa los atributos de la instancia en un diccionario.
-
-        Returns:
-            dict: Diccionario con los atributos de la instancia.
-        """
         return {
             "id": self.id,
             "proyecto": self.proyecto,
             "id_proyecto": self.id_proyecto,
+            "id_director": self.id_director,
             "id_cliente": self.id_cliente,
             "id_empresa": self.id_empresa,
-            "id_director": self.director_obra,
             "presupuesto_cliente": self.presupuesto_cliente,
-            "estatus_proyecto": self.estatus_proyecto,
+            "falta_por_cobrar": self.falta_por_cobrar,
+            "porcentaje_por_cobra": self.porcentaje_por_cobra,
+            "fecha_inicio": self.fecha_inicio,
+            "direccion_obra": self.direccion_obra,
             "pagado_cliente": self.pagado_cliente,
             "porcentaje_pagado_cliente": self.porcentaje_pagado_cliente,
-            "gastado_real": self.gastado_real,
-            "porcentaje_gastado_real": self.porcetaje_gastado_real,
-            "falta_por_cobrar": self.falta_por_cobrar,
             "falta_por_gastar": self.falta_por_gastar,
             "porcentaje_por_gastar": self.porcentaje_por_gastar,
+            "fecha_fin": self.fecha_fin,
+            "director_obra": self.director_obra,
+            "gastado_real": self.gastado_real,
+            "porcetaje_gastado_real": self.porcetaje_gastado_real,
+            "estatus_proyecto": self.estatus_proyecto,
+            "total_semanas": self.total_semanas,
             "subtotal_cliente": self.subtotal_cliente,
-            "porcentaje_indirecto": self.porcentaje_indirecto,
-            "total_cliente": self.total_cliente,
             "subtotal_proveedor": self.subtotal_proveedor,
             "subtotal_diferencia": self.subtotal_diferencia,
+            "porcentaje_indirecto": self.porcentaje_indirecto,
+            "total_porcentaje_indirecto": self.total_porcentaje_indirecto,
+            "total_cliente": self.total_cliente,
+            "total_proveedor": self.total_proveedor,
+            "total_diferencia": self.total_diferencia,
             "usuario_id": self.usuario_id,
             "estatus": self.estatus,
-            "fecha_inicio": self.fecha_inicio,
-            "fecha_fin": self.fecha_fin,
-            "direccion_obra": self.direccion_obra,
-            "total_semanas": self.total_semanas,
-            "total_porcentaje_indirecto": self.total_porcentaje_indirecto,
-            "total_proveedor": self.total_proveedor,
-            "total_diferencia": self.total_diferencia
+            "estatus_contratos": self.estatus_contratos,
+            "estatus_presupuesto": self.estatus_presupuesto
         }
-
+        
+        
 class DetallePresupuesto:
     def __init__(self, id=0, id_presupuesto=None, id_concepto=None, concepto="", 
                  id_proveedor=None, presupuesto_cliente=0.0, presupuesto_contratista=0.0, 

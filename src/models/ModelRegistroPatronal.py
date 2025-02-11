@@ -139,3 +139,35 @@ class ModelRegistroPatronal:
                 db.commit()
         except Exception as ex:
             raise Exception(ex)
+
+
+    @classmethod
+    def get_registro_patronal_by_empresa(cls, db, id_empresa):
+        try:
+            with db.cursor() as cursor:
+                query = """
+                    SELECT ID, ID_EMPRESA, NUMERO_REGISTRO_PATRONAL, ESTADO, FECHA_REGISTRO, USUARIO_ID, IS_BLOCKED
+                    FROM REGISTRO_PATRONALES 
+                    WHERE ID_EMPRESA = ?;
+                """
+                cursor.execute(query, (id_empresa,))  # <-- Corregí la sintaxis del parámetro
+                rows = cursor.fetchall()
+
+                if not rows:
+                    return []
+
+                registrospatronales = []
+                for row in rows:
+                    registrospatronales.append({
+                        "id_registro": row[0],
+                        "id_empresa": row[1],
+                        "numero_registro_patronal": row[2],
+                        "estado": row[3],
+                        "fecha_registro": row[4],
+                        "usuario": row[5],
+                        "is_blocked": row[6]
+                    })
+                return registrospatronales
+
+        except Exception as ex:
+            raise Exception(f"Error en la consulta: {str(ex)}")

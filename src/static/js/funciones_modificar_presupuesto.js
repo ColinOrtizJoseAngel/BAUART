@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <input type="text" class="form-control" style="display: none" id="INPUT_ID_ESPECIALIDADES" name=ID_ESPECIALIDADES_NV[]>
     <div class="autocomplete-items"></div>
     <div class="invalid-feedback">
-        Selecciona una especialidad
+        SELECT A ESPECIALIDAD
     </div>`;
   
     cell3.innerHTML = `
@@ -196,9 +196,9 @@ document.addEventListener("DOMContentLoaded", function () {
   `;
   
     cell7.innerHTML = `
-  <select style="text-align: center;"  id="CONTRATO_FIRMADO" name="CONTRATO_FIRMADO_NV[]" class="form-control" >
-      <option value=True>SÍ</option>
-      <option value=False>NO</option>
+  <select style="text-align: center;"  id="CONTRATO_FIRMADO_${contador}" name="CONTRATO_FIRMADO_NV[]" onchange="validarContratosPresupuesto()" class="form-control" >
+      <option value=1>SÍ</option>
+      <option value=0>NO</option>
   </select>
   <div class="invalid-feedback">
       Completa el banco
@@ -206,9 +206,9 @@ document.addEventListener("DOMContentLoaded", function () {
   `;
   
     cell8.innerHTML = `
-    <select id="STATUS" name="STATUS_NV[]"  id="STATUS_${contador}" class="form-control">
-        <option value="1">PRESUPUESTO CARGADO</option>
-        <option value="2">APROBADO POR DIRECTOR</option>
+    <select name="STATUS_NV[]"  id="STATUS_${contador}" onchange="validarEstatusPresupuesto()" class="form-control">
+        <option value="0">PRESUPUESTO CARGADO</option>
+        <option value="1">APROBADO POR DIRECTOR</option>
     </select>
     `;
   
@@ -220,10 +220,9 @@ document.addEventListener("DOMContentLoaded", function () {
     
     
     configurar_autocompletado_especialida(newRow,contador);
+    validarEstatusPresupuesto();
     actualizarNumeracion();
 
-
-   
 }
 
 
@@ -295,8 +294,8 @@ document.addEventListener("DOMContentLoaded", function () {
       
       cell7.innerHTML = `
       <select id="STATUS" name="SUB_STATUS-${id}[]" class="form-control">
-                                    <option value="0">PRESUPUESTO CARGADO</option>
-                                    <option value="0">APROBADO POR DIRECTOR</option>
+                                    <option value="1">PRESUPUESTO CARGADO</option>
+                                    <option value="2">APROBADO POR DIRECTOR</option>
                                 </select>
       `;                      
   
@@ -345,8 +344,8 @@ document.addEventListener("DOMContentLoaded", function () {
   
       cell7.innerHTML = `
       <select id="STATUS" name="SUB_STATUS-${id}[]" class="form-control">
-                                    <option value="0">PRESUPUESTO CARGADO</option>
-                                    <option value="0">APROBADO POR DIRECTOR</option>
+                                    <option value="1">PRESUPUESTO CARGADO</option>
+                                    <option value="2">APROBADO POR DIRECTOR</option>
                                 </select>
       `;                      
   
@@ -486,7 +485,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const directorPrepupuesto = document.getElementById(`NOMBRE_DIRECTOR_${id}`)
       const direccionPrepupuesto = document.getElementById(`DIRECCION_${id}`)
       const inputNombreSub = document.getElementById(`INPUT_NOMBRE_PREPUSPUESTO_${id}`)
-  
+      const statuspartida = document.getElementById(`STATUS_${id}`)
      
       tituloPresupuesto.textContent  = "BAUART - " +inputEspecialidad.value 
       inputNombreSub.value =  "BAUART - " +inputEspecialidad.value 
@@ -496,6 +495,7 @@ document.addEventListener("DOMContentLoaded", function () {
       inputEspecialidad.setAttribute("readonly", true);
       inputPresupuestoCliente.setAttribute("readonly", true);
       inputPresupuestoProveedor.setAttribute("readonly", true)
+      statuspartida.classList.add("readonly-select"); 
       contenedorBotones.classList.remove("oculto");
       select.classList.add("oculto")
   
@@ -510,7 +510,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function guardar_presuouesto(id){
     const inputSubpresupuestoCliente = document.getElementById(`INPUT_PRESUPUESTO_CLIENTE_BAUART_${id}`)
     const inputSubpresuouestoContratista = document.getElementById(`INPUT_PRESUPUESTO_CONTRATISTA_${id}`)
-    console.log(inputSubpresuouestoContratista.value)
     const inputSubpresupuestoDiferencia = document.getElementById(`INPUT_DIFERENCIA_PRESUPUESTOS_${id}`)
     const inputDetallePresupuestoCliente = document.getElementById(`PRESUPUESTO_CLIENTE_${id}`)
     const inputDetallePresupuestoContratista = document.getElementById(`PRESUPUESTO_PROVEEDOR_${id}`)
@@ -532,23 +531,26 @@ document.addEventListener("DOMContentLoaded", function () {
     
      // Selecciona todas las filas del cuerpo de la tabla
      var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-     
-     // Recorre todas las filas
-     for (var i = 0; i < rows.length; i++) {
-         // Selecciona el campo de estatus en la fila actual
-         var estatusSelect = rows[i].querySelector('select[name="STATUS_SUB_DB[]"]');
-         
-         // Verifica si el estatus es "APROBADO POR DIRECTOR"
-         if (estatusSelect && estatusSelect.value === "1") {
-            contrado_aprobado = true
-         }
-         else {
-            contrado_aprobado = false
-         }
+    
+    
+    // Variable para verificar si todas las partidas están aprobadas
+    let presupuesto_aprobado = true;
 
-     }
+    // Recorrer todas las filas
+    for (var i = 0; i < rows.length; i++) {
+      // Obtener los selects de estatus
+      var estatusSelect = rows[i].querySelector('select[name="STATUS_SUB_DB[]"]');
+      var estatusSubPresupuesto = rows[i].querySelector(`select[name="SUB_STATUS-${id}[]"]`);
 
-    if(contrado_aprobado){
+      // Verificar si ambos existen y si alguna fila no está aprobada
+      if ((estatusSelect && estatusSelect.value !== "1") || 
+          (estatusSubPresupuesto && estatusSubPresupuesto.value !== "1")) {
+          presupuesto_aprobado = false;
+          break;  // Si encontramos una fila no aprobada, salimos del bucle
+      }
+    }
+
+    if(presupuesto_aprobado){
       // Si no se encontró ningún estatus "APROBADO POR DIRECTOR", muestra un mensaje de error
       selectEstatus = document.getElementById(`STATUS_${id}`)
       selectEstatus.value = 1
@@ -558,6 +560,7 @@ document.addEventListener("DOMContentLoaded", function () {
       selectEstatus.value = 0
     }
     
+    validarEstatusPresupuesto()
   }
   
   function eliminarFila(button) {
@@ -1408,3 +1411,92 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+
+
+function validarEstatusPresupuesto() {
+  // Obtener la tabla
+  var table = document.getElementById("DETALLE_PRESUPUESTO");
+  if (!table) {
+      console.error("No se encontró la tabla con ID DETALLE_PRESUPUESTO.");
+      return;
+  }
+
+  // Obtener todas las filas del tbody
+  let rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+  // Variable para verificar si todas las partidas están aprobadas
+  var estatus_presupuesto = true;
+
+  // Recorrer todas las filas de la tabla
+  for (var i = 0; i < rows.length; i++) {
+      // Buscar los selects de estatus
+      var estatusPartidasDb = rows[i].querySelector('select[name="STATUS_DB[]"]');
+      var estatusPartidasNv = rows[i].querySelector('select[name="STATUS_NV[]"]');
+
+      // Verificar si existen los selects y si alguna fila no está aprobada
+      if ((estatusPartidasDb && estatusPartidasDb.value !== "1") || 
+          (estatusPartidasNv && estatusPartidasNv.value !== "1")) {
+          estatus_presupuesto = false;
+          break; // Si encontramos una fila no aprobada, salimos del bucle
+      }
+  }
+
+  // Obtener el campo de status_presupuesto
+  let inputstatusPresupuesto = document.getElementById("status_presupuesto");
+
+  if (!inputstatusPresupuesto) {
+      console.error("No se encontró el campo con ID status_presupuesto.");
+      return;
+  }
+
+  // Asignar el valor al input
+  inputstatusPresupuesto.value = estatus_presupuesto ? "true" : "false";
+
+  console.log("Estado del presupuesto:", inputstatusPresupuesto.value);
+}
+
+
+function validarContratosPresupuesto(){
+   // Obtener la tabla
+   var table = document.getElementById("DETALLE_PRESUPUESTO");
+   if (!table) {
+       console.error("No se encontró la tabla con ID DETALLE_PRESUPUESTO.");
+       return;
+   }
+ 
+   // Obtener todas las filas del tbody
+   let rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+ 
+   // Variable para verificar si todas las partidas están aprobadas
+   var contratos_firmados = true;
+ 
+   // Recorrer todas las filas de la tabla
+  for (var i = 0; i < rows.length; i++) {
+      // Buscar los selects de estatus
+      var contatroFirmadoDb = rows[i].querySelector('select[name="CONTRATO_FIRMADO_DB[]"]');
+      var contatroFirmadoNv = rows[i].querySelector('select[name="CONTRATO_FIRMADO_NV[]"]');
+ 
+      // Verificar si existen los selects y si alguna fila no está aprobada
+      if ((contatroFirmadoDb && contatroFirmadoDb.value !== "1") || 
+          (contatroFirmadoNv && contatroFirmadoNv.value !== "1")) {
+          contratos_firmados = false;
+          break; // Si encontramos una fila no aprobada, salimos del bucle
+      }
+  }
+
+  
+  // Obtener el campo de status_presupuesto
+  let inputStatusContratos = document.getElementById("status_contratos");
+
+  if (!inputStatusContratos) {
+      console.error("No se encontró el campo con ID status_presupuesto.");
+      return;
+  }
+
+  // Asignar el valor al input
+  inputStatusContratos.value = contratos_firmados ? "true" : "false";
+
+  console.log("Estado del presupuesto:", inputstatusPresupuesto.value);
+
+}

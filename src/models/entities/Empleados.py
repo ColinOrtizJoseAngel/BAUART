@@ -10,8 +10,9 @@ class Empleados:
                  salario_diario_integrado=0.0, numero_credito_infonavit="", tipo_descuento_infonavit="",
                  factor_infonavit=0.0, fecha_ingreso="", turno="", tipo_contrato="", contacto_accidente="",
                  alergias="", enfermedades_controladas="", edificio="", alcaldia="", municipio="",
-                 registro_patronal="", cuenta="", motivo_baja="", id_monedero="") -> None:
-
+                 registro_patronal="", cuenta="", motivo_baja="", id_monedero="",
+                 contratable=None, observaciones="") -> None:
+        # Campos existentes
         self.id = id
         self.nombre = nombre
         self.apellido = apellido
@@ -71,3 +72,5 @@ class Empleados:
         self.cuenta = cuenta
         self.motivo_baja = motivo_baja
         self.id_monedero = id_monedero
+        self.contratable = contratable  
+        self.observaciones = observaciones  

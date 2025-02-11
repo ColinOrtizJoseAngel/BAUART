@@ -203,9 +203,10 @@ class ModelPresupuesto:
         try:
             # Obtener la información general del presupuesto
             presupuesto_general = cls.obtener_presupuesto_por_id(db, id_presupuesto)
-
             # Obtener los detalles del presupuesto
             detalles_presupuesto = cls.obtener_detalle_presupuesto_por_id(db, id_presupuesto)
+            
+            presupuesto_general['total_partidas'] = len(detalles_presupuesto)
 
             # Obtener presupuestos Bauart asociados a los detalles del presupuesto
             #presupuestos_bauart = cls.obtener_presupuesto_bauart_por_detalle(db, detalles_presupuesto)
@@ -289,7 +290,9 @@ class ModelPresupuesto:
                         p.porcentaje_por_gastar,
                         p.total_contratista,
                         p.total_diferencia,
-                        p.porcentaje_indirecto
+                        p.porcentaje_indirecto,
+                        p.estatus_contratos,
+						p.estatus_presupuesto
                     FROM Presupuestos AS p
                     INNER JOIN CLIENTES AS c ON c.ID = p.id_cliente
                     INNER JOIN EMPRESAS AS e ON e.ID = p.id_empresa
@@ -326,7 +329,7 @@ class ModelPresupuesto:
                         "diferencia_es_negativa" : cls.vierificar_diferecnia(row[20]),
                         "usuario": row[21],
                         "nombre_usuario": row[22],
-                        "estatus": cls.formatear_a_pesos(row[23]),
+                        "estatus": row[23],
                         "direcion_obra" : row[24],
                         "fecha_inicio": row[25],
                         "fecha_fin": row[26],
@@ -336,6 +339,8 @@ class ModelPresupuesto:
                         "total_proveedor":cls.formatear_a_pesos(row[30]),
                         "total_diferencia":cls.formatear_a_pesos(row[31]),
                         "porcentaje_indirecto":row[32],
+                        "estatus_contratos":row[33],
+                        "estatus_presupuesto":row[34],
                         "detalle_presupuesto" : []
                     }
                 return presupuesto
@@ -487,42 +492,59 @@ class ModelPresupuesto:
                 """
                 cursor.execute(query)
                 rows = cursor.fetchall()
-
-                # Mapear resultados a objetos o diccionarios
-                presupuestos = [
-                    {
-                        "id_presupuesto": row[0],
-                        "proyecto": row[1],
-                        "id_proyecto": row[2],
-                        "id_cliente": row[3],
-                        "cliente": row[4],
-                        "id_empresa": row[5],
-                        "empresa": row[6],
-                        "id_director": row[7],
-                        "presupuesto_cliente": cls.formatear_a_pesos(row[8]),
-                        "estatus_proyecto":cls.formatear_a_pesos(row[9]),
-                        "pagado_cliente":cls.formatear_a_pesos(row[10]),
-                        "porcentaje_pagado":cls.formatear_a_pesos(row[11]),
-                        "gastado_real": cls.formatear_a_pesos(row[12]),
-                        "porcentaje_gastado": cls.formatear_a_pesos(row[13]),
-                        "falta_por_cobrar": cls.formatear_a_pesos(row[14]),
-                        "falta_por_gastar": cls.formatear_a_pesos(row[15]),
-                        "subtotal_cliente_iva": cls.formatear_a_pesos(row[16]),
-                        "indirecto_cliente_iva": cls.formatear_a_pesos(row[17]),
-                        "total_cliente_iva": cls.formatear_a_pesos(row[18]),
-                        "sub_proveedor": cls.formatear_a_pesos(row[19]),
-                        "sub_diferencia": cls.formatear_a_pesos(row[20]),
-                        "diferencia_es_negativa" : cls.vierificar_diferecnia(row[20]),
-                        "usuario": row[21],
-                        "nombre_usuario": row[22],
-                        "estatus": row[23],
-                        "total_proveedor":row[24],
-                        "total_diferencia": row[25],
-                        "porcentaje_indirecto": row[26]
+                presupuestos = []
+                for row in rows:
+                    # Mapear resultados a objetos o diccionarios
+                    presupuesto ={
+                            "id_presupuesto": row[0],
+                            "proyecto": row[1],
+                            "id_proyecto": row[2],
+                            "id_cliente": row[3],
+                            "cliente": row[4],
+                            "id_empresa": row[5],
+                            "empresa": row[6],
+                            "id_director": row[7],
+                            "presupuesto_cliente": cls.formatear_a_pesos(row[8]),
+                            "estatus_proyecto":cls.formatear_a_pesos(row[9]),
+                            "pagado_cliente":cls.formatear_a_pesos(row[10]),
+                            "porcentaje_pagado":cls.formatear_a_pesos(row[11]),
+                            "gastado_real": cls.formatear_a_pesos(row[12]),
+                            "porcentaje_gastado": cls.formatear_a_pesos(row[13]),
+                            "falta_por_cobrar": cls.formatear_a_pesos(row[14]),
+                            "falta_por_gastar": cls.formatear_a_pesos(row[15]),
+                            "subtotal_cliente_iva": cls.formatear_a_pesos(row[16]),
+                            "indirecto_cliente_iva": cls.formatear_a_pesos(row[17]),
+                            "total_cliente_iva": cls.formatear_a_pesos(row[18]),
+                            "sub_proveedor": cls.formatear_a_pesos(row[19]),
+                            "sub_diferencia": cls.formatear_a_pesos(row[20]),
+                            "diferencia_es_negativa" : cls.vierificar_diferecnia(row[20]),
+                            "usuario": row[21],
+                            "nombre_usuario": row[22],
+                            "estatus": row[23],
+                            "total_proveedor":row[24],
+                            "total_diferencia": row[25],
+                            "porcentaje_indirecto": row[26]
                     }
-                    for row in rows
-                ]
-
+                    detalle_presupuesto = cls.obtener_detalle_presupuesto_por_id(db, presupuesto["id_presupuesto"])
+                    contras_firmados = 0
+                    partidas_aprobadas = 0
+                    
+                    
+                    for i in  detalle_presupuesto:
+                        if i.contrato_firmado == 1:
+                            contras_firmados += 1
+                        if i.estatus == 1:
+                            partidas_aprobadas += 1
+                    
+                    partidas_totales = len(detalle_presupuesto)
+                    presupuesto["contratos_firmados"] = contras_firmados
+                    presupuesto["partidas_aprobadas"] = partidas_aprobadas
+                    presupuesto["partidas_sin_contrato"] = partidas_totales - contras_firmados
+                    presupuesto["partidas_por_aprobar"] = partidas_totales - partidas_aprobadas
+                    presupuesto["partidas_totales"] = partidas_totales  
+                        
+                    presupuestos.append(presupuesto)
+                    
                 return presupuestos
         except Exception as ex:
             raise Exception(f"Error al obtener los presupuestos: {ex}")
@@ -897,8 +919,18 @@ class ModelPresupuesto:
                 if presupuesto_actual['usuario'] != presupuesto.usuario_id:
                     updates.append("usuario = ?")
                     params.append(presupuesto.usuario_id)
+                    
+                if presupuesto_actual['estatus'] != presupuesto.estatus:
+                    updates.append("estatus = ?")
+                    params.append(presupuesto.estatus)
+                    
+                if presupuesto_actual['estatus_contratos'] != presupuesto.estatus_contratos:  
+                    updates.append("estatus_contratos = ?")
+                    params.append(presupuesto.estatus_contratos)
                 
-                
+                if presupuesto_actual['estatus_presupuesto'] != presupuesto.estatus_presupuesto:
+                    updates.append("estatus_presupuesto = ?")
+                    params.append(presupuesto.estatus_presupuesto)
                 
                 updates.append("porcentaje_indirecto = ?")
                 params.append(float(presupuesto.porcentaje_indirecto))

@@ -58,7 +58,24 @@ class ModelEmpleado:
                 return empleados
         except Exception as ex:
             raise Exception(ex)
-
+    
+    @classmethod
+    def get_empleados_por_categoria(cls, db, categoria):
+        """
+        Obtiene los empleados que pertenecen a la categoría seleccionada en la nómina presupuestada.
+        """
+        try:
+            with db.cursor() as cursor:
+                query = """ 
+                SELECT * FROM EMPLEADOS 
+                WHERE categoria = ?
+                """
+                cursor.execute(query, (categoria,))
+                rows = cursor.fetchall()
+                empleados = [Empleados(*row) for row in rows]
+                return empleados
+        except Exception as ex:
+            raise Exception(f"Error al obtener empleados por categoría: {ex}")
     
     @classmethod
     def get_empleado_by_id(cls, db, id):
@@ -277,8 +294,8 @@ class ModelEmpleado:
         except Exception as ex:
             db.rollback()
             raise Exception(ex)
-    
-    
+        
+
     @classmethod
     def obtener_directores(cls,db):
         try:
