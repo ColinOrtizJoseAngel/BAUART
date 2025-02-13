@@ -1,4 +1,5 @@
 from .entities.Empleados import Empleados
+import pyodbc
 
 class ModelEmpleado:
 
@@ -60,22 +61,48 @@ class ModelEmpleado:
             raise Exception(ex)
     
     @classmethod
-    def get_empleados_por_categoria(cls, db, categoria):
+    def get_empleados_por_categoria(cls, db, categoria, id_proyecto):
         """
-        Obtiene los empleados que pertenecen a la categoría seleccionada en la nómina presupuestada.
+        Obtiene los empleados que pertenecen a la categoría seleccionada en la nómina presupuestada
+        y que NO estén ya asignados al proyecto actual.
         """
         try:
             with db.cursor() as cursor:
-                query = """ 
-                SELECT * FROM EMPLEADOS 
-                WHERE categoria = ?
+                categoria = str(categoria)
+                id_proyecto = int(id_proyecto)
+
+                query = """
+                SET NOCOUNT ON;
+                SELECT e.id, e.nombre, e.apellido, e.id_empresa, e.puesto,
+                    e.tipo_empleado, e.tipo_nomina, e.sueldo_imss, e.monedero, e.nomina,
+                    e.banco, e.numero_cuenta, e.clabe, e.alta_empleado, e.baja_empleado, 
+                    e.fecha_registro, e.is_blocked, e.categoria, e.no_imss, e.curp, e.ine, 
+                    e.rfc, e.cedula_profesional, e.estado_civil, e.fecha_nacimiento, 
+                    e.telefono_contacto, e.domicilio, e.tope_horas_extra, e.foto_base64, 
+                    e.tipo_sangre, e.lugar_nacimiento, e.sexo, e.calle, e.manzana, e.lote, 
+                    e.numero_exterior, e.numero_interior, e.colonia, e.codigo_postal, 
+                    e.estado, e.telefono_domicilio, e.cuenta_correo, e.salario_diario_integrado,
+                    e.numero_credito_infonavit, e.tipo_descuento_infonavit, e.factor_infonavit, 
+                    e.fecha_ingreso, e.turno, e.tipo_contrato, e.contacto_accidente, e.alergias, 
+                    e.enfermedades_controladas, e.edificio, e.alcaldia, e.municipio, 
+                    e.registro_patronal, e.cuenta, e.motivo_baja, e.id_monedero, e.contratable,
+                    e.observaciones
+                FROM EMPLEADOS e
+                WHERE SOUNDEX(e.categoria) = SOUNDEX(?)
+                AND NOT EXISTS (
+                    SELECT 1 FROM ASIGNACIONES a 
+                    WHERE a.id_proyecto = ?
+                    AND a.id_empleado = e.id
+                    AND (a.fecha_fin IS NULL OR a.fecha_fin >= GETDATE())
+                )
                 """
-                cursor.execute(query, (categoria,))
+                cursor.execute(query, (categoria, id_proyecto))
                 rows = cursor.fetchall()
-                empleados = [Empleados(*row) for row in rows]
-                return empleados
+                return [Empleados(*row) for row in rows]
         except Exception as ex:
-            raise Exception(f"Error al obtener empleados por categoría: {ex}")
+            raise Exception(f"Error general al obtener empleados por categoría: {ex}")
+
+        
     
     @classmethod
     def get_empleado_by_id(cls, db, id):
@@ -294,8 +321,8 @@ class ModelEmpleado:
         except Exception as ex:
             db.rollback()
             raise Exception(ex)
-        
-
+    
+    
     @classmethod
     def obtener_directores(cls,db):
         try:
@@ -428,3 +455,4 @@ class ModelEmpleado:
         
         except Exception as ex:
             raise Exception(ex)
+        

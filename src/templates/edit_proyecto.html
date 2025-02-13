@@ -127,19 +127,27 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                    <label for="monto" class="form-label">HORA ENTRA</label>
-                                    <input type="time" class="form-control read_only" style="text-align: center;" value="{{ proyecto.hora_entrada }}" name="HORA_ENTRADA" id="HORA_ENTRADA" placeholder="Enter value" style="text-align: center;" required readonly>
+                                    <label for="HORA_ENTRADA" class="form-label">HORA ENTRADA</label>
+                                    <input type="time" class="form-control read_only" style="text-align: center;"
+                                           value="{{ proyecto.hora_entrada if proyecto.hora_entrada else '' }}"
+                                           name="HORA_ENTRADA" id="HORA_ENTRADA"
+                                           required >
                                     <div class="invalid-feedback">
-                                        DEFINE UNA HORA DE ENTRA AL PROYECTO
+                                        DEFINE UNA HORA DE ENTRADA AL PROYECTO
                                     </div>
                                 </div>
+                                
                                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                    <label for="monto" class="form-label">HORA SALIDA</label>
-                                    <input type="time" class="form-control read_only" style="text-align: center;" value="{{ proyecto.hora_salida }}" name="HORA_SALIDA" id="HORA_SALIDA" placeholder="Enter value" style="text-align: center;" required readonly>
+                                    <label for="HORA_SALIDA" class="form-label">HORA SALIDA</label>
+                                    <input type="time" class="form-control read_only" style="text-align: center;"
+                                           value="{{ proyecto.hora_salida if proyecto.hora_salida else '' }}"
+                                           name="HORA_SALIDA" id="HORA_SALIDA"
+                                           required >
                                     <div class="invalid-feedback">
-                                        DEFINE NUNA HORA DE SALIDA AL PROYECTO
+                                        DEFINE UNA HORA DE SALIDA AL PROYECTO
                                     </div>
                                 </div>
+                                
 
                             </div>
                             <!--Fin info general-->

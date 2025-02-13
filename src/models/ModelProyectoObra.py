@@ -26,7 +26,7 @@ class ModelProyectoObra:
                     proyecto.id_cliente, proyecto.id_empresa, proyecto.nombre_proyecto, proyecto.tipo_id, proyecto.fecha_inicio, proyecto.fecha_fin,
                     proyecto.pais, proyecto.estado, proyecto.municipio, proyecto.colonia, proyecto.calle, proyecto.numero_exterior, proyecto.numero_interior, 
                     proyecto.centro_comercial, proyecto.director_proyecto, proyecto.lider_proyecto, proyecto.gerente_proyecto, proyecto.lider1, 
-                    proyecto.lider2, proyecto.cp, proyecto.hora_entrada, proyecto.hora_salida, proyecto.longitud, proyecto.latitud, proyecto.direcion_obra, 
+                    proyecto.lider2, proyecto.cp, proyecto.hora_entrada, proyecto.hora_salida, proyecto.longitud, proyecto.latitud, proyecto.direccion_obra, 
                     proyecto.usuario_id, proyecto.is_blocked
                 ))
                 db.commit()
@@ -66,12 +66,7 @@ class ModelProyectoObra:
                         P.[USUARIO_ID],
                         P.[IS_BLOCKED],
                         P.[CP],
-                        C.[RAZON_SOCIAL],
-                        P.[HORA_ENTRADA],
-                        P.[HORA_SALIDA],
-                        P.[LONGITUD],
-                        P.[LATITUD],
-                        P.[DIRECCION_OBRA]
+                        C.[RAZON_SOCIAL]
                     FROM 
                         [PROYECTOS] P
                     INNER JOIN 
@@ -99,15 +94,8 @@ class ModelProyectoObra:
                     gerente_proyecto=row[18], lider1=row[19], 
                     lider2=row[20],
                     fecha_registro=row[21], 
-                    usuario_id=row[22], 
-                    is_blocked=row[23],
-                    cp=row[24],
-                    hora_entrada=row[25],
-                    hora_salida=row[26],
-                    longitud=row[27],
-                    latitud=row[28],
-                    direcion_obra=row[29]
-                    
+                    usuario_id=row[22], is_blocked=row[23],
+                    cp=row[24]
 
                 ))
             return proyectos
@@ -149,15 +137,7 @@ class ModelProyectoObra:
                     lider2=row[20],
                     fecha_registro=row[21], 
                     usuario_id=row[22],
-                    is_blocked=row[23],
-                    cp=row[24],
-                    hora_entrada=row[25],
-                    hora_salida=row[26],
-                    direcion_obra=row[27],
-                    longitud=row[28],
-                    latitud=row[29]
-                    
-                    
+                    is_blocked=row[23]
                 ))
             return proyectos
         except Exception as ex:
@@ -171,36 +151,44 @@ class ModelProyectoObra:
                 cursor.execute(query)
                 rows = cursor.fetchall()
                 proyectos = []
-            for row in rows:
-                proyectos.append(ProyectoObra(
-                   id=row[0], 
-                    id_empresa=row[1], 
-                    id_cliente=row[2],
-                    tipo_id=row[3],  
-                    fecha_inicio=row[4],
-                    fecha_contrato=[5], 
-                    fecha_fin=row[6],
-                    nombre_proyecto=row[7], 
-                    centro_comercial=row[8],
-                    pais=row[9], estado=row[10], municipio=row[11],
-                    colonia=row[12], calle=row[13], 
-                    numero_exterior=row[14], numero_interior=row[15], 
-                    director_proyecto=row[16], lider_proyecto=row[17], 
-                    gerente_proyecto=row[18], lider1=row[19], 
-                    lider2=row[20],
-                    fecha_registro=row[21], 
-                    usuario_id=row[22], is_blocked=row[23],
-                    cp=row[24],
-                    hora_entrada=row[25],
-                    hora_salida=row[26],
-                    direcion_obra=row[27],
-                    longitud=row[28],
-                    latitud=row[29]
-                ))
-            return proyectos
+                
+                for row in rows:
+                    proyectos.append(ProyectoObra(
+                        id=row[0], 
+                        id_empresa=row[1], 
+                        id_cliente=row[2],
+                        tipo_id=row[3],  
+                        fecha_inicio=row[4],
+                        fecha_contrato=row[5], 
+                        fecha_fin=row[6],
+                        nombre_proyecto=row[7], 
+                        centro_comercial=row[8],
+                        pais=row[9], 
+                        estado=row[10], 
+                        municipio=row[11],
+                        colonia=row[12], 
+                        calle=row[13], 
+                        numero_exterior=row[14], 
+                        numero_interior=row[15], 
+                        director_proyecto=row[16], 
+                        lider_proyecto=row[17], 
+                        gerente_proyecto=row[18], 
+                        lider1=row[19], 
+                        lider2=row[20],
+                        fecha_registro=row[21], 
+                        usuario_id=row[22], 
+                        is_blocked=row[23],
+                        cp=row[24],
+                        hora_entrada=row[25],  # Asumí que 'hora_entrada' es el índice 25
+                        hora_salida=row[26],  # Asumí que 'hora_salida' es el índice 26
+                        direccion_obra=row[27],  # Asumí que 'direccion_obra' es el índice 27
+                        latitud=row[28],  # Asumí que 'latitud' es el índice 28
+                        longitud=row[29]  # Asumí que 'longitud' es el índice 29
+                    ))
+                return proyectos
         except Exception as ex:
-            raise Exception(ex)    
-        
+            raise Exception(ex)
+
 
     @classmethod
     def get_proyecto_by_id(cls, db, id):
@@ -211,30 +199,30 @@ class ModelProyectoObra:
                 row = cursor.fetchone()
                 if row:
                     return ProyectoObra(
-                    id=row[0], 
-                    id_empresa=row[1], 
-                    id_cliente=row[2],
-                    tipo_id=row[3],  
-                    fecha_inicio=row[4],
-                    fecha_contrato=[5], 
-                    fecha_fin=row[6],
-                    nombre_proyecto=row[7], 
-                    centro_comercial=row[8],
-                    pais=row[9], estado=row[10], municipio=row[11],
-                    colonia=row[12], calle=row[13], 
-                    numero_exterior=row[14], numero_interior=row[15], 
-                    director_proyecto=row[16], lider_proyecto=row[17], 
-                    gerente_proyecto=row[18], lider1=row[19], 
-                    lider2=row[20],
-                    fecha_registro=row[21], 
-                    usuario_id=row[22], is_blocked=row[23],
-                    cp=row[24],
-                    hora_entrada=cls.format_time(row[25]),
-                    hora_salida=cls.format_time(row[26]),
-                    direcion_obra=row[27],
-                    longitud=row[28],
-                    latitud=row[29]
-                )
+                        id=row[0], 
+                        id_empresa=row[1], 
+                        id_cliente=row[2],
+                        tipo_id=row[3],  
+                        fecha_inicio=row[4],
+                        fecha_contrato=row[5], 
+                        fecha_fin=row[6],
+                        nombre_proyecto=row[7], 
+                        centro_comercial=row[8],
+                        pais=row[9], estado=row[10], municipio=row[11],
+                        colonia=row[12], calle=row[13], 
+                        numero_exterior=row[14], numero_interior=row[15], 
+                        director_proyecto=row[16], lider_proyecto=row[17], 
+                        gerente_proyecto=row[18], lider1=row[19], 
+                        lider2=row[20],
+                        fecha_registro=row[21], 
+                        usuario_id=row[22], is_blocked=row[23],
+                        cp=row[24],
+                        hora_entrada=row[25],  
+                        hora_salida=row[26],   
+                        direccion_obra=row[27], 
+                        latitud=row[28],       
+                        longitud=row[29]      
+                    )
                 return None
         except Exception as ex:
             raise Exception(ex)    
@@ -268,19 +256,23 @@ class ModelProyectoObra:
                         ID_CLIENTE = ?, ID_EMPRESA = ?, NOMBRE_PROYECTO = ?, TIPO_ID = ?, FECHA_INICIO = ?, FECHA_FIN = ?,
                         PAIS = ?, ESTADO = ?, MUNICIPIO = ?, COLONIA = ?, CALLE = ?, NUMERO_EXTERIOR = ?, NUMERO_INTERIOR = ?, CP = ?,
                         CENTRO_COMERCIAL = ?, DIRECTOR_PROYECTO = ?, LIDER_PROYECTO = ?, GERENTE_PROYECTO = ?, LIDER1 = ?, LIDER2 = ?,
-                        FECHA_REGISTRO = ?, USUARIO_ID = ?, IS_BLOCKED = ?
+                        FECHA_REGISTRO = ?, USUARIO_ID = ?, IS_BLOCKED = ?, 
+                        HORA_ENTRADA = ?, HORA_SALIDA = ?  -- Agregamos estos campos
                     WHERE ID = ?
                 """
                 cursor.execute(query, (
                     proyecto.id_cliente, proyecto.id_empresa, proyecto.nombre_proyecto, proyecto.tipo_id, proyecto.fecha_inicio, proyecto.fecha_fin,
                     proyecto.pais, proyecto.estado, proyecto.municipio, proyecto.colonia, proyecto.calle, proyecto.numero_exterior, proyecto.numero_interior,
                     proyecto.cp, proyecto.centro_comercial, proyecto.director_proyecto, proyecto.lider_proyecto, proyecto.gerente_proyecto, proyecto.lider1, 
-                    proyecto.lider2, proyecto.fecha_registro, proyecto.usuario_id, proyecto.is_blocked, proyecto.id
+                    proyecto.lider2, proyecto.fecha_registro, proyecto.usuario_id, proyecto.is_blocked, 
+                    proyecto.hora_entrada, proyecto.hora_salida,  # Agregamos estos valores
+                    proyecto.id
                 ))
                 db.commit()
         except Exception as ex:
             db.rollback()
             raise Exception(ex)
+
 
     @classmethod
     def change_status(cls, db, id, status):

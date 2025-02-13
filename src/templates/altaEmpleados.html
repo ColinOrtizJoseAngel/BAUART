@@ -341,12 +341,12 @@
                             <div class="form-group row">
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="NUMERO_CREDITO" class="form-label">NÚMERO DE CRÉDITO INFONAVIT*</label>
-                                    <input type="text" class="form-control" name="NUMERO_CREDITO_INFONAVIT" id="NUMERO_CREDITO_INFONAVIT" value="{{ request.form.get('NUMERO_CREDITO_INFONAVIT', '') }}" required>
+                                    <input type="text" class="form-control" name="NUMERO_CREDITO_INFONAVIT" id="NUMERO_CREDITO_INFONAVIT" value="{{ request.form.get('NUMERO_CREDITO_INFONAVIT', '') }}" >
                                     <div class="invalid-feedback">Completar Número de Crédito</div>
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="TIPO_DESCUENTO_INFONAVIT" class="form-label">TIPO DE DESCUENTO INFONAVIT*</label>
-                                    <select class="form-control" name="TIPO_DESCUENTO_INFONAVIT" id="TIPO_DESCUENTO_INFONAVIT" required>
+                                    <select class="form-control" name="TIPO_DESCUENTO_INFONAVIT" id="TIPO_DESCUENTO_INFONAVIT" >
                                         <option value="" style="text-align: center;">- SELECCIONE -</option>
                                         <option value="1" {% if request.form.get('TIPO_DESCUENTO_INFONAVIT') == '1' %}selected{% endif %}>FIJO</option>
                                         <option value="2" {% if request.form.get('TIPO_DESCUENTO_INFONAVIT') == '2' %}selected{% endif %}>PORCENTAJE</option>
@@ -355,7 +355,7 @@
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label for="FACTOR_INFONAVIT" class="form-label">FACTOR INFONAVIT*</label>
-                                    <input type="text" class="form-control" name="FACTOR_INFONAVIT" id="FACTOR_INFONAVIT" value="{{ request.form.get('FACTOR_INFONAVIT', '') }}" required>
+                                    <input type="text" class="form-control" name="FACTOR_INFONAVIT" id="FACTOR_INFONAVIT" value="{{ request.form.get('FACTOR_INFONAVIT', '') }}" >
                                     <div class="invalid-feedback">Completar Factor INFONAVIT</div>
                                 </div>
                             </div>

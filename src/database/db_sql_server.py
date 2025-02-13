@@ -17,26 +17,25 @@ connectionString = f'DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};UID={US
 """
 
 
-connectionString = "DRIVER={SQL Server};SERVER=SRV009\FASTBAUART;DATABASE=BAUART;UID=sa;PWD=Flu1G$$32;MARS_Connection=yes"
+connectionString = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=SRV009\FASTBAUART;DATABASE=BAUART;UID=sa;PWD=Flu1G$$32;MARS_Connection=yes"
 
 
 
 def get_connection():
-    print(f"Esta es la conexcion {connectionString}")
+    print(f"Esta es la conexión: {connectionString}")
     try:
-        return pyodbc.connect(connectionString)
+        return pyodbc.connect(connectionString, autocommit=True)  # Activa autocommit
     except pyodbc.Error as ex:
         print("Error al conectar a la base de datos:", ex)
 
-def ejecutar_query(db,query):
+def ejecutar_query(db, query):
     try:
-        cursor = db.cursor()
-        cursor.execute(query)
-        row = cursor.fetchone()
-        return print(row)
+        with db.cursor() as cursor:  # Usamos 'with' para cerrar el cursor automáticamente
+            cursor.execute(query)
+            row = cursor.fetchone()
+            return print(row)
     except Exception as ex:
         print("Error al ejecutar consulta: ", ex)
-
 
 
 

@@ -41,11 +41,6 @@
             color: #0f2d3a;
         }
 
-        p {
-            font-size: 18px;
-            color: #333;
-        }
-
         input, video, img {
             width: 100%;
             margin: 10px 0;
@@ -82,10 +77,11 @@
         <h2>Registro de Asistencia</h2>
         <form id="formAsistencia">
             <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
+
             <input type="text" id="empleado" placeholder="Escribe el nombre del empleado" required>
             <input type="hidden" id="id_empleado">
 
-            <input type="text" id="proyecto" placeholder="Escribe el nombre del proyecto" required>
+            <input type="text" id="proyecto" placeholder="Escribe el nombre del proyecto asignado" required>
             <input type="hidden" id="id_proyecto">
 
             <input type="hidden" id="latitud">
@@ -105,7 +101,8 @@
         $(document).ready(function () {
             const csrfToken = $("#csrf_token").val();
             let canvas = document.createElement('canvas');
-
+            let proyectoErrorMostrado = false;  // Variable para controlar el error de proyectos
+    
             function obtenerGeolocalizacion() {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
@@ -121,7 +118,7 @@
                     Swal.fire("Error", "Tu navegador no soporta geolocalización.", "error");
                 }
             }
-
+    
             function inicializarCamara() {
                 navigator.mediaDevices.getUserMedia({ video: true })
                     .then(function (stream) {
@@ -132,7 +129,7 @@
                         Swal.fire("Error", "No se pudo acceder a la cámara: " + error.message, "error");
                     });
             }
-
+    
             $("#btnCapturar").on("click", function () {
                 const video = document.getElementById("video");
                 const foto = document.getElementById("foto");
@@ -146,106 +143,140 @@
                 foto.classList.remove("hidden");
                 video.classList.add("hidden");
             });
-
+    
+            // Autocompletado para empleados
             $("#empleado").autocomplete({
-                source: function (request, response) {
-                    $.ajax({
-                        url: "/api/buscar_empleado/",
-                        type: "GET",
-                        data: { query: request.term },
-                        success: function (data) {
-                            response(data.map(empleado => ({
-                                label: `${empleado.nombre} ${empleado.apellido}`,
-                                value: `${empleado.nombre} ${empleado.apellido}`,
-                                id: empleado.id
-                            })));
-                        },
-                        error: function () {
-                            Swal.fire("Error", "No se pudieron cargar los empleados.", "error");
-                        }
-                    });
-                },
-                minLength: 2,
-                select: function (event, ui) {
-                    const idEmpleado = ui.item.id;
-                    $("#id_empleado").val(idEmpleado);
+    source: function (request, response) {
+        $.ajax({
+            url: "/api/buscar_empleado/",
+            type: "GET",
+            data: { query: request.term },
+            success: function (data) {
+                response(data.map(empleado => ({
+                    label: `${empleado.nombre} ${empleado.apellido}`,
+                    value: `${empleado.nombre} ${empleado.apellido}`,
+                    id: empleado.id
+                })));
+            },
+            error: function () {
+                Swal.fire("Error", "No se pudieron cargar los empleados.", "error");
+            }
+        });
+    },
+    minLength: 1,
+    select: function (event, ui) {
+        const idEmpleado = ui.item.id;
+        $("#id_empleado").val(idEmpleado);
 
-                    $.ajax({
-                        url: "/verificar_asistencia",
-                        type: "GET",
-                        data: { id_empleado: idEmpleado },
-                        success: function (data) {
-                            if (data.asistencia_registrada) {
-                                $("#btnRegistrarAsistencia").addClass("hidden");
-                                $("#btnRegistrarSalida").removeClass("hidden");
-                            } else {
-                                $("#btnRegistrarAsistencia").removeClass("hidden");
-                                $("#btnRegistrarSalida").addClass("hidden");
-                            }
-                        },
-                        error: function () {
-                            Swal.fire("Error", "No se pudo verificar la asistencia.", "error");
-                        }
-                    });
+        // Verificar asistencia
+        $.ajax({
+            url: "/verificar_asistencia",
+            type: "GET",
+            data: { id_empleado: idEmpleado },
+            success: function (data) {
+                // Imprimir la respuesta de la API en la consola
+                console.log("Respuesta de la verificación de asistencia:", data);
+
+                // Verificar si ya se ha registrado la asistencia hoy
+                if (data.asistencia_registrada) {
+                    // Si ya está registrado, mostrar el botón de salida
+                    console.log("Asistencia registrada: Hora entrada:", data.hora_entrada);
+                    console.log("Hora salida:", data.hora_salida || "No registrada");
+                    $("#btnRegistrarAsistencia").addClass("hidden");
+                    $("#btnRegistrarSalida").removeClass("hidden");
+                } else {
+                    // Si no está registrado, mostrar el botón de entrada
+                    console.log("No se ha registrado asistencia hoy.");
+                    $("#btnRegistrarAsistencia").removeClass("hidden");
+                    $("#btnRegistrarSalida").addClass("hidden");
                 }
-            });
+            },
+            error: function () {
+                Swal.fire("Error", "No se pudo verificar la asistencia.", "error");
+            }
+        });
 
-            $("#proyecto").autocomplete({
-                source: function (request, response) {
-                    $.ajax({
-                        url: "/api/buscar_proyecto/",
-                        type: "GET",
-                        data: { query: request.term },
-                        success: function (data) {
-                            response(data.map(proyecto => ({
-                                label: proyecto.nombre_proyecto,
-                                value: proyecto.nombre_proyecto,
-                                id: proyecto.id
-                            })));
-                        },
-                        error: function () {
-                            Swal.fire("Error", "No se pudieron cargar los proyectos.", "error");
-                        }
-                    });
-                },
-                minLength: 2,
-                select: function (event, ui) {
-                    $("#id_proyecto").val(ui.item.id);
-                }
-            });
-
-            $("#btnRegistrarAsistencia").on("click", async function () {
-                const datos = {
-                    id_empleado: parseInt($("#id_empleado").val()),
-                    id_proyecto: parseInt($("#id_proyecto").val()),
-                    dia: new Date().toISOString().split("T")[0],
-                    hora_entrada: new Date().toLocaleTimeString("es-MX", { hour12: false }),
-                    latitud: $("#latitud").val(),
-                    longitud: $("#longitud").val(),
-                    foto_base64: $("#foto_base64").val()
-                };
-
-                try {
-                    const respuesta = await fetch('/registrar_asistencia_empleado', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-                        body: JSON.stringify(datos)
-                    });
-
-                    const resultado = await respuesta.json();
-                    if (respuesta.ok) {
-                        Swal.fire("Éxito", resultado.mensaje, "success").then(() => {
-                            $("#formAsistencia")[0].reset();
-                            $("#btnRegistrarAsistencia, #btnRegistrarSalida").addClass("hidden");
-                        });
-                    } else {
-                        Swal.fire("Error", resultado.error || "Error desconocido.", "error");
+        // Autocompletado para proyectos
+        $("#proyecto").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/api/buscar_proyectos_asignados/",
+                    type: "GET",
+                    data: { id_empleado: idEmpleado, query: request.term },
+                    success: function (data) {
+                        response(data.map(proyecto => ({
+                            label: proyecto.nombre_proyecto,
+                            value: proyecto.nombre_proyecto,
+                            id: proyecto.id
+                        })));
+                    },
+                    error: function () {
+                        Swal.fire("Error", "No se pudieron cargar los proyectos.", "error");
                     }
-                } catch (error) {
-                    Swal.fire("Error", "No se pudo registrar la asistencia.", "error");
-                }
-            });
+                });
+            },
+            minLength: 0,
+            select: function (event, ui) {
+                $("#id_proyecto").val(ui.item.id);
+            }
+        }).focus(function () {
+            $(this).autocomplete("search", "");
+        });
+    }
+});
 
+    
+            // Registrar asistencia
+            $("#btnRegistrarAsistencia").on("click", async function () {
+    // Obtener la fecha actual en UTC
+    const fechaUTC = new Date();
+    
+    // Restar 6 horas para ajustarla a la zona horaria de México (UTC-6)
+    fechaUTC.setHours(fechaUTC.getHours() - 6);
+    
+    // Obtener la fecha ajustada (YYYY-MM-DD)
+    const dia = fechaUTC.toISOString().split("T")[0];
+    
+    // Obtener la hora de entrada (HH:MM:SS)
+    const hora_entrada = fechaUTC.toLocaleTimeString("es-MX", { hour12: false });
+
+    const datos = {
+        id_empleado: parseInt($("#id_empleado").val()),
+        id_proyecto: parseInt($("#id_proyecto").val()),
+        dia: dia,  // Fecha en formato YYYY-MM-DD
+        hora_entrada: hora_entrada,  // Hora en formato HH:MM:SS
+        latitud: $("#latitud").val(),
+        longitud: $("#longitud").val(),
+        foto_base64: $("#foto_base64").val()
+    };
+
+    // Verificar que la fecha se está enviando correctamente
+    console.log("Fecha a enviar:", datos.dia);
+    console.log("Hora de entrada a enviar:", datos.hora_entrada);
+
+    try {
+        const respuesta = await fetch('/registrar_asistencia_empleado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+            body: JSON.stringify(datos)
+        });
+
+        const resultado = await respuesta.json();
+        if (respuesta.ok) {
+            Swal.fire("Éxito", resultado.mensaje, "success").then(() => {
+                $("#formAsistencia")[0].reset();
+                $("#btnRegistrarAsistencia, #btnRegistrarSalida").addClass("hidden");
+                location.reload();  // Recargar la página
+            });
+        } else {
+            Swal.fire("Error", resultado.error || "Error desconocido.", "error");
+        }
+    } catch (error) {
+        Swal.fire("Error", "No se pudo registrar la asistencia.", "error");
+    }
+});
+    
+            // Registrar salida
             $("#btnRegistrarSalida").on("click", async function () {
                 const idEmpleado = $("#id_empleado").val();
                 Swal.fire({
@@ -262,12 +293,13 @@
                                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
                                 body: JSON.stringify({ id_empleado: parseInt(idEmpleado) })
                             });
-
+    
                             const resultado = await respuesta.json();
                             if (respuesta.ok) {
                                 Swal.fire("Éxito", resultado.mensaje, "success").then(() => {
                                     $("#formAsistencia")[0].reset();
                                     $("#btnRegistrarSalida").addClass("hidden");
+                                    location.reload();  // Recargar la página
                                 });
                             } else {
                                 Swal.fire("Error", resultado.error || "Error desconocido.", "error");
@@ -278,7 +310,7 @@
                     }
                 });
             });
-
+    
             obtenerGeolocalizacion();
             inicializarCamara();
         });

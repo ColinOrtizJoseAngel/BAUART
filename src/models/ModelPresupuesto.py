@@ -150,16 +150,18 @@ class ModelPresupuesto:
                 query = """
                     INSERT INTO PresupuestosBauart (
                         id_detalle, nombre_presupuesto, total_presupuesto_cliente, total_presupuesto_proveedor, 
-                        diferencia_presupuesto, is_blocked
-                    ) VALUES (?, ?, ?, ?, ?, ?);
+                        diferencia_presupuesto, is_blocked, estatus, id_presupuesto
+                    ) OUTPUT INSERTED.id_presupuesto_bauart
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?);
                 """
                 cursor.execute(query, (
                     presupuesto_bauart.id_detalle, presupuesto_bauart.nombre_presupuesto,
                     presupuesto_bauart.total_presupuesto_cliente, presupuesto_bauart.total_presupuesto_proveedor,
-                    presupuesto_bauart.diferencia_presupuesto, presupuesto_bauart.is_blocked
+                    presupuesto_bauart.diferencia_presupuesto, presupuesto_bauart.is_blocked,
+                    presupuesto_bauart.estatus, presupuesto_bauart.id_presupuesto
                 ))
-                 # Recuperar el último ID insertado
-                cursor.execute("SELECT TOP (1) [id_presupuesto_bauart] FROM PresupuestosBauart ORDER BY [id_presupuesto_bauart] DESC;")
+                
+                # Obtener el último ID insertado
                 last_id = cursor.fetchone()[0]
                 
                 db.commit()
@@ -1044,7 +1046,6 @@ class ModelPresupuesto:
             db.rollback()
             print(f"Error al actualizar el detalle del presupuesto: {ex}")
             raise ex
-        
         
     @classmethod
     def actualizar_presupuesto_bauart_detalle(cls,db,fila):

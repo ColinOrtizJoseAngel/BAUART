@@ -775,7 +775,7 @@ def alta_proyecto():
                         hora_salida = request.form.get('HORA_SALIDA', ''),
                         latitud=request.form.get('LATITUD', ''),
                         longitud=request.form.get('LONGITUD', ''),
-                        direcion_obra=request.form.get('DIRECCION_OBRA', ''),
+                        direccion_obra=request.form.get('DIRECCION_OBRA', ''),
                         usuario_id=current_user.id
             )
             
@@ -857,54 +857,73 @@ def edit_proyecto(id):
         if token and session.get('token') == token:
             # Elimina el token de la sesión para evitar reenvíos duplicados
             session.pop('token', None)
-            nuevo_proyecto = ProyectoObra(
-                        id=id,
-                        id_empresa=current_user.id_empresa,
-                        id_cliente=request.form['cliente_id'],
-                        fecha_inicio=request.form['fecha_inicio'],
-                        fecha_contrato="2024-08-22",
-                        fecha_fin=request.form['fecha_fin'],
-                        nombre_proyecto=request.form['nombre_proyecto'],
-                        centro_comercial=request.form.get('centro_comercial', ''),
-                        pais='MÉXICO',
-                        estado=request.form['ESTADO'],
-                        municipio=request.form['MUNICIPIO'],
-                        colonia=request.form.get('COLONIA', ''),
-                        calle=request.form['CALLE'],
-                        numero_exterior=request.form['NUMERO_INTERIOR'],
-                        numero_interior=request.form.get('NUMERO_EXTERIOR', ''),
-                        director_proyecto=request.form['nombre_director'],
-                        lider_proyecto=request.form['lider1_proyecto'],
-                        gerente_proyecto=request.form.get('nombre_gerente', ''),  # Ajuste en caso de que no haya un campo gerente
-                        lider1=request.form['lider1_proyecto'],
-                        lider2=request.form.get('lider2_proyecto', ''),
-                        cp = request.form['CP'],
-                        tipo_id = request.form.get('probra', ''),
-                        hora_entrada = request.form.get('HORA_ENTRADA', ''),
-                        hora_salida = request.form.get('HORA_SALIDA', ''),
-                        latitud=request.form.get('LATITUD', ''),
-                        longitud=request.form.get('LONGITUD', ''),
-                        direcion_obra=request.form.get('DIRECCION_OBRA', ''),
-                        usuario_id=current_user.id
-            )
             
+            # Imprimimos las horas para verificar que se reciben bien
+            print(f"Hora entrada recibida: {request.form.get('HORA_ENTRADA')}")
+            print(f"Hora salida recibida: {request.form.get('HORA_SALIDA')}")
+
+            nuevo_proyecto = ProyectoObra(
+                id=id,
+                id_empresa=current_user.id_empresa,
+                id_cliente=request.form['cliente_id'],
+                fecha_inicio=request.form['fecha_inicio'],
+                fecha_contrato="2024-08-22",
+                fecha_fin=request.form['fecha_fin'],
+                nombre_proyecto=request.form['nombre_proyecto'],
+                centro_comercial=request.form.get('centro_comercial', ''),
+                pais='MÉXICO',
+                estado=request.form['ESTADO'],
+                municipio=request.form['MUNICIPIO'],
+                colonia=request.form.get('COLONIA', ''),
+                calle=request.form['CALLE'],
+                numero_exterior=request.form['NUMERO_INTERIOR'],
+                numero_interior=request.form.get('NUMERO_EXTERIOR', ''),
+                director_proyecto=request.form['nombre_director'],
+                lider_proyecto=request.form['lider1_proyecto'],
+                gerente_proyecto=request.form.get('nombre_gerente', ''),  
+                lider1=request.form['lider1_proyecto'],
+                lider2=request.form.get('lider2_proyecto', ''),
+                cp=request.form['CP'],
+                tipo_id=request.form.get('probra', ''),
+                hora_entrada=request.form.get('HORA_ENTRADA', None),  # Se usa None para que no envíe string vacío
+                hora_salida=request.form.get('HORA_SALIDA', None),    # Se usa None para que no envíe string vacío
+                latitud=request.form.get('LATITUD', ''),
+                longitud=request.form.get('LONGITUD', ''),
+                direccion_obra=request.form.get('DIRECCION_OBRA', ''),
+                usuario_id=current_user.id
+            )
+
+            # Llamamos a la función de actualización
             ModelProyectoObra.update_proyecto(db, nuevo_proyecto)
             return redirect(url_for('proyectos'))
         
         else:
             return redirect(url_for('proyectos'))
     else:
+        # Obtener los datos actuales del proyecto
+        proyecto = ModelProyectoObra.get_proyecto_by_id(db, id)
+
+        # Verificar si se están recuperando correctamente los valores
+        print(f"Hora entrada cargada: {proyecto.hora_entrada}")
+        print(f"Hora salida cargada: {proyecto.hora_salida}")
+
+        # Obtener datos adicionales
         directores = ModelEmpleado.obtener_directores(db)
         lideres = ModelEmpleado.obtener_lideres(db)
         gerentes = ModelEmpleado.obtener_gerentes(db)
-        # Genera un token único y lo almacena en la sesión
+        cliente = Modelclientes.get_cliente_by_id(db, proyecto.id_cliente)
+
+        # Genera un token único y lo almacena en la sesión para evitar reenvíos duplicados
         session['token'] = str(uuid.uuid4())      
-        proyecto = ModelProyectoObra.get_proyecto_by_id(db,id)   
-        cleinte = Modelclientes.get_cliente_by_id(db,proyecto.id_cliente)
-        return render_template('edit_proyecto.html', proyecto=proyecto,cliente=cleinte,token=session['token'],directores=directores,lideres=lideres,gerentes=gerentes)
 
+        return render_template('edit_proyecto.html', 
+                               proyecto=proyecto, 
+                               cliente=cliente, 
+                               token=session['token'], 
+                               directores=directores, 
+                               lideres=lideres, 
+                               gerentes=gerentes)
 
-    
 
 """
 FIN PROYECTO 
@@ -1094,7 +1113,18 @@ def Altaempleados():
 
     except Exception as e:
         print(f"Error en la ruta /Altaempleados: {str(e)}")
-        return redirect(url_for('empleados')) 
+        return redirect(url_for('empleados'))
+
+
+@app.route("/get_registro_patronal_empresa/<int:id_empresa>", methods=["GET"])
+def get_registro_patronal_empresa(id_empresa):
+
+    registros = ModelRegistroPatronal.get_registro_patronal_by_empresa(db, id_empresa)
+
+    if not registros:
+        return jsonify({"message": "No se encontraron registros patronales para esta empresa"}), 404
+
+    return jsonify(registros), 200
     
     
 #BLOQUEAR EMPLEADO
@@ -1989,49 +2019,55 @@ def unblock_especialidades(id):
             
 
 # API LLENAR PORYECTO
+# Función para convertir objetos datetime o time a cadenas en formato 'HH:MM'
+def format_time(time_obj):
+    if isinstance(time_obj, (datetime, time)):
+        return time_obj.strftime('%H:%M')
+    return str(time_obj)  # Si no es un objeto datetime o time, lo convertimos a string
+
 @app.route('/api/buscar_proyecto/', methods=['GET'])
 def buscar_proyecto():
     try:
         query = request.args.get('query', '')
         proyectos = ModelProyectoObra.get_proyectos_not_block(db)
-        
-        proyectos_filtradas = []
+        proyectos_filtrados = []
 
         for p in proyectos:
             if query.lower() in p.nombre_proyecto.lower():
-                # Definir las fechas como cadenas para evitar el error de `datetime.date`
-                fecha_inicio = datetime.strptime(str(p.fecha_inicio), '%Y-%m-%d')
-                fecha_fin = datetime.strptime(str(p.fecha_fin), '%Y-%m-%d')
-                
-                # Calcular la diferencia entre las dos fechas
-                diferencia = fecha_fin - fecha_inicio
-                semanas = round(diferencia.days / 7)
-                
+                # Convertir las fechas y horas a formato string
+                fecha_inicio = p.fecha_inicio.strftime('%d %m %y') if p.fecha_inicio else None
+                fecha_fin = p.fecha_fin.strftime('%d %m %y') if p.fecha_fin else None
+                hora_entrada = format_time(p.hora_entrada) if p.hora_entrada else None
+                hora_salida = format_time(p.hora_salida) if p.hora_salida else None
+
+                # Imprimir las fechas y horas para depuración
+                print(f"Proyecto: {p.nombre_proyecto}")
+                print(f"Fecha inicio: {fecha_inicio}")
+                print(f"Fecha fin: {fecha_fin}")
+                print(f"Hora entrada: {hora_entrada}")
+                print(f"Hora salida: {hora_salida}")
+
+                # Construir la dirección
                 direccion = f"{p.calle} {p.numero_exterior}"
                 if p.numero_interior:
                     direccion += f" Int. {p.numero_interior}"
                 direccion += f", {p.colonia}, {p.municipio}, {p.estado}, {p.pais}"
-                
-                director = ModelEmpleado.obtener_director_por_id(db,p.director_proyecto)
-                
-                proyectos_filtradas.append({
+
+                proyectos_filtrados.append({
                     'id': p.id,
                     'id_cliente': p.id_cliente,
                     'nombre_proyecto': p.nombre_proyecto,
-                    'fecha_inicio': p.fecha_inicio,
-                    'fecha_fin': p.fecha_fin,
-                    'semanas': semanas,
-                    'director_proyecto': director.nombre + ' ' + director.apellido,
-                    'id_director': director.id,
-                    'direccion': direccion
+                    'fecha_inicio': fecha_inicio,
+                    'fecha_fin': fecha_fin,
+                    'direccion': direccion,
+                    'hora_entrada': hora_entrada,
+                    'hora_salida': hora_salida
                 })
-        
-        if proyectos_filtradas:
-            return jsonify(proyectos_filtradas), 200
-        else:
-            return jsonify([]), 200
+
+        return jsonify(proyectos_filtrados), 200
 
     except Exception as e:
+        print("❌ Error en la API:", str(e))  # Depuración en consola
         return jsonify({'error': str(e)}), 500
 
     
@@ -2885,7 +2921,8 @@ def edit_presupuesto():
                                 nombre_presupuesto=nombre_sub_presupuesto,
                                 total_presupuesto_cliente=convertir_a_float(total_cliente_bauart),
                                 total_presupuesto_proveedor=convertir_a_float(total_proveedor_bauart),
-                                diferencia_presupuesto=convertir_a_float(diferencia_bauart)
+                                diferencia_presupuesto=convertir_a_float(diferencia_bauart),
+                                id_presupuesto=presupuesto.id  # Aquí se asigna el ID del presupuesto central
                             )
 
                             # Guarda el presupuesto Bauart
@@ -4129,28 +4166,28 @@ def buscar_empleado():
 @app.route('/api/buscar_empleado_nombre_apellido/', methods=['GET'])
 def buscar_empleado_nombre_apellido():
     try:
-        # Obtener el parámetro de búsqueda desde la URL
         query = request.args.get('query', '').strip()
-        
+
         if not query:
             return jsonify({'error': 'El término de búsqueda es requerido'}), 400
 
-        # Dividir el término de búsqueda en posibles nombre y apellido
         query_parts = query.split()
-        nombre = query_parts[0] if len(query_parts) > 0 else None
-        apellido = " ".join(query_parts[1:]) if len(query_parts) > 1 else None
 
-        # Reutilizar el método filter_empleados del modelo
+        empleados_filtrados = []
+        
+        # Opción 1: Asumir el último elemento como apellido y el resto como nombre
+        nombre = " ".join(query_parts[:-1]) if len(query_parts) > 1 else query_parts[0]
+        apellido = query_parts[-1] if len(query_parts) > 1 else None
+        
         empleados = ModelEmpleado.filter_empleados(
             db=db,
             nombre=nombre,
             apellido=apellido,
             tipo_empleado=None,
-            estado='0'  # Buscar solo empleados no bloqueados
+            estado='0'
         )
-        
-        # Formatear los datos para la respuesta JSON
-        empleados_filtrados = [
+
+        empleados_filtrados.extend([
             {
                 'id': e.id,
                 'nombre': e.nombre,
@@ -4159,16 +4196,43 @@ def buscar_empleado_nombre_apellido():
                 'nomina': e.nomina
             }
             for e in empleados
-        ]
+        ])
         
+        # Opción 2: Asumir que el primer elemento es el nombre y el resto el apellido
+        if len(query_parts) > 1:
+            nombre = query_parts[0]
+            apellido = " ".join(query_parts[1:])
+            
+            empleados = ModelEmpleado.filter_empleados(
+                db=db,
+                nombre=nombre,
+                apellido=apellido,
+                tipo_empleado=None,
+                estado='0'
+            )
+
+            empleados_filtrados.extend([
+                {
+                    'id': e.id,
+                    'nombre': e.nombre,
+                    'apellido': e.apellido,
+                    'puesto': e.puesto,
+                    'nomina': e.nomina
+                }
+                for e in empleados
+            ])
+        
+        # Eliminar duplicados si los hubiera
+        empleados_filtrados = [dict(t) for t in {tuple(d.items()) for d in empleados_filtrados}]
+
         if empleados_filtrados:
             return jsonify(empleados_filtrados), 200
         else:
             return jsonify({'error': 'No se encontraron empleados con el nombre y apellido especificados'}), 404
 
     except Exception as e:
-        # Manejar errores y devolver un mensaje de error
         return jsonify({'error': str(e)}), 500
+
 
 
 @app.route('/registrar_asistencia_empleado', methods=['POST'])
@@ -4903,6 +4967,120 @@ def exportar_excel():
     except Exception as e:
         # Capturar cualquier excepción y mostrar el error
         return {"error": f"Error al generar el archivo Excel: {str(e)}"}, 500
+    
+ #incidensias
+
+@app.route('/incidencias', methods=['GET'])
+def incidencias():
+    return render_template('incidencias.html')
+
+@app.route('/guardar_incidencia', methods=['POST'])
+def guardar_incidencia():
+    print("Inicio del endpoint /guardar_incidencia")
+    db = db_sql_server.get_connection()
+    if db is None:
+        print("No se pudo conectar a la base de datos.")
+        return jsonify({"error": "No se pudo conectar a la base de datos."}), 500
+
+    try:
+        # Obtener los datos enviados desde el frontend
+        data = request.json
+        print(f"Datos recibidos del frontend: {data}")
+
+        # Verificar que todos los campos necesarios estén presentes
+        required_fields = ['idEmpleado', 'tipoIncidencia', 'fechaInicial']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                print(f"Falta el campo requerido: {field}")
+                return jsonify({"error": f"Falta el campo requerido: {field}"}), 400
+
+        # Crear instancia de la clase Incidencia
+        incidencia = Incidencia(
+            idIncidencia=None,  # Asume que es autoincremental
+            idEmpleado=data['idEmpleado'],
+            tipoIncidencia=data['tipoIncidencia'],
+            fechaInicial=data['fechaInicial'],
+            fechaFinal=data.get('fechaFinal'),
+            diasSolicitados=data.get('diasSolicitados', 0),
+            comentarios=data.get('comentarios'),
+            fechaRegistro=data.get('fechaRegistro', None)
+        )
+        print(f"Instancia de Incidencia creada: {incidencia}")
+
+        # Registrar la incidencia en la base de datos
+        incidencia_id = IncidenciaModel.create_incidencia(db, incidencia)
+        print(f"ID de incidencia creada: {incidencia_id}")
+
+        if not incidencia_id:
+            return jsonify({"error": "No se pudo registrar la incidencia."}), 500
+
+        # Crear la asistencia usando el ID de la incidencia recién generada
+        asistencia_result = IncidenciaModel.create_asistencia(
+            db,
+            id_empleado=data['idEmpleado'],
+            id_proyecto=data.get('idProyecto'),
+            dia=data['fechaInicial'],
+            es_incidencia=True,
+            id_incidencia=incidencia_id
+        )
+
+        print(f"Resultado de la creación de asistencia: {asistencia_result}")
+
+        if "error" in asistencia_result:
+            return jsonify({"error": "Incidencia registrada, pero falló la creación de asistencia."}), 500
+
+        return jsonify({
+            "message": "Incidencia y asistencia registradas exitosamente.",
+            "id_incidencia": incidencia_id,
+            "id_asistencia": asistencia_result['id']
+        }), 201
+
+    except Exception as e:
+        print(f"Error interno: {str(e)}")
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
+    finally:
+        print("Cerrando la conexión a la base de datos.")
+        db.close()
+
+@app.route('/api/consultar_incidencia', methods=['GET'])
+def consultar_incidencia():
+    try:
+        # Obtener parámetros de la solicitud
+        id_empleado = request.args.get('id_empleado')
+        fecha = request.args.get('fecha')
+
+        # Validar que los parámetros estén presentes
+        if not id_empleado or not fecha:
+            return jsonify({"error": "Faltan parámetros: 'id_empleado' y/o 'fecha' son obligatorios"}), 400
+
+        # Validar que id_empleado sea un número entero
+        if not id_empleado.isdigit():
+            return jsonify({"error": "'id_empleado' debe ser un número entero válido"}), 400
+        
+        id_empleado = int(id_empleado)  # Convertir a entero después de validarlo
+
+        # Validar que la fecha esté en el formato correcto (YYYY-MM-DD)
+        try:
+            datetime.strptime(fecha, '%Y-%m-%d')  # Usar la clase directamente
+        except ValueError:
+            return jsonify({"error": "'fecha' debe estar en el formato 'YYYY-MM-DD'"}), 400
+
+        # Consulta a la base de datos para obtener incidencias
+        incidencias = IncidenciaModel.obtener_incidencias_por_empleado_y_fecha(db, id_empleado, fecha)
+
+
+        return jsonify(incidencias), 200
+
+    except Exception as e:
+        # Manejo de errores generales
+        print(f"Error en consultar_incidencia: {e}")
+        return jsonify({"error": "Error interno del servidor"}), 500
+
+
+    except Exception as e:
+        # Registrar el error en el servidor
+        print(f"Error al consultar incidencias: {e}")
+        return jsonify({"error": "Error interno del servidor"}),    
 
 #RUTAS PDF 
 
@@ -4951,6 +5129,7 @@ def get_partidas(requisicion_id):
         return jsonify({"error": "Error fetching partition data"}), 500
     finally:
         db.close()
+
 
         
 ## MANEJO DE ERRORES

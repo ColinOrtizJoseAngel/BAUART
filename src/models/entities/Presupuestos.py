@@ -165,7 +165,7 @@ class DetallePresupuesto:
 class PresupuestoBauart:
     def __init__(self, id=0, concepto="", id_detalle=None, nombre_presupuesto="", 
                  total_presupuesto_cliente=0.0, total_presupuesto_proveedor=0.0, 
-                 diferencia_presupuesto=0.0,is_blocked = False, estatus=0):
+                 diferencia_presupuesto=0.0, is_blocked=False, estatus=0, id_presupuesto=None):
         """
         Clase para representar un Presupuesto Bauart.
 
@@ -177,6 +177,9 @@ class PresupuestoBauart:
             total_presupuesto_cliente (float): Total del presupuesto del cliente.
             total_presupuesto_proveedor (float): Total del presupuesto del proveedor.
             diferencia_presupuesto (float): Diferencia entre el presupuesto del cliente y del proveedor.
+            is_blocked (bool): Indica si el presupuesto está bloqueado.
+            estatus (int): Estado del presupuesto.
+            id_presupuesto (int): Identificador general del presupuesto.
         """
         self.id = id
         self.concepto = concepto
@@ -187,7 +190,8 @@ class PresupuestoBauart:
         self.diferencia_presupuesto = diferencia_presupuesto
         self.is_blocked = is_blocked
         self.estatus = estatus
-        self.detalles = [] 
+        self.id_presupuesto = id_presupuesto
+        self.detalles = []
 
     def agregar_detalle(self, detalle):
         """
