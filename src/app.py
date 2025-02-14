@@ -3,9 +3,10 @@ from database import db_sql_server
 from flask_login import LoginManager,login_user, logout_user, login_required,current_user
 from flask_wtf.csrf import CSRFProtect
 import uuid
-from datetime import datetime, timedelta, date, time
 import pytz
 
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta, date, time
 
 # Zona horaria de México (UTC-6)
 mexico_tz = pytz.timezone('America/Mexico_City')
@@ -127,10 +128,46 @@ def index():
     return redirect(url_for('login'))
 
 
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory('static', 'Buart.ico', mimetype='image/vnd.microsoft.icon')
         
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        nombre = request.form['NOMBRE']
+        usuario = request.form['USUARIO']
+        password = request.form['CONTRASENA']
+        correo = request.form['CORREO'] if 'CORREO' in request.form else ""
+
+        # Verificar si el usuario ya existe
+        existing_user = ModelUser.get_by_username(db, usuario)
+        if existing_user:
+            flash("El usuario ya existe. Intenta con otro.", "danger")
+            return render_template('signup.html')
+
+        # Hashear la contraseña antes de almacenarla
+        hashed_password = User.hash_password(password)
+
+        # Crear nuevo usuario
+        new_user = User(0, None, usuario, nombre, hashed_password, correo, False, None)
+        ModelUser.register(db, new_user)
+
+        flash("Registro exitoso. Ahora puedes iniciar sesión.", "success")
+        return redirect(url_for('login'))
+
+    return render_template('signup.html')
+
+@app.context_processor
+def inject_empresas():
+    if current_user.is_authenticated:
+        empresa = ModelEmpresas.get_empresa_by_id(db, current_user.id_empresa)
+    else:
+        empresa = None  # Si no hay usuario autenticado, no hay empresa
+    
+    return dict(empresas=empresa)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -161,19 +198,23 @@ def login():
             flash("Usuario incorrectos")
             return render_template('login.html', empresas=empresas)
     else:
-        return render_template('login.html', empresas=empresas)
-    
+        return render_template('login.html', empresas=empresas) 
+
 @app.route('/Home')
 @login_required
 def home():
     if current_user.is_authenticated:
-        print(f"ESTA ES EL USAURIO {current_user.id}")
-        return render_template('home.html')
-    
+        empresa = ModelEmpresas.get_empresa_by_id(db, current_user.id_empresa)
+        return render_template('home.html', empresas=empresa)
     else:
         flash("Ocurrió un error al intentar iniciar sesión.")
         return redirect(url_for('login'))
         
+@app.before_request
+def require_login():
+    rutas_permitidas = ['login', 'signup', 'static']  # Excepciones
+    if not current_user.is_authenticated and request.endpoint not in rutas_permitidas:
+        return redirect(url_for('login'))
         
 @app.route('/Periodos')
 def periodos():

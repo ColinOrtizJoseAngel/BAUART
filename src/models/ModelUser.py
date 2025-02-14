@@ -1,4 +1,5 @@
 from .entities.Usuarios import User
+from datetime import datetime
 
 class ModelUser():
 
@@ -35,5 +36,40 @@ class ModelUser():
                     return User(row[0], row[1], row[2], row[3], None, row[5], row[6], row[7])
                 else:
                     return None
+        except Exception as ex:
+            raise Exception(ex)
+        
+
+    @classmethod
+    def register(cls, db, user):
+        try:
+            with db.cursor() as cursor:
+                query = """INSERT INTO USUARIOS (ID_EMPRESA, NOMBRE_USUARIO, NOMBRE, CONTRASENA, CORREO, IS_BLOCKED, ID_EMPLEADO, FECHA_REGISTRO)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)"""
+                fecha_registro = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 🔥 Formato correcto para SQL Server
+                cursor.execute(query, (
+                    user.id_empresa,
+                    user.usuario,
+                    user.nombre,
+                    user.password,
+                    user.email,
+                    user.is_bloked,
+                    user.id_empleado,
+                    fecha_registro
+                ))
+                db.commit()
+                return True
+        except Exception as ex:
+            db.rollback()
+            raise Exception(ex)
+
+    @classmethod
+    def get_by_username(cls, db, username):
+        try:
+            with db.cursor() as cursor:
+                query = "SELECT ID FROM USUARIOS WHERE NOMBRE_USUARIO = ?"
+                cursor.execute(query, (username,))
+                row = cursor.fetchone()
+                return row is not None  # Retorna True si el usuario ya existe, False si no
         except Exception as ex:
             raise Exception(ex)

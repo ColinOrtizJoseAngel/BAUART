@@ -178,16 +178,18 @@
                 <br>
                 {% if current_user.is_authenticated %}
                 <p>USUARIO: {{ current_user.usuario }}</p> 
-                <p>EMPRESA: {{ current_user.id_empresa}}</p>
+                {% if empresas %}
+                <p>EMPRESA: {{ empresas.razon_social }}</p>
+                {% else %}
+                <p>No hay información de la empresa.</p>
+                {% endif %}
                 <p>CORREO: {{ current_user.email}}</p>
-                
                 {% endif %}
                 <div class="text-center">
                     <a href="{{ url_for('logout') }}" class=" btn btn-cerrar-session"><i class="bi bi-person-walking"></i> CERRAR SESIÓN</a>
                 </div>
                 <br>
             </div>
-
         </div>
     </div>
     <!--FIN MENU-->
