@@ -173,6 +173,7 @@ def inject_empresas():
 def login():
     try:
         empresas = ModelEmpresas.get_all_empresas(db)
+        print("Empresas enviadas al HTML:", empresas)  # 🔹 Verifica si se están obteniendo las empresas
     except Exception as e:
         raise e
 
@@ -181,24 +182,28 @@ def login():
         password = request.form['CONTRASENA']
         empresa = request.form['EMPRESA']
 
+        print("Empresa seleccionada por el usuario:", empresa)  # 🔹 Verifica qué empresa se está enviando desde el formulario
+
+        # 🔹 Asegurar que se actualice la empresa antes de loguear al usuario
+        if not ModelUser.actualizar_empresa(db, usuario, empresa):
+            flash("Error al actualizar la empresa. Inténtalo de nuevo.")
+            return render_template('login.html', empresas=empresas)
+
         user = User(0, empresa, usuario, "", password, "", False)
         logged_user = ModelUser.login(db, user)
         
         if logged_user:
             if logged_user.password:
-                # Login del usuario en la sesión
                 login_user(logged_user)
                 return redirect(url_for('home'))
-            
             else:
-                flash("Contraseña incorrectos")
-                return render_template('login.html', empresas=empresas)
-                
+                flash("Contraseña incorrecta")
         else:
-            flash("Usuario incorrectos")
-            return render_template('login.html', empresas=empresas)
-    else:
-        return render_template('login.html', empresas=empresas) 
+            flash("Usuario incorrecto")
+            
+        return render_template('login.html', empresas=empresas)
+
+    return render_template('login.html', empresas=empresas)
 
 @app.route('/Home')
 @login_required

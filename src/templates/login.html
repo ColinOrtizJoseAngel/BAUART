@@ -106,7 +106,7 @@
                                 <select class="form-control" name="EMPRESA" id="EMPRESA" required>
                                     <option value="" style="text-align: center;">SELECCIONA</option>
                                     {% for empresa in empresas %}
-                                    <option value="{{ empresa.id }}">{{empresa.razon_social}}</option>
+                                    <option value="{{ empresa.id }}">{{ empresa.razon_social }}</option>
                                     {% endfor %}
                                 </select>
                                 <div class="invalid-feedback">

@@ -22,6 +22,19 @@ class ModelUser():
         except Exception as ex:
             raise Exception(ex)
 
+    @classmethod
+    def actualizar_empresa(cls, db, nombre_usuario, nueva_empresa_id):
+        try:
+            with db.cursor() as cursor:
+                query = "UPDATE USUARIOS SET ID_EMPRESA = ? WHERE NOMBRE_USUARIO = ?"
+                cursor.execute(query, (nueva_empresa_id, nombre_usuario))
+                db.commit()
+            return True
+        except Exception as ex:
+            db.rollback()
+            print(f"Error al actualizar la empresa: {ex}")
+            return False
+
 
     @classmethod
     def get_by_id(cls, db, id):
