@@ -1362,21 +1362,19 @@ function abrirModalDetallesAsistencia(empleadoNombre, dia, entrada, salida, foto
 }
 
     // Configurar el autocompletado del input de proyectos
-    function configurarAutocompletado() {
-        const projectInput = document.getElementById("projectInput");
-        const projectName = document.getElementById("projectName");
+function configurarAutocompletado() {
+    const projectInput = document.getElementById("projectInput");
+    const projectName = document.getElementById("projectName");
 
-        projectInput.addEventListener("input", async (event) => {
-            const query = event.target.value.trim();
-            if (query.length < 2) return;
+    projectInput.addEventListener("input", async (event) => {
+        const query = event.target.value.trim();
+        if (query.length < 2) return;
 
-            const projects = await fetch(`/api/buscar_proyecto?query=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .catch(error => {
-                    console.error("Error al buscar proyectos:", error);
-                    return [];
-                });
+        try {
+            const response = await fetch(`/api/buscar_proyecto?query=${encodeURIComponent(query)}`);
+            if (!response.ok) throw new Error("Error al obtener proyectos");
 
+            const projects = await response.json();
             const datalistId = "projectSuggestions";
             let datalist = document.getElementById(datalistId);
             if (!datalist) {
@@ -1390,28 +1388,55 @@ function abrirModalDetallesAsistencia(empleadoNombre, dia, entrada, salida, foto
                 const option = document.createElement("option");
                 option.value = project.nombre_proyecto;
                 option.dataset.projectId = project.id;
-                option.dataset.fechaInicio = project.fecha_inicio;  
+                option.dataset.fechaInicio = project.fecha_inicio;
                 option.dataset.fechaFin = project.fecha_fin;
-                option.dataset.hora_entrada = project.hora_entrada;  
-                option.dataset.hora_salida = project.hora_salida;  
+                option.dataset.hora_entrada = project.hora_entrada;
+                option.dataset.hora_salida = project.hora_salida;
+                option.dataset.lider_proyecto = project.lider_proyecto || "No asignado"; // 🔹 Agregar líder del proyecto
                 datalist.appendChild(option);
             });
 
             projectInput.setAttribute("list", datalistId);
-        });
+        } catch (error) {
+            console.error("Error al buscar proyectos:", error);
+        }
+    });
 
-        projectInput.addEventListener("change", () => {
-            const selectedOption = Array.from(document.querySelectorAll(`#projectSuggestions option`))
-                .find(option => option.value === projectInput.value);
+    projectInput.addEventListener("change", () => {
+        const selectedOption = Array.from(document.querySelectorAll(`#projectSuggestions option`))
+            .find(option => option.value === projectInput.value);
 
-            if (selectedOption) {
-                currentProjectId = selectedOption.dataset.projectId; // Actualizar el proyecto seleccionado
-                const projectNameText = selectedOption.value;
-                projectName.textContent = projectNameText;
-                cargarAsistencias(currentStartDate, currentProjectId);
-            }
-        });
-    }
+        if (selectedOption) {
+            // Obtener los valores del proyecto seleccionado
+            currentProjectId = selectedOption.dataset.projectId;
+            const projectNameText = selectedOption.value;
+            const projectLeader = selectedOption.dataset.lider_proyecto || "No asignado"; // 🔹 Obtener el líder del proyecto
+            const fechaInicio = selectedOption.dataset.fechaInicio;
+            const fechaFin = selectedOption.dataset.fechaFin;
+            const projectHoraEntrada = selectedOption.dataset.hora_entrada;
+            const projectHoraSalida = selectedOption.dataset.hora_salida;
+
+            // 📌 Imprimir en consola para depuración
+            console.log("Proyecto seleccionado:", projectNameText);
+            console.log("ID del Proyecto:", currentProjectId);
+            console.log("Líder del Proyecto:", projectLeader);
+            console.log("Fecha de inicio:", fechaInicio);
+            console.log("Fecha de fin:", fechaFin);
+
+            // 🔹 Actualizar la UI con los datos del proyecto seleccionado
+            projectName.textContent = projectNameText;
+            document.getElementById("projectLeader").textContent = projectLeader; // Mostrar líder en la UI
+            document.getElementById("projectPeriodo").textContent = `${fechaInicio} - ${fechaFin}`;
+            document.getElementById("projectSchedule").textContent = `${projectHoraEntrada} - ${projectHoraSalida}`;
+
+            // Cargar las asistencias del proyecto seleccionado
+            cargarAsistencias(currentStartDate, currentProjectId);
+        } else {
+            console.log("No se seleccionó un proyecto válido.");
+        }
+    });
+}
+
 
     // Exportar a Excel
 document.getElementById("exportExcel").addEventListener("click", function () {
@@ -1949,38 +1974,43 @@ try {
 });
 
 document.getElementById("projectInput").addEventListener("change", function () {
-// Buscar el proyecto seleccionado en las opciones del datalist
-const selectedOption = Array.from(document.querySelectorAll(`#projectSuggestions option`))
-.find(option => option.value === this.value);
+    // Buscar el proyecto seleccionado en las opciones del datalist
+    const selectedOption = Array.from(document.querySelectorAll(`#projectSuggestions option`))
+        .find(option => option.value === this.value);
 
-// Si se seleccionó una opción válida
-if (selectedOption) {
-// Obtener la ID y los detalles del proyecto
-const projectId = selectedOption.dataset.projectId;
-const projectName = selectedOption.value;
+    // Si se seleccionó una opción válida
+    if (selectedOption) {
+        // Obtener la ID y los detalles del proyecto
+        const projectId = selectedOption.dataset.projectId;
+        const projectName = selectedOption.value;
+        const fechaInicio = selectedOption.dataset.fechaInicio;
+        const fechaFin = selectedOption.dataset.fechaFin;
+        const projectHoraEntrada = selectedOption.dataset.hora_entrada;
+        const projectHoraSalida = selectedOption.dataset.hora_salida;
 
-// Imprimir los datos del proyecto en la consola
-console.log("Proyecto seleccionado:", projectName);
-console.log("ID del Proyecto:", projectId);
+        // 🆕 Obtener el líder del proyecto
+        const projectLeader = selectedOption.dataset.lider_proyecto || "No asignado";
 
-// Aquí puedes añadir más detalles si necesitas imprimir más información del proyecto
-// Por ejemplo, si tienes fechas asociadas al proyecto:
-const fechaInicio = selectedOption.dataset.fechaInicio;
-const fechaFin = selectedOption.dataset.fechaFin;
-const projectHoraEntrada = selectedOption.dataset.hora_entrada;
-const projectHoraSalida = selectedOption.dataset.hora_salida;
-console.log("Fecha de inicio:", fechaInicio);
-console.log("Fecha de fin:", fechaFin);
+        // 📌 Imprimir en consola para depuración
+        console.log("Proyecto seleccionado:", projectName);
+        console.log("ID del Proyecto:", projectId);
+        console.log("Líder del Proyecto:", projectLeader);
+        console.log("Fecha de inicio:", fechaInicio);
+        console.log("Fecha de fin:", fechaFin);
 
-// Ahora actualizas las partes de la UI con la información del proyecto seleccionado
-document.getElementById("projectName").textContent = projectName;
-document.getElementById("projectPeriodo").textContent = `${fechaInicio} - ${fechaFin}`;
-document.getElementById("projectSchedule").textContent = `${(projectHoraEntrada)} - ${(projectHoraSalida)}`;
-} else {
-console.log("No se seleccionó un proyecto válido.");
-}
+        // 🔹 Actualizar la UI con los datos del proyecto seleccionado
+        document.getElementById("projectName").textContent = projectName;
+        document.getElementById("projectLeader").textContent = projectLeader; // 🆕 Mostrar el líder en la UI
+        document.getElementById("projectPeriodo").textContent = `${fechaInicio} - ${fechaFin}`;
+        document.getElementById("projectSchedule").textContent = `${projectHoraEntrada} - ${projectHoraSalida}`;
+
+        // Cargar las asistencias del proyecto seleccionado
+        currentProjectId = projectId;
+        cargarAsistencias(currentStartDate, currentProjectId);
+    } else {
+        console.log("No se seleccionó un proyecto válido.");
+    }
 });
-
 
 // Función para formatear la fecha en formato YYYY-MM-DD
 function formatFechaYYYYMMDD(fechaISO) {

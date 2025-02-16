@@ -2086,18 +2086,20 @@ def buscar_proyecto():
                 hora_entrada = format_time(p.hora_entrada) if p.hora_entrada else None
                 hora_salida = format_time(p.hora_salida) if p.hora_salida else None
 
-                # Imprimir las fechas y horas para depuración
-                print(f"Proyecto: {p.nombre_proyecto}")
-                print(f"Fecha inicio: {fecha_inicio}")
-                print(f"Fecha fin: {fecha_fin}")
-                print(f"Hora entrada: {hora_entrada}")
-                print(f"Hora salida: {hora_salida}")
-
-                # Construir la dirección
+                # Construir la dirección completa
                 direccion = f"{p.calle} {p.numero_exterior}"
                 if p.numero_interior:
                     direccion += f" Int. {p.numero_interior}"
                 direccion += f", {p.colonia}, {p.municipio}, {p.estado}, {p.pais}"
+
+                # 🆕 Añadir el líder del proyecto
+                lider_nombre = f"{p.lider_nombre} {p.lider_apellido}".strip() if p.lider_nombre and p.lider_apellido else "No asignado"
+
+                # 📌 Depuración en consola
+                print(f"Proyecto: {p.nombre_proyecto}")
+                print(f"Fecha inicio: {fecha_inicio}, Fecha fin: {fecha_fin}")
+                print(f"Hora entrada: {hora_entrada}, Hora salida: {hora_salida}")
+                print(f"Líder del proyecto: {lider_nombre}")
 
                 proyectos_filtrados.append({
                     'id': p.id,
@@ -2107,7 +2109,8 @@ def buscar_proyecto():
                     'fecha_fin': fecha_fin,
                     'direccion': direccion,
                     'hora_entrada': hora_entrada,
-                    'hora_salida': hora_salida
+                    'hora_salida': hora_salida,
+                    'lider_proyecto': lider_nombre  # 🆕 Se añade al JSON
                 })
 
         return jsonify(proyectos_filtrados), 200
@@ -2115,6 +2118,7 @@ def buscar_proyecto():
     except Exception as e:
         print("❌ Error en la API:", str(e))  # Depuración en consola
         return jsonify({'error': str(e)}), 500
+
 
     
 @app.route('/api/get_project_details/<int:id>', methods=['GET'])

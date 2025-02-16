@@ -147,47 +147,47 @@ class ModelProyectoObra:
     def get_proyectos_not_block(cls, db):
         try:
             with db.cursor() as cursor:
-                query = "SELECT * FROM PROYECTOS WHERE is_blocked = 0"
+                query = """
+                    SELECT 
+                        p.ID, p.ID_EMPRESA, p.ID_CLIENTE, p.TIPO_ID,  
+                        p.FECHA_INICIO, p.FECHA_CONTRATO, p.FECHA_FIN, 
+                        p.NOMBRE_PROYECTO, p.CENTRO_COMERCIAL, p.PAIS, 
+                        p.ESTADO, p.MUNICIPIO, p.COLONIA, p.CALLE, 
+                        p.NUMERO_EXTERIOR, p.NUMERO_INTERIOR, 
+                        p.DIRECTOR_PROYECTO, p.LIDER_PROYECTO, p.GERENTE_PROYECTO, 
+                        p.LIDER1, p.LIDER2, p.FECHA_REGISTRO, p.USUARIO_ID, 
+                        p.IS_BLOCKED, p.CP, p.HORA_ENTRADA, p.HORA_SALIDA, 
+                        p.DIRECCION_OBRA, p.LATITUD, p.LONGITUD,
+                        COALESCE(e.NOMBRE, '') AS lider_nombre, 
+                        COALESCE(e.APELLIDO, '') AS lider_apellido
+                    FROM PROYECTOS p
+                    LEFT JOIN EMPLEADOS e ON p.LIDER_PROYECTO = e.ID
+                    WHERE p.is_blocked = 0
+                """
                 cursor.execute(query)
                 rows = cursor.fetchall()
+
                 proyectos = []
-                
                 for row in rows:
                     proyectos.append(ProyectoObra(
-                        id=row[0], 
-                        id_empresa=row[1], 
-                        id_cliente=row[2],
-                        tipo_id=row[3],  
-                        fecha_inicio=row[4],
-                        fecha_contrato=row[5], 
-                        fecha_fin=row[6],
-                        nombre_proyecto=row[7], 
-                        centro_comercial=row[8],
-                        pais=row[9], 
-                        estado=row[10], 
-                        municipio=row[11],
-                        colonia=row[12], 
-                        calle=row[13], 
-                        numero_exterior=row[14], 
-                        numero_interior=row[15], 
-                        director_proyecto=row[16], 
-                        lider_proyecto=row[17], 
-                        gerente_proyecto=row[18], 
-                        lider1=row[19], 
-                        lider2=row[20],
-                        fecha_registro=row[21], 
-                        usuario_id=row[22], 
-                        is_blocked=row[23],
-                        cp=row[24],
-                        hora_entrada=row[25],  # Asumí que 'hora_entrada' es el índice 25
-                        hora_salida=row[26],  # Asumí que 'hora_salida' es el índice 26
-                        direccion_obra=row[27],  # Asumí que 'direccion_obra' es el índice 27
-                        latitud=row[28],  # Asumí que 'latitud' es el índice 28
-                        longitud=row[29]  # Asumí que 'longitud' es el índice 29
+                        id=row[0], id_empresa=row[1], id_cliente=row[2],
+                        tipo_id=row[3], fecha_inicio=row[4], fecha_contrato=row[5],
+                        fecha_fin=row[6], nombre_proyecto=row[7], centro_comercial=row[8],
+                        pais=row[9], estado=row[10], municipio=row[11], colonia=row[12], 
+                        calle=row[13], numero_exterior=row[14], numero_interior=row[15], 
+                        director_proyecto=row[16], lider_proyecto=row[17], 
+                        gerente_proyecto=row[18], lider1=row[19], lider2=row[20], 
+                        fecha_registro=row[21], usuario_id=row[22], is_blocked=row[23], 
+                        cp=row[24], hora_entrada=row[25], hora_salida=row[26], 
+                        direccion_obra=row[27], latitud=row[28], longitud=row[29], 
+                        lider_nombre=f"{row[30]} {row[31]}".strip()  # 🔹 Agregamos el nombre completo
                     ))
+
                 return proyectos
+
         except Exception as ex:
-            raise Exception(ex)
+            raise Exception(f"Error en get_proyectos_not_block: {str(ex)}")
+
 
 
     @classmethod
