@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for,redirect, flash, jsonify,session,send_from_directory, send_file
+from flask import Flask, render_template, request, url_for,redirect, flash, jsonify,session,send_from_directory, send_file, g
 from database import db_sql_server
 from flask_login import LoginManager,login_user, logout_user, login_required,current_user
 from flask_wtf.csrf import CSRFProtect
@@ -169,6 +169,56 @@ def inject_empresas():
     
     return dict(empresas=empresa)
 
+@app.route('/MenuAdministrador', methods=['GET'])
+def MenuAdministrador():
+
+
+    with db.cursor() as cursor:
+        cursor.execute("SELECT ID, NOMBRE_USUARIO, NOMBRE FROM USUARIOS")
+        usuarios = cursor.fetchall()
+
+    return render_template('MenuAdministrador.html', usuarios=usuarios)
+
+@app.route('/asignar_procesos', methods=['POST'])
+def asignar_procesos():
+
+    data = request.get_json()
+    usuario = data.get("usuario")
+    procesos = data.get("procesos")  # Lista de procesos con True o False
+
+    if not usuario or not isinstance(procesos, dict):
+        return jsonify({"success": False, "message": "Datos inválidos"}), 400
+
+    try:
+        with db.cursor() as cursor:
+            for id_proceso, asignado in procesos.items():
+                id_proceso = int(id_proceso)  # Convertir a int por seguridad
+                
+                if asignado:  
+                    # 🔹 Si está marcado (True), asignamos el proceso
+                    ModelUser.asignar_proceso(db, usuario, id_proceso)
+                else:  
+                    # 🔹 Si está desmarcado (False), desasignamos el proceso
+                    ModelUser.desasignar_proceso(db, usuario, id_proceso)
+
+        return jsonify({"success": True, "message": "Permisos actualizados correctamente"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/obtener_permisos/<usuario>', methods=['GET'])
+def obtener_permisos(usuario):
+
+    try:
+        with db.cursor() as cursor:
+            query = "SELECT id_proceso FROM PERMISOS WHERE usuario = ?"
+            cursor.execute(query, (usuario,))
+            permisos = [row[0] for row in cursor.fetchall()]  # Lista de procesos asignados
+            
+        return jsonify({"success": True, "permisos": permisos})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     try:
@@ -205,6 +255,60 @@ def login():
 
     return render_template('login.html', empresas=empresas)
 
+@app.before_request
+def restrict_apoderados():
+    rutas_restringidas = ['Altaempleados', 'edit_empleado']  # Nombre de las rutas protegidas
+
+    # Si el usuario intenta acceder a una de las rutas restringidas
+    if request.endpoint in rutas_restringidas:
+        if not current_user.is_authenticated:
+            return render_template('error401.html')
+
+        # Obtener los usuarios que tienen acceso a EMPLEADOS (id_proceso = 1)
+        try:
+            with db.cursor() as cursor:
+                query = "SELECT usuario FROM PERMISOS WHERE id_proceso = 1"
+                cursor.execute(query)
+                usuarios_permitidos = {row[0] for row in cursor.fetchall()}  # Guardamos en un set para mejor rendimiento
+            
+            # Si el usuario actual no está en la lista, bloquear acceso
+            if current_user.usuario not in usuarios_permitidos:
+                return render_template('error401.html')
+
+        except Exception as e:
+            print(f"Error al verificar permisos: {e}")
+            return render_template('error401.html')  # Bloquear acceso en caso de error
+
+@app.before_request
+def restrict_administrador():
+    rutas_restringidas = ['MenuAdministrador']  # 🔹 Rutas protegidas
+    usuarios_permitidos = set()  # 🔹 Inicializa variable para evitar errores
+
+    # 🔥 Si el usuario no está autenticado, no puede ver `MenuAdministrador`
+    if not current_user.is_authenticated:
+        g.es_admin = False  # 🔹 Asegura que `es_admin` tenga un valor siempre
+        if request.endpoint in rutas_restringidas:
+            return render_template('error401.html')
+        return  # 🔥 Permite acceder a otras rutas sin bloquearlas
+
+    try:
+        with db.cursor() as cursor:
+            query = "SELECT usuario FROM PERMISOS WHERE id_proceso = 0"
+            cursor.execute(query)
+            usuarios_permitidos = {row[0] for row in cursor.fetchall()}  # Convierte a set
+
+    except Exception as e:
+        print(f"Error al verificar permisos: {e}")
+        return render_template('error401.html')  # 🔥 En caso de error, bloquea acceso a admin
+
+    # 🔥 Define `g.es_admin` para ocultar botón en el layout
+    g.es_admin = current_user.usuario in usuarios_permitidos
+
+    # 🔒 Si intenta entrar a `MenuAdministrador` y no está en la lista, bloquearlo
+    if request.endpoint in rutas_restringidas and not g.es_admin:
+        return render_template('error401.html')
+
+
 @app.route('/Home')
 @login_required
 def home():
@@ -214,7 +318,13 @@ def home():
     else:
         flash("Ocurrió un error al intentar iniciar sesión.")
         return redirect(url_for('login'))
-        
+
+@app.route('/debug_user')
+def debug_user():
+    if current_user.is_authenticated:
+        return str(dir(current_user))  # Muestra todos los atributos del objeto
+    return "Usuario no autenticado"
+
 @app.before_request
 def require_login():
     rutas_permitidas = ['login', 'signup', 'static']  # Excepciones

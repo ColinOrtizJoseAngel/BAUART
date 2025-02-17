@@ -2,7 +2,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin, login_user
 
 class User(UserMixin):
-    def __init__(self, id, id_empresa, usuario, nombre, password, email="", is_bloked=False, id_empleado=None):
+    def __init__(self, id, id_empresa, usuario, nombre, password, email="", is_bloked=False, id_empleado=None, nivel_acceso=1):
         self.id = id
         self.id_empresa = id_empresa
         self.usuario = usuario
@@ -11,6 +11,7 @@ class User(UserMixin):
         self.email = email
         self.is_bloked = is_bloked
         self.id_empleado = id_empleado
+        self.nivel_acceso = int(nivel_acceso) if nivel_acceso is not None else 1 
 
     @classmethod
     def check_pass(self,hashed_password,password):

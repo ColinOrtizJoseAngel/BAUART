@@ -1,0 +1,228 @@
+{% extends "layout.html" %}
+
+{% block title %}Menú Administrador{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_menu.css') }}">
+{% endblock %}
+
+{% block titutlo %}Menú Administrador{% endblock %}
+
+{% block content %}
+<style>
+    .admin-container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .admin-container h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .admin-btn {
+        display: inline-block;
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-decoration: none;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+    }
+
+    .admin-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .proceso-checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .proceso-checkbox {
+        display: none; /* Ocultar el checkbox original */
+    }
+
+    .proceso-checkbox-label {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Estilo del checkbox personalizado */
+    .proceso-checkbox-label::before {
+        content: "";
+        width: 24px;
+        height: 24px;
+        border: 2px solid #007bff;
+        border-radius: 6px;
+        background: white;
+        display: inline-block;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Cambia el color cuando el checkbox está seleccionado */
+    .proceso-checkbox:checked + .proceso-checkbox-label::before {
+        background-color: #007bff;
+        border-color: #0056b3;
+        content: "✔";
+        color: white;
+        font-size: 16px;
+        text-align: center;
+        line-height: 22px;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Hover para resaltar el checkbox */
+    .proceso-checkbox-label:hover::before {
+        border-color: #0056b3;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+</style>
+
+<div class="admin-container">
+    <h2>Panel de Administración</h2>
+
+<!-- Botón para abrir el modal de asignación de usuarios -->
+<button class="admin-btn" data-bs-toggle="modal" data-bs-target="#asignarUsuarioModal">
+    Asignar Procesos a un Usuario
+</button>
+
+<!-- Botón para registrar un nuevo usuario -->
+<a href="{{ url_for('signup') }}" class="admin-btn">Registrar Nuevo Usuario</a>
+
+<!-- MODAL PARA ASIGNAR USUARIOS A PROCESOS -->
+<div class="modal fade" id="asignarUsuarioModal" tabindex="-1" aria-labelledby="asignarUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog"> <!-- Tamaño normal -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="asignarUsuarioLabel">Asignar Procesos a un Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="asignarUsuariosForm">
+                    <div class="mb-3">
+                        <label for="usuarioSelect" class="form-label">Selecciona un Usuario</label>
+                        <select id="usuarioSelect" class="form-control" required>
+                            <option value="">- Seleccione un Usuario -</option>
+                            {% for usuario in usuarios %}
+                            <option value="{{ usuario[1] }}">{{ usuario[1] }} - {{ usuario[2] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>Procesos Disponibles</h6>
+                        <div class="form-check">
+                            <input class="proceso-checkbox" type="checkbox" id="proceso0" value="0">
+                            <label class="proceso-checkbox-label" for="proceso0">
+                                ADMINISTRADOR
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="proceso-checkbox" type="checkbox" id="proceso1" value="1">
+                            <label class="proceso-checkbox-label" for="proceso1">
+                                EMPLEADOS
+                            </label>
+                        </div>
+                        
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Guardar Asignaciones</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript para manejar la asignación -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const usuarioSelect = document.getElementById("usuarioSelect");
+
+    // Cuando se selecciona un usuario, obtenemos sus permisos actuales
+    usuarioSelect.addEventListener("change", function () {
+        const usuario = usuarioSelect.value;
+
+        if (!usuario) {
+            document.querySelectorAll(".proceso-checkbox").forEach(checkbox => checkbox.checked = false);
+            return;
+        }
+
+        fetch(`/obtener_permisos/${usuario}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelectorAll(".proceso-checkbox").forEach(checkbox => {
+                        checkbox.checked = data.permisos.includes(parseInt(checkbox.value)); // Comprobar si el proceso está asignado
+                    });
+                } else {
+                    alert("Error al obtener permisos: " + data.message);
+                }
+            })
+            .catch(error => console.error("Error al obtener permisos:", error));
+    });
+
+    // Manejo del envío del formulario
+    document.getElementById("asignarUsuariosForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const usuario = usuarioSelect.value;
+        if (!usuario) {
+            alert("Por favor selecciona un usuario.");
+            return;
+        }
+
+        let procesos = {};
+        document.querySelectorAll(".proceso-checkbox").forEach(checkbox => {
+            procesos[checkbox.value] = checkbox.checked;
+        });
+
+        fetch("/asignar_procesos", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({ usuario, procesos })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Permisos actualizados correctamente.");
+                location.reload();
+            } else {
+                alert("Error al actualizar permisos: " + data.message);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+});
+
+</script>
+
+
+{% endblock %}
