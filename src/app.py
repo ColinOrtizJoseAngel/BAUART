@@ -326,10 +326,22 @@ def debug_user():
     return "Usuario no autenticado"
 
 @app.before_request
-def require_login():
-    rutas_permitidas = ['login', 'signup', 'static']  # Excepciones
-    if not current_user.is_authenticated and request.endpoint not in rutas_permitidas:
+def store_login_check():
+    rutas_permitidas = ['login', 'signup']
+    
+    # Permitir archivos estáticos sin chequeo
+    if request.path.startswith('/static/'):
+        return
+
+    # Guardamos en request si necesita autenticación
+    request.needs_auth_check = not current_user.is_authenticated and request.endpoint not in rutas_permitidas
+
+@app.after_request
+def require_login(response):
+    if hasattr(request, 'needs_auth_check') and request.needs_auth_check:
         return redirect(url_for('login'))
+    return response
+
         
 @app.route('/Periodos')
 def periodos():

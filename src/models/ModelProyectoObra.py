@@ -34,6 +34,7 @@ class ModelProyectoObra:
             db.rollback()
             raise Exception(ex)
         
+
     @classmethod
     def get_all_proyectos(cls, db):
         try:
@@ -66,7 +67,12 @@ class ModelProyectoObra:
                         P.[USUARIO_ID],
                         P.[IS_BLOCKED],
                         P.[CP],
-                        C.[RAZON_SOCIAL]
+                        C.[RAZON_SOCIAL],
+                        P.[HORA_ENTRADA],
+                        P.[HORA_SALIDA],
+                        P.[LONGITUD],
+                        P.[LATITUD],
+                        P.[DIRECCION_OBRA]
                     FROM 
                         [PROYECTOS] P
                     INNER JOIN 
@@ -94,15 +100,20 @@ class ModelProyectoObra:
                     gerente_proyecto=row[18], lider1=row[19], 
                     lider2=row[20],
                     fecha_registro=row[21], 
-                    usuario_id=row[22], is_blocked=row[23],
-                    cp=row[24]
+                    usuario_id=row[22], 
+                    is_blocked=row[23],
+                    cp=row[24],
+                    hora_entrada=row[25],
+                    hora_salida=row[26],
+                    longitud=row[27],
+                    latitud=row[28],
+                    direccion_obra=row[29]
+                    
 
                 ))
             return proyectos
         except Exception as ex:
             raise Exception(ex)   
-
-
     
     @classmethod
     def buscar_proyectos(cls, db):
